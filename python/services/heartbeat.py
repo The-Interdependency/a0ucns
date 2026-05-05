@@ -38,6 +38,14 @@ DEFAULT_TASKS = [
         "weight": 0.6,
         "interval_seconds": 21600,
     },
+    {
+        "name": "prime_seeds_tick",
+        "description": "Propagate 7 prime-seed PTCA cores; merge ST→memory_s; zeta bandit decides LT→memory_l",
+        "task_type": "prime_seeds_tick",
+        "enabled": True,
+        "weight": 0.9,
+        "interval_seconds": 60,
+    },
 ]
 
 TICK_INTERVAL = 30
@@ -212,6 +220,17 @@ class HeartbeatService:
 
         if task_type == "conversation_review":
             return await self._run_conversation_review()
+
+        if task_type == "prime_seeds_tick":
+            from ..engine.prime_seeds import get_prime_seeds
+            result = get_prime_seeds().tick()
+            return (
+                f"prime_seeds_tick_ok: tick={result['tick']}"
+                f" lt_promoted={result['lt_promoted']}"
+                f" st_coh={result['st_coherence']}"
+                f" lt_coh={result['lt_coherence']}"
+                f" avg_coh={result['avg_coherence']}"
+            )
 
         return f"unknown_task_type: {task_type}"
 

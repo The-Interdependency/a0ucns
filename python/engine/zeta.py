@@ -283,6 +283,20 @@ class ZetaEngine:
             print(f"[zfae:sigma] set_content_interval error: {exc}")
             return {}
 
+    def memory_context_for_prompt(self) -> dict:
+        """Return prime-seed memory context for prompt composition.
+
+        LT (N=19) → inject into prompt cache prefix (stable, high-reward).
+        ST (N=17) → inject after cache (volatile, recent).
+        Sub-agent seeds are volatile and not returned here.
+        """
+        try:
+            from .prime_seeds import get_prime_seeds
+            return get_prime_seeds().memory_context()
+        except Exception as exc:
+            print(f"[zfae:memory_context] error: {exc}")
+            return {"lt": {}, "st": {}}
+
     def state(self) -> dict:
         return {
             "agent": self.AGENT_NAME,
