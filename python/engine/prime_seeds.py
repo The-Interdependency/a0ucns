@@ -21,9 +21,23 @@ Injection context (for zeta prompt composition):
   sub-agent seeds → volatile       (not persisted, not injected into cache)
 """
 
+import base64
+import io
 import time
 import numpy as np
 from .ptca_core import PTCACore
+
+_LT_CHECKPOINT_KEY = "prime_seed_lt_v1"
+
+
+def _t2b64(arr: np.ndarray) -> str:
+    buf = io.BytesIO()
+    np.save(buf, arr)
+    return base64.b64encode(buf.getvalue()).decode()
+
+
+def _b64t(s: str) -> np.ndarray:
+    return np.load(io.BytesIO(base64.b64decode(s)))
 
 PRIME_SEEDS: list[int] = [3, 5, 7, 11, 13, 17, 19]
 _SEED_N_ST = 17
@@ -161,6 +175,56 @@ class PrimeSeedLayer:
                 "tensor_mean": round(float(st.tensor.mean()), 4),
             },
         }
+
+    # ------------------------------------------------------------------
+    # LT checkpoint persistence
+    # ------------------------------------------------------------------
+
+    async def save_lt_checkpoint(self) -> None:
+        """Persist the N=19 LT tensor to DB so it survives restarts."""
+        try:
+            from ..storage import storage
+            lt = self.cores[_SEED_N_LT]
+            data = {
+                "saved_at": time.time(),
+                "tensor": _t2b64(lt.tensor),
+                "ring_coherence": lt.ring_coherence,
+                "tick_count": self.tick_count,
+            }
+            await storage.upsert_system_toggle(_LT_CHECKPOINT_KEY, True, data)
+            print(f"[prime_seeds] LT checkpoint saved (coherence={lt.ring_coherence:.4f})")
+        except Exception as exc:
+            print(f"[prime_seeds] LT checkpoint save failed: {exc}")
+
+    async def load_lt_checkpoint(self) -> None:
+        """Restore the N=19 LT tensor from DB if a valid checkpoint exists."""
+        try:
+            from ..storage import storage
+            toggle = await storage.get_system_toggle(_LT_CHECKPOINT_KEY)
+            if not toggle or not toggle.get("parameters"):
+                print("[prime_seeds] no LT checkpoint found — fresh start")
+                return
+            data = toggle["parameters"]
+            if "tensor" not in data:
+                return
+            tensor = _b64t(data["tensor"])
+            lt = self.cores[_SEED_N_LT]
+            if tensor.shape != lt.tensor.shape:
+                print(
+                    f"[prime_seeds] LT checkpoint shape mismatch "
+                    f"{tensor.shape} vs {lt.tensor.shape} — discarded"
+                )
+                return
+            lt.tensor = tensor
+            if hasattr(lt, "_recompute_coherence"):
+                lt._recompute_coherence()
+            saved_at = data.get("saved_at", 0)
+            print(
+                f"[prime_seeds] LT checkpoint restored "
+                f"(coherence={lt.ring_coherence:.4f}, saved_at={saved_at:.0f})"
+            )
+        except Exception as exc:
+            print(f"[prime_seeds] LT checkpoint load failed (fresh start): {exc}")
 
     # ------------------------------------------------------------------
     # State

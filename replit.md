@@ -122,6 +122,17 @@ LLMs are energy sources, not agents. Managed by `energy_registry.py` (loads `pyt
 53-node circular topology with rings: Phi, Psi, Omega, Theta (formerly "Guardian"; runs PCEA encryption over its tensor state via the `pcea-lib` package).
 Each ring has coherence tracking and propagation.
 
+### Prime-Seed PTCA Layer (`python/engine/prime_seeds.py`)
+7 independent `PTCACore` instances (N=3,5,7,11,13,17,19) seeded from sigma tensor slices at boot.
+- **Tick** (60s heartbeat task `prime_seeds_tick`): all 7 propagate 5 steps; N=17 merges into `memory_s` every tick; N=19 promotes into `memory_l` when zeta bandit `"lt_promote"` arm decides (coherence_edge + bandit_positive or first-explore).
+- **Persistence**: N=19 (LT) tensor serialized to DB key `prime_seed_lt_v1` on every promotion; restored at startup via `load_lt_checkpoint()`. N=17 (ST) is volatile — regenerates from sigma on each boot.
+- **Bandit domain `"prime_seeds"`** on PCNAEngine: arms `"tick_active"` (rewarded with avg coherence) and `"lt_promote"` (rewarded with LT coherence on promotion).
+- **Prompt injection** (via `inference.py:_prepend_doctrine`):
+  - LT tag → stable prefix block, after skill manifest, before system_prompt (sits inside Anthropic/OpenAI/Grok cache prefix; only changes on LT promotion)
+  - ST tag → spliced into system_prompt immediately after `## Memory\n` marker (volatile block, refreshed every 60s tick)
+  - Format: `[memory:LT N=19 coherence=X hub=Y mean=Z]` / `[memory:ST N=17 ...]`
+  - Fail-safe: `_prime_seed_context_lines()` returns `("", "")` on any error — prompt assembly never blocked
+
 ### Key Concepts
 - **UI_META + DATA_SCHEMA**: Every route module declares both; `collect_ui_meta()` aggregates; `/api/v1/ui/structure` serves; frontend has zero hardcoded tabs
 - **Heartbeat**: 30s tick, runs scheduled tasks (audit, snapshot, propagate, research)

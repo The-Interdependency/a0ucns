@@ -57,17 +57,67 @@ def _load_doctrine() -> str:
     return ""
 
 
+def _prime_seed_context_lines() -> tuple[str, str]:
+    """Return (lt_line, st_line) compact one-line memory tags from prime seeds.
+
+    LT (N=19) → goes into the stable cache prefix (only changes on promotion).
+    ST (N=17) → goes into the volatile section after the ## Memory marker.
+    Returns ("", "") if prime seeds are not ready or raise.
+    """
+    try:
+        from ..engine.prime_seeds import get_prime_seeds
+        ctx = get_prime_seeds().memory_context()
+        lt = ctx.get("lt") or {}
+        st = ctx.get("st") or {}
+        lt_line = (
+            f"[memory:LT N={lt.get('n', '?')} "
+            f"coherence={lt.get('ring_coherence', '?')} "
+            f"hub={lt.get('hub_mean', '?')} "
+            f"mean={lt.get('tensor_mean', '?')}]"
+        ) if lt else ""
+        st_line = (
+            f"[memory:ST N={st.get('n', '?')} "
+            f"coherence={st.get('ring_coherence', '?')} "
+            f"hub={st.get('hub_mean', '?')} "
+            f"mean={st.get('tensor_mean', '?')}]"
+        ) if st else ""
+        return lt_line, st_line
+    except Exception:
+        return "", ""
+
+
 def _prepend_doctrine(system_prompt: Optional[str]) -> Optional[str]:
     """Prepend the doctrine + a0 skill manifest as the first cacheable blocks
     of any system prompt. Both blocks are byte-stable across calls (manifest
     is alphabetically sorted) so prompt caches latch onto the same prefix
-    until either a doctrine edit or a SKILL.md edit invalidates it."""
+    until either a doctrine edit or a SKILL.md edit invalidates it.
+
+    Prime-seed injection:
+      LT (N=19) tag → inserted into the stable prefix block, after the skill
+        manifest and before the caller's system_prompt. Lives inside the
+        Anthropic cache_control prefix and the auto-cache prefix on all other
+        providers. Only changes when the LT bandit arm fires a promotion.
+      ST (N=17) tag → spliced into the caller's system_prompt immediately after
+        the literal "## Memory\\n" marker so it lands in the volatile cache block
+        (second Anthropic breakpoint) and is refreshed every 60s heartbeat tick.
+    """
     doctrine = _load_doctrine()
     try:
         manifest = get_a0_skill_manifest()
     except Exception:
         manifest = ""
-    parts = [p for p in (doctrine, manifest, system_prompt) if p]
+    lt_line, st_line = _prime_seed_context_lines()
+    # ST: inject into system_prompt after the ## Memory marker (volatile block).
+    # The split marker is "\n\n## Memory\n" — same literal the Claude path uses
+    # for its second cache_control breakpoint so the two stay in sync.
+    _MEMORY_MARKER = "\n\n## Memory\n"
+    if st_line and system_prompt and _MEMORY_MARKER in system_prompt:
+        system_prompt = system_prompt.replace(
+            _MEMORY_MARKER,
+            f"{_MEMORY_MARKER}{st_line}\n",
+            1,
+        )
+    parts = [p for p in (doctrine, manifest, lt_line, system_prompt) if p]
     if not parts:
         return system_prompt
     if len(parts) == 1:

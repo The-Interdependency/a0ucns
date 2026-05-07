@@ -630,6 +630,7 @@ async def lifespan(app: FastAPI):
     print(f"[sigma] Σ online — n={_sigma.n}, resolution={_sigma.resolution}")
     from .engine.prime_seeds import get_prime_seeds
     get_prime_seeds().boot()
+    await get_prime_seeds().load_lt_checkpoint()
     print("[prime_seeds] 7 PTCA seed cores online")
     await heartbeat_service.start()
     # Periodic sweep so expired chat-approval gates don't accumulate on a quiet system.

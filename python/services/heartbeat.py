@@ -223,7 +223,10 @@ class HeartbeatService:
 
         if task_type == "prime_seeds_tick":
             from ..engine.prime_seeds import get_prime_seeds
-            result = get_prime_seeds().tick()
+            ps = get_prime_seeds()
+            result = ps.tick()
+            if result["lt_promoted"]:
+                await ps.save_lt_checkpoint()
             return (
                 f"prime_seeds_tick_ok: tick={result['tick']}"
                 f" lt_promoted={result['lt_promoted']}"
