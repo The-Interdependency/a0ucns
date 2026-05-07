@@ -1,6 +1,6 @@
-// 174:0
+// 257:0
 import { useLocation, Link } from "wouter";
-import { Zap, Shield, Palette, Check, Archive, Network, Images, FileSearch, Sun, Moon, Monitor, Cpu, Clock } from "lucide-react";
+import { Zap, Shield, Palette, Check, Archive, Network, Images, FileSearch, Sun, Moon, Monitor, Cpu, Clock, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUiStructure } from "@/hooks/use-ui-structure";
 import { useBillingStatus } from "@/hooks/use-billing-status";
@@ -227,6 +227,20 @@ export default function TopNav() {
           </div>
         </PopoverContent>
       </Popover>
+      {(isWs || isAdmin) && (
+        <Link
+          href="/docs"
+          className={cn(
+            "flex flex-col items-center justify-center px-2 min-h-[44px] py-2 gap-0.5 transition-colors select-none",
+            location === "/docs" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+          )}
+          data-testid="nav-docs"
+          aria-label="Docs"
+        >
+          <BookOpen className={cn("w-5 h-5", location === "/docs" && "drop-shadow-[0_0_6px_hsl(var(--primary))]")} />
+          <span className="text-[11px] font-medium leading-none">Docs</span>
+        </Link>
+      )}
       <LastUpdatedWidget />
       {data?.agent && (
         <div
@@ -252,4 +266,4 @@ export default function TopNav() {
     </nav>
   );
 }
-// 174:0
+// 257:0

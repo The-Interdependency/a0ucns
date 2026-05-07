@@ -1,4 +1,4 @@
-// 98:0
+// 100:0
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
@@ -19,6 +19,7 @@ import FleetPage from "@/pages/fleet";
 import GalleryPage from "@/pages/gallery";
 import TranscriptsPage from "@/pages/transcripts";
 import ProvidersPage from "@/pages/providers";
+import DocsPage from "@/pages/docs";
 import TopNav from "@/components/top-nav";
 import HmmmDoctrine from "@/components/hmmm-doctrine";
 
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/fleet" component={FleetPage} />
       <Route path="/transcripts" component={TranscriptsPage} />
       <Route path="/providers" component={ProvidersPage} />
+      <Route path="/docs" component={DocsPage} />
       <Route component={ChatPage} />
     </Switch>
   );
@@ -106,4 +108,4 @@ export default function App() {
     </QueryClientProvider>
   );
 }
-// 98:0
+// 100:0

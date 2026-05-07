@@ -1,4 +1,4 @@
-# 116:28
+# 155:50
 """
 PrimeSeedLayer — 7 independent PTCACore instances seeded from sigma tensor slices.
 
@@ -244,4 +244,4 @@ _prime_seeds = PrimeSeedLayer()
 
 def get_prime_seeds() -> PrimeSeedLayer:
     return _prime_seeds
-# 116:28
+# 155:50

@@ -1,4 +1,4 @@
-# 183:10
+# 236:12
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional, Any
@@ -258,6 +258,35 @@ async def build_info(request: Request):
     }
 
 
+from pathlib import Path as _Path
+
+_DOCS_ROOT = _Path(__file__).resolve().parents[2]
+_ALLOWED_DOCS: dict[str, str] = {
+    "replit.md": "replit.md",
+    "CLAUDE.md": "CLAUDE.md",
+    "copilot.md": "copilot.md",
+    "README.md": "README.md",
+}
+
+
+@router.get("/system/docs")
+async def get_doc_file(file: str, request: Request):
+    """Return one of the four root-level Markdown docs. ws/admin only."""
+    uid = request.headers.get("x-user-id")
+    role = request.headers.get("x-user-role", "")
+    if role not in ("admin", "ws"):
+        from ..storage import storage as _s
+        row = await _s.get_user(uid) if uid else None
+        if not row or row.get("role") not in ("admin", "ws"):
+            raise HTTPException(status_code=403, detail="ws/admin only")
+    if file not in _ALLOWED_DOCS:
+        raise HTTPException(status_code=400, detail=f"Unknown file. Allowed: {list(_ALLOWED_DOCS)}")
+    path = _DOCS_ROOT / _ALLOWED_DOCS[file]
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"{file} not found")
+    return {"file": file, "content": path.read_text(encoding="utf-8")}
+
+
 from ..services.editable_registry import editable_registry, EditableField
 editable_registry.register(EditableField(
     key="system_toggle",
@@ -269,4 +298,4 @@ editable_registry.register(EditableField(
     patch_endpoint="/api/v1/system/toggles/{subsystem}",
     query_key="/api/v1/system/toggles",
 ))
-# 183:10
+# 236:12

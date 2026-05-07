@@ -1,4 +1,4 @@
-# 635:175
+# 666:178
 import time
 import traceback
 from fastapi import APIRouter, HTTPException, Request
@@ -927,4 +927,4 @@ async def send_message(conv_id: int, body: SendMessage, request: Request):
 #   class: correctness
 #   call:  python.tests.contracts.chat.test_unknown_body_model_400
 # === END CONTRACTS ===
-# 635:175
+# 666:178

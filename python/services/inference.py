@@ -1,4 +1,4 @@
-# 652:153
+# 681:170
 import os
 import json
 import copy
@@ -952,4 +952,4 @@ async def _call_anthropic_LEGACY_DEAD_PATH(
         current_messages.append({"role": "user", "content": tool_results})
 
     return "[claude: tool loop exhausted]", accumulated_usage
-# 652:153
+# 681:170
