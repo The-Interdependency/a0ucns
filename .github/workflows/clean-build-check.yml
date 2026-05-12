@@ -38,3 +38,19 @@ jobs:
             exit 1
           fi
           echo "Clean build confirmed: zero @replit references in client bundle."
+
+  website-smoke:
+    name: Static website pages smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Run website smoke test
+        run: node --test tests/website-smoke.mjs
