@@ -4,7 +4,8 @@ from pathlib import Path
 from .contract import A0Request, A0Response, normalize_hmmm
 from .logging import log_event
 from .state import load_state, save_state
-from .model_adapter import LocalEchoAdapter
+from .adapters import get_adapter
+from .ptca import assemble_system
 
 from .tools.edcm_tool import run_edcm
 from .tools.pdf_tool import run_pdf_extract
@@ -34,8 +35,11 @@ def _select_adapter(req: A0Request):
 def handle(req: A0Request) -> A0Response:
     hmmm = normalize_hmmm(req.hmmm)
     state = load_state()
+    adapter = get_adapter()
+    stack = assemble_system()
     adapter = _select_adapter(req)
     state["last_model"] = adapter.name
+    state["meta_sentinel_codes"] = stack.meta_sentinel.integrated_codes
     save_state(state)
 
     log_event(LOG_DIR, req.task_id, {
