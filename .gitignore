@@ -1,5 +1,10 @@
 __pycache__/
 *.pyc
+*.pyo
+.env
+*.env
+a0/state/a0_state.json
+a0/logs/
 node_modules
 dist
 .DS_Store
