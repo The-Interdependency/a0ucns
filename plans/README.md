@@ -25,6 +25,7 @@ Use lowercase names. Replace hyphens with underscores when needed.
 ## Current scope
 
 These plan files cover the currently triaged repositories under `The-Interdependency`:
+Repository casing below intentionally matches each repository's canonical GitHub name.
 
 - `The-Interdependency/a0`
 - `The-Interdependency/ucns`
