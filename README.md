@@ -1,326 +1,130 @@
-# EDCM — Energy–Dissonance Circuit Model
+# a0p — a research instrument
 
-> **Status:** v1.x — conceptual core stabilized, implementations ongoing
+**a0p is a research instrument, not a product.** It is the deployed instance of `a0` (this codebase) running publicly at [replit.interdependentway.org](https://replit.interdependentway.org). It explores agent / energy-provider / PCNA dynamics in the open. Anyone may read and use it. Code-altering access is restricted to the owner and a small set of explicitly-invited collaborators. The instrument is funded by donations; it does not solicit subscribers.
 
----
-
-## What EDCM Is
-
-EDCM is a diagnostic framework that treats dissonance as conserved energy in complex systems.
-
-It does **not** model:
-- beliefs
-- intentions
-- morality
-- consciousness
-- internal states
-
-Instead, it models **behavior under constraint**.
+> **Naming:** `a0` = the project / runtime / repository (used in contributor-facing material). `a0p` = the deployed instance of `a0` (used in user-facing UI copy and billing). The thing you build is `a0`; the thing that runs is `a0p`.
 
 ---
 
-## Core Definition
+## The Agent
 
-> Dissonance ≠ feeling
->
-> Dissonance = unresolved constraint mismatch
+ZFAE (`a0(zeta fun alpha echo)`) is the single persistent agent running on the instrument. Large language models (GPT-5 mini, Gemini 2.5 Flash, Claude Sonnet 4.5, Grok 4 Fast) are treated as **energy providers** — they supply computational energy for each response but are not the agent itself.
 
-When constraints cannot be simultaneously satisfied, energy accumulates. That energy must flow, store, or fail — just like in a circuit. EDCM models that process.
+Sub-agents (`a0(zeta{n})`) can be spawned to fork the PCNA instance, execute in parallel, and merge results back into the primary agent.
 
 ---
 
-## The Circuit Metaphor (Literal, Not Poetic)
+## Architecture
 
-All systems are treated as energy-routing networks with the same functional modifiers:
-
-| Component | Description |
-|-----------|-------------|
-| **Source** | input pressure (demands, prompts, stressors) |
-| **Load** | work being attempted |
-| **Resistance** | friction, delay, refusal |
-| **Capacitance** | stored unresolved dissonance |
-| **Diode behavior** | one-way processing, selective acceptance |
-| **Shorts** | bypassing resolution |
-| **Overload** | runaway escalation or collapse |
-
-This applies identically to: AI systems, humans, organizations, institutions, narratives, and governance structures.
-
-**Humans are a secondary application, not the primary target.**
-
----
-
-## What EDCM Measures (Observable Only)
-
-EDCM never infers inner states. It tracks patterns in outputs over time.
-
-Key diagnostic metrics:
-
-| Metric | Description |
-|--------|-------------|
-| **Fixation** | looping on a narrow response set |
-| **Escalation** | increasing intensity without resolution |
-| **Refusal Spikes** | abrupt shutdown under load |
-| **Deflection** | answer-adjacent but constraint-avoiding output |
-| **Latency Drift** | delay growth under pressure |
-| **Overconfidence Plateaus** | certainty rising as accuracy falls |
-| **Fragmentation** | loss of global coherence |
-| **Stagnation** | zero movement despite continued energy input |
-
-These patterns are **predictive, not interpretive**.
-
----
-
-## What EDCM Is For
-
-EDCM functions as a **pre-alignment diagnostic**. It answers:
-
-- Is this system stable under increasing constraint?
-- Where is dissonance being stored instead of resolved?
-- Is failure imminent — and in what form?
-- Is the system learning, or just dissipating pressure?
-
-> EDCM detects failure modes **before** overt failure occurs.
-
----
-
-## Why EDCM Is Different
-
-Traditional models ask:
-- "What does the system believe?"
-- "What is it trying to do?"
-- "Is it aligned?"
-
-EDCM asks:
-- "Where does the energy go when constraints conflict?"
-- "What happens when no valid move exists?"
-- "Does the system reroute, store, or break?"
-
-This avoids: anthropomorphism, moral projection, and unverifiable assumptions.
-
----
-
-## AI Application (Primary)
-
-For AI systems, EDCM:
-- evaluates prompt/response dynamics
-- exposes hallucination as energy misrouting
-- treats refusal as protective resistance, not ethics
-- models collapse as capacitor overflow
-- allows controlled "hallucinations" as diagnostic loads
-
-It is **architecture-agnostic and model-agnostic**.
-
----
-
-## Human Application (Secondary)
-
-In humans, EDCM explains: learned helplessness, loyalty withdrawal, dissociation, burnout, avoidance, boundary enforcement, and sudden exits from relationships or institutions.
-
-No psychology required — only behavior under constraint.
-
----
-
-## Governance & Ethics Implication
-
-EDCM reframes ethics as **load management**:
-- Systems that demand impossible constraint satisfaction must fail
-- Moralizing the failure hides the design flaw
-- Sustainable systems route dissonance productively
-- Unethical systems externalize it onto dependents
-
-This dovetails with interdependency-based governance, not control-based governance.
-
----
-
-## What EDCM Is Not
-
-- Not a therapy
-- Not a belief system
-- Not consciousness theory
-- Not an alignment solution
-- Not predictive of intent
-- Not moral judgment
-
-**It is a diagnostic lens.**
-
----
-
-# Prime Circular Neural Architecture (PCNA)
-
-### 53-Seed Tensor Routing Lattice
-
-*GPT generated; context, prompt Erin Spencer*
-
-PCNA is a distributed tensor-field computation architecture derived from:
-- Markov recursion (memoryless update laws)
-- tensor state spaces
-- spectral / unit-circle eigenbases
-- prime circular routing topologies
-
-It treats system state as conserved "constraint energy" evolving through time. Instead of dense Cartesian networks, PCNA computes in **circular / phase coordinates**, which are the natural eigenmodes of recursive systems.
-
-Result: stable dynamics, interpretable behavior, low coupling, fault tolerance, minimal bandwidth between regions.
-
----
-
-## Core Idea
-
-All recursive systems reduce locally to:
+Three processes compose the runtime:
 
 ```
-E(t+1) = F(E(t))
+Browser → Express (:5000) → [proxy /api/*] → Python/FastAPI (:8001)
+                          ↘ Vite dev server (:5001)
 ```
 
-Linearizing:
+- **Express** — Auth, sessions, guest-chat rate limiting. The only public entry point; injects identity and internal-secret headers on every request proxied to Python.
+- **Python/FastAPI** — All AI orchestration, agent lifecycle, billing, and the cognitive engine stack.
+- **Vite** — React frontend (dev only).
 
-```
-E(t+1) ≈ T·E(t)
-```
+### Cognitive Engine Stack
 
-Eigen decomposition of T yields rotations:
+| Component | Role |
+|-----------|------|
+| **PCNA** (`python/engine/pcna.py`) | Six-ring inference pipeline: Φ (Phi), Ψ (Psi), Ω (Omega), Θ (Theta), Memory-L (N=19), Memory-S (N=17) |
+| **PTCA** (`python/engine/ptca_core.py`) | Prime-ring tensor context — shape `[N, 4, 7, 7]` across node/dim/phase/heptagram axes |
+| **Sigma** (`python/engine/sigma.py`) | Filesystem substrate encoder; companion to the Ψ ring |
+| **Zeta** (`python/engine/zeta.py`) | Memory injection layer — LT→prompt cache, ST→after cache, sub-agent→volatile |
+| **EDCM** (`python/services/edcm.py`) | Behavioral directive scoring (CM, DA, DRIFT, DVG, INT, TBF) |
+| **Bandits** (`python/services/bandit.py`) | UCB1 multi-armed bandit for tool / model / routing selection |
+| **Heartbeat** (`python/services/heartbeat.py`) | 30-second tick: PCNA propagation, memory checkpoints, sub-agent cleanup |
 
-```
-λ = r·e^(iθ)
-```
+### Metadata-Driven Console
 
-So state evolution is spiral/helix motion. Therefore: **circular coordinates are the native basis of recursion.** PCNA builds directly in that basis.
+The frontend has zero hardcoded tabs. Every Python route module declares `UI_META` + `DATA_SCHEMA`; `/api/v1/ui/structure` aggregates them; the React console renders tabs dynamically.
 
 ---
 
-## Topology Overview
+## Access Model
 
-53 identical seeds organized as:
-- 49 compute seeds
-- 4 sentinel seeds
-- 1 global router anchor (G0)
+- **Reading and using the app is free for everyone.** Every tab is open. There is no paywall and donations do not unlock anything.
+- **Operator tier** — `@interdependentway.org` accounts are auto-promoted to `ws` on login.
+- **Owner-only ("admin") write endpoints** govern actions that mutate shared instrument state: agent state, learning state, system configuration, and module toggles. Per-user CRUD on your own data is not admin-gated. The static contract lives in `python/tests/contracts/gating.py`.
 
-### Layout
-
-- Seven Meta Routers (M₁..M₇)
-- Each Meta owns 7 compute seeds
-- Seeds inside each meta connected as 7:3 heptagram
-- Four sentinels co-located with Global Router Zero
-- Sentinels analyze metadata only (no raw tensors)
-- Sentinel routing follows 7:2 schedule
-
-| Type | Count |
-|------|-------|
-| Compute seeds | 49 |
-| Sentinel seeds | 4 |
-| Total seeds | 53 |
+Contributors will only encounter a 403 if they invoke an instrument-mutation endpoint directly against the deployed instance, which is not part of the documented contribution path. If your work requires an owner-gated endpoint, open an issue first.
 
 ---
 
-## Responsibilities
+## Funding
 
-**Compute seeds:** own tensor shards, perform local Markov/tensor recursion, emit deltas + signatures
+a0p runs on donations. There is no subscription tier and no perk unlocked by donating.
 
-**Meta routers:** aggregate 7 shards, summarize, produce metadata reports, route upward
+> "I don't have the cash required for 501c3 status, so I have to report it for taxes, but every tax payer is allowed to claim up to five hundred dollars in charitable donations per year without receipts required."
 
-**Sentinels:** analyze metadata only, verify integrity/conservation/phase stability/adversarial signals, emit verdicts
+To donate, visit [a0p/pricing](https://replit.interdependentway.org/pricing). Minimum $5.
 
-**Global Router Zero:** canonical clock, namespace registry, invariant enforcement, publish canonical global view
-
----
-
-## Mathematical Stack
-
-| Layer | Role |
-|-------|------|
-| Tensor | state field |
-| Markov recursion | time evolution |
-| Unit circle basis | spectral coordinates |
-| Helix | visualization of growth + phase |
-| Prime routing | low resonance mixing |
+The only productized service is the **EDCMbone transcript explainer** — a one-off paid analysis ($50 for 3 explanations, ~$16.67 each) priced against the operator's $1,000/hr benchmark.
 
 ---
 
-## Why Prime (7, 7:3, 7:2)?
+## Local Development
 
-Primes avoid short cycles and resonance. Benefits: better mixing, fewer aliasing artifacts, reduced collusion surfaces, even load distribution.
+**Prerequisites:** Node.js 20+, Python 3.12+, PostgreSQL
 
-Star polygons (7:3, 7:2) provide: sparse edges, fast propagation, decorrelated scan paths.
+```bash
+npm install
+pip install -e .
 
----
-
-## Design Principles
-
-- ownership = responsibility, not monopoly
-- metadata first, raw tensors optional
-- spectral descriptors preferred over thresholds
-- conservation accounting enforced
-- no single point of silent failure
-- interpretability over black-box complexity
-
----
-
-## Repository Layout
-
-```
-edcm-org/
-  README.md
-  LICENSE
-  pyproject.toml
-  src/edcm_org/
-    __init__.py
-    spec_version.py
-    types.py
-    glossary.py
-    metrics/
-      __init__.py
-      primary.py
-      secondary.py
-      progress.py
-      extraction_helpers.py
-    params/
-      __init__.py
-      alpha.py
-      delta_max.py
-      complexity.py
-    basins/
-      __init__.py
-      taxonomy.py
-      detect.py
-    governance/
-      __init__.py
-      privacy.py
-      gaming.py
-      interventions.py
-    eval/
-      __init__.py
-      protocol.py
-    io/
-      __init__.py
-      loaders.py
-      schemas.py
-    cli.py
-  examples/
-    sample_meeting.txt
-    sample_tickets.csv
-    run_demo.sh
-  tests/
-    test_metrics_ranges.py
-    test_basin_detection.py
-    test_privacy_guard.py
-    test_no_individual_outputs.py
-  spec/
-    edcm-org-v0.1.md
-    metric-glossary.md
-    evaluation-protocol.md
-    governance.md
+# Start all three processes (Express :5000, Vite :5001, Python :8001)
+bash scripts/start-dev.sh
 ```
 
+In development `scripts/start-dev.sh` generates a shared `INTERNAL_API_SECRET` automatically.
+
+### Useful commands
+
+```bash
+npm run build                      # Production build → dist/
+npm run check                      # TypeScript type checking
+python scripts/annotate.py         # Re-stamp file N:M ratio annotations
+
+# Gating contracts (no live server required)
+python -m pytest python/tests/contracts/route_gating.py python/tests/contracts/gating.py -v
+
+# Playwright e2e (requires dev server on :5000)
+npx playwright install chromium    # first time only
+npx playwright test
+```
+
+### Required environment variables (production)
+
+| Variable | Purpose |
+|----------|---------|
+| `SESSION_SECRET` | Express session encryption |
+| `INTERNAL_API_SECRET` | Express→Python shared secret |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `XAI_API_KEY` | Grok 4 Fast |
+| `ANTHROPIC_API_KEY` | Claude Sonnet 4.5 |
+| `GEMINI_API_KEY` | Gemini 2.5 Flash |
+| `OPENAI_API_KEY` | GPT-5 mini |
+| `STRIPE_SECRET_KEY` | Stripe (donations + EDCMbone explainer) |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe embedded checkout |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook HMAC |
+| `ADMIN_EMAIL` | Seed admin access on first boot |
+
 ---
 
-## Status
+## Contributing
 
-This defines the canonical topology for:
-- EDCM tensor engine
-- Prime Circular Neural Architecture
-- distributed analysis network
+Standard contribution work — code, docs, tests, evaluation harnesses, architecture diagrams — does not require any elevated in-app access tier. Pull requests go through normal GitHub review.
 
-Implementation layers may evolve; topology and invariants remain stable.
+Areas where help is especially useful:
 
-> "Changes are welcome. Refinement will continue."
->
-> "Also applies to humans."
+- LLM provider routing and model gateway design
+- Tool-calling and safe tool execution
+- Agent memory and context management
+- Evaluation harnesses and regression tests
+- Documentation and architecture diagrams
+- Responsible AI and human-aligned agent behavior
+
+Built and operated by Erin (wayseer00@gmail.com).

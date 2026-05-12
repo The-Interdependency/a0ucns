@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from .contract import A0Request, A0Response
+from .contract import A0Request, A0Response, normalize_hmmm
 from .logging import log_event
 from .state import load_state, save_state
 from .adapters import get_adapter
@@ -13,10 +13,31 @@ from .tools.whisper_tool import run_whisper_segments
 
 LOG_DIR = Path(__file__).resolve().parent / "logs"
 
+
+def _select_adapter(req: A0Request):
+    """Select the best available adapter for this request.
+
+    Prefers ClaudeAgentAdapter (full PTCA subagent pipeline).
+    Falls back to LocalEchoAdapter if agent mode is not requested
+    or if the SDK is unavailable.
+    """
+    try:
+        from .adapters.claude_agent_adapter import ClaudeAgentAdapter, _SDK_AVAILABLE
+    except (ImportError, ModuleNotFoundError):
+        _SDK_AVAILABLE = False
+        ClaudeAgentAdapter = None  # type: ignore[assignment]
+
+    if _SDK_AVAILABLE and ClaudeAgentAdapter and req.mode in ("analyze", "act", "route"):
+        return ClaudeAgentAdapter(mode=req.mode)
+    return LocalEchoAdapter()
+
+
 def handle(req: A0Request) -> A0Response:
+    hmmm = normalize_hmmm(req.hmmm)
     state = load_state()
     adapter = get_adapter()
     stack = assemble_system()
+    adapter = _select_adapter(req)
     state["last_model"] = adapter.name
     state["meta_sentinel_codes"] = stack.meta_sentinel.integrated_codes
     save_state(state)
@@ -25,7 +46,7 @@ def handle(req: A0Request) -> A0Response:
         "type": "request",
         "mode": req.mode,
         "tools_allowed": req.tools_allowed,
-        "hmm": req.hmm
+        "hmmm": hmmm,
     })
 
     text = (req.input or {}).get("text", "")
@@ -33,19 +54,28 @@ def handle(req: A0Request) -> A0Response:
 
     if "pdf_extract" in req.tools_allowed and files:
         out = run_pdf_extract(files)
-        log_event(LOG_DIR, req.task_id, {"type": "tool", "name": "pdf_extract"})
-        return A0Response(task_id=req.task_id, result={"text": "", "artifacts": [out]}, hmm=req.hmm)
+        log_event(LOG_DIR, req.task_id, {"type": "tool", "name": "pdf_extract", "hmmm": hmmm})
+        return A0Response(task_id=req.task_id, result={"text": "", "artifacts": [out]}, hmmm=hmmm)
 
     if "whisper" in req.tools_allowed and files:
         out = run_whisper_segments(files)
-        log_event(LOG_DIR, req.task_id, {"type": "tool", "name": "whisper"})
-        return A0Response(task_id=req.task_id, result={"text": "", "artifacts": [out]}, hmm=req.hmm)
+        log_event(LOG_DIR, req.task_id, {"type": "tool", "name": "whisper", "hmmm": hmmm})
+        return A0Response(task_id=req.task_id, result={"text": "", "artifacts": [out]}, hmmm=hmmm)
 
     if "edcm" in req.tools_allowed:
         out = run_edcm(text)
-        log_event(LOG_DIR, req.task_id, {"type": "tool", "name": "edcm"})
-        return A0Response(task_id=req.task_id, result={"text": "", "artifacts": [out]}, hmm=req.hmm)
+        log_event(LOG_DIR, req.task_id, {"type": "tool", "name": "edcm", "hmmm": hmmm})
+        return A0Response(task_id=req.task_id, result={"text": "", "artifacts": [out]}, hmmm=hmmm)
 
-    resp = adapter.complete([{"role": "user", "content": text}])
-    log_event(LOG_DIR, req.task_id, {"type": "model", "name": adapter.name})
-    return A0Response(task_id=req.task_id, result={"text": resp.get("text", ""), "artifacts": []}, hmm=req.hmm)
+    resp = adapter.complete(
+        [{"role": "user", "content": text}],
+        mode=req.mode,
+        hmmm=hmmm,
+    )
+    log_event(LOG_DIR, req.task_id, {
+        "type": "model",
+        "name": adapter.name,
+        "subagents_used": resp.get("subagents_used", []),
+        "hmmm": hmmm,
+    })
+    return A0Response(task_id=req.task_id, result={"text": resp.get("text", ""), "artifacts": []}, hmmm=hmmm)

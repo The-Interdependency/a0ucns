@@ -52,3 +52,7 @@ def get_adapter():
 
 
 __all__ = ["get_adapter", "LocalEchoAdapter"]
+from .claude_agent_adapter import ClaudeAgentAdapter
+from .subagents import ALL_SUBAGENTS, MODE_SUBAGENTS
+
+__all__ = ["ClaudeAgentAdapter", "ALL_SUBAGENTS", "MODE_SUBAGENTS"]
