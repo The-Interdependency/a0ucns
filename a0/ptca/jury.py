@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from typing import List
 
-from .types import Core, JurySentinel, MetaSentinel, SentinelCode
+from .types import Core, JurySentinel, MetaSentinel
 
 
 def build_jury(phi: Core, psi: Core, omega: Core) -> List[JurySentinel]:
