@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, "..");
+const planReadmePath = join(repoRoot, "plans", "README.md");
 
 const htmlFiles = (await readdir(repoRoot))
   .filter((name) => name.endsWith(".html"))
@@ -34,3 +35,26 @@ for (const file of htmlFiles) {
     );
   });
 }
+
+test("plans README tracks current The-Interdependency triage scope", async () => {
+  const text = await readFile(planReadmePath, "utf8");
+  const expectedRepos = [
+    "The-Interdependency/a0",
+    "The-Interdependency/ucns",
+    "The-Interdependency/interdependent-lib",
+    "The-Interdependency/edcmbone",
+    "The-Interdependency/PTCA",
+    "The-Interdependency/pcna",
+    "The-Interdependency/ai-tiw",
+    "The-Interdependency/PCEA",
+    "The-Interdependency/aimmh",
+    "The-Interdependency/ZFAE",
+  ];
+
+  for (const repo of expectedRepos) {
+    assert.ok(
+      text.includes(`- \`${repo}\``),
+      `plans/README.md is missing triage scope entry for ${repo}`,
+    );
+  }
+});

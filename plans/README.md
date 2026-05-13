@@ -24,18 +24,19 @@ Use lowercase names. Replace hyphens with underscores when needed.
 
 ## Current scope
 
-These plan files cover the currently visible canonical repositories under `The-Interdependency`:
+These plan files cover the currently triaged repositories under `The-Interdependency`:
+Repository casing below intentionally matches each repository's canonical GitHub name.
 
-- `a0`
-- `ai-tiw`
-- `aimmh`
-- `edcmbone`
-- `pcna`
-- `pcea`
-- `ptca`
-- `ucns`
-- `website`
-- `zfae`
+- `The-Interdependency/a0`
+- `The-Interdependency/ucns`
+- `The-Interdependency/interdependent-lib`
+- `The-Interdependency/edcmbone`
+- `The-Interdependency/PTCA`
+- `The-Interdependency/pcna`
+- `The-Interdependency/ai-tiw`
+- `The-Interdependency/PCEA`
+- `The-Interdependency/aimmh`
+- `The-Interdependency/ZFAE`
 
 ## Attribution
 
