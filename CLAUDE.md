@@ -142,9 +142,10 @@ ADMIN_USER_ID           # User ID allowed to write prompt contexts
 ## Git Workflow
 
 - Main branch: `main`
-- Feature branches: `<type>/<description>` (e.g., `claude/add-feature-abc`)
-- Author: Erin Patrick Spencer
-- License: see LICENSE
+- Feature branches: `feat/<description>`, `fix/<description>`, `docs/<description>`, `chore/<description>` (e.g., `claude/add-feature-abc`)
+- Commit style: Conventional Commits (`feat(console):`, `fix(pcna):`, etc.)
+- Author: Erin Patrick Spencer (wayseer@interdependentway.org)
+- License: Apache 2.0
 
 ## Agent module-build doctrine
 
