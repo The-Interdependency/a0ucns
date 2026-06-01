@@ -1,4 +1,3 @@
-// 257:0
 import { useLocation, Link } from "wouter";
 import { Zap, Shield, Palette, Check, Archive, Network, Images, FileSearch, Sun, Moon, Monitor, Cpu, Clock, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -110,7 +109,7 @@ export default function TopNav() {
   const [location] = useLocation();
   const { data } = useUiStructure();
   const { user } = useAuth();
-  const { tier, tierLabel } = useBillingStatus();
+  const { tier, tierLabel, isWs, isAdmin } = useBillingStatus();
   const { toast } = useToast();
   const { skin, setSkin } = useSkin();
   const { mode, setMode } = useThemeMode();
@@ -266,4 +265,3 @@ export default function TopNav() {
     </nav>
   );
 }
-// 257:0

@@ -23,3 +23,10 @@ logs/sigma_checkpoint_meta.json
 test-results/
 playwright-report/
 .playwright/
+
+# Build / runtime artifacts
+*.egg-info/
+repl_nix_workspace.egg-info/
+uploads/
+__pycache__/
+*.pyc
