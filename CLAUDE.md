@@ -30,8 +30,11 @@ bash scripts/start-dev.sh
 # Production build (Vite → dist/public/, esbuild → dist/index.cjs)
 npm run build            # = tsx script/build.ts
 
-# Run the production build
+# Run the production build (Express only — dist/index.cjs on :5000)
 npm start                # = NODE_ENV=production node dist/index.cjs
+
+# Run both production processes (Express :5000 + uvicorn :8001) — what the container uses
+bash scripts/start-prod.sh
 
 # TypeScript type checking
 npm run check            # = tsc
@@ -145,7 +148,7 @@ Schema source of truth is `shared/schema.ts` (Drizzle ORM), applied via `npm run
 
 ### Auth & tiers
 
-Auth is handled entirely by Express. `@interdependentway.org` accounts are auto-promoted to the operator (`ws`) tier on login. Owner-only ("admin") write endpoints govern mutations to shared instrument state; per-user CRUD is not admin-gated. The static gating contract lives in `python/tests/contracts/gating.py` / `route_gating.py`.
+Auth is handled entirely by Express (`server/auth/`). On login/signup it fires a non-fatal call to the Python internal endpoint `POST /api/v1/billing/internal/promote-ws` (`tryPromoteWs` in `server/auth/routes.ts`), which promotes `@interdependentway.org` accounts to the operator (`ws`) tier. Owner-only ("admin") write endpoints govern mutations to shared instrument state; per-user CRUD is not admin-gated. The static gating contract lives in `python/tests/contracts/gating.py` / `route_gating.py`.
 
 ### Standalone `a0` CLI package
 
