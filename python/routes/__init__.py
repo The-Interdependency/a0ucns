@@ -1,4 +1,4 @@
-# 172:17
+# 171:20
 from .chat import router as chat_router
 from .agents import router as agents_router
 from .memory import router as memory_router
@@ -98,7 +98,9 @@ def collect_ui_meta() -> list[dict]:
         "python.routes.cli",
         "python.routes.forge",
         "python.routes.liminals",
-        "python.routes.artifacts",
+        # artifacts (the "Archive") is a standalone page reached via the top
+        # nav, not a console tab — its router stays in ALL_ROUTERS but it must
+        # not appear in /api/v1/ui/structure (no custom renderer / sections).
         "python.routes.module_config_api",
     ]
     tabs = []
@@ -203,4 +205,4 @@ def collect_doc_meta() -> list[dict]:
 # === END CONTRACTS ===
 # 171:16
 
-# 172:17
+# 171:20
