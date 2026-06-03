@@ -70,7 +70,7 @@ API_BASE=http://localhost:5000 node scripts/check-console-tabs.mjs
 node --test tests/website-smoke.mjs
 ```
 
-`run_tests.py` is a pytest wrapper that pre-caches stdlib `logging` (the local `a0/logging.py` would otherwise shadow it).
+`run_tests.py` is a pytest wrapper that pre-caches stdlib `logging` (the local `a0/logging.py` would otherwise shadow it). Caveat: it hardcodes the stdlib path `/usr/lib/python3.11/logging/__init__.py`, so it is brittle on non-3.11 hosts even though the repo otherwise targets Python 3.12.
 
 ---
 
@@ -163,7 +163,7 @@ The top-level `a0/` package (with `a0python/`, `requirements.txt`, `run.sh`) is 
 ## Conventions
 
 - **File annotation** — Every Python/TS source file opens and closes with a `# N:M` or `// N:M` line (N = non-blank/non-comment lines, must stay ≤ 400; M = comment lines). Run `python scripts/annotate.py` after edits.
-- **No file over 400 lines** — annotation warns; split before CI triggers.
+- **No file over 400 lines** — `scripts/annotate.py` warns on violation but does **not** block, and CI does not enforce it (per `.agents/skills/a0p-module-doctrine/SKILL.md`); split long files for readability, not to avoid a failing build.
 - **Python route DOC blocks** — each route file includes `# DOC module:`, `# DOC label:`, `# DOC description:`, `# DOC tier:`, `# DOC endpoint:` headers.
 - **All frontend `/api/*` calls go through Express on :5000** — never call Python :8001 directly.
 - **Dynamic SQL UPDATE** — use the column-allowlist pattern already established in the codebase.
@@ -190,7 +190,7 @@ The top-level `a0/` package (with `a0python/`, `requirements.txt`, `run.sh`) is 
 
 ## Environment variables
 
-Required in production (dev has safe fallbacks except where noted). See `.env.example`.
+Required in production (dev has safe fallbacks except where noted). Note: `.env.example` only covers model selection + LLM/adapter keys (`A0_MODEL`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GROK_API_KEY`, `DEEPSEEK_API_KEY`, `GITHUB_TOKEN`, Google Cloud) — it does **not** list the core platform vars below (`SESSION_SECRET`, `INTERNAL_API_SECRET`, `DATABASE_URL`, `XAI_API_KEY`, Stripe secrets), which must be set separately.
 
 | Variable | Purpose |
 |----------|---------|
