@@ -102,7 +102,7 @@ The `skills/` directory and `skills-lock.json` implement a plugin-style skill re
 
 - **File annotation** — Every file opens/closes with `// N:M` or `# N:M` (code:comment ratio). Run `python scripts/annotate.py` after edits.
 - **Python route DOC blocks** — Each route file includes `# DOC module:`, `# DOC label:`, `# DOC description:`, `# DOC tier:`, `# DOC endpoint:` headers.
-- **No file over 400 lines** — Annotation warns; split before it triggers CI.
+- **No file over 400 lines** — Keep modules under this limit; `scripts/annotate.py` warns when exceeded (CI does not block on this rule).
 - **All frontend `/api/*` calls go through Express on :5000** — never call Python :8001 directly.
 - **Dynamic SQL UPDATE** — Use the column allowlist pattern already established in the codebase.
 
