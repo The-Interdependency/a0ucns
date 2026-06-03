@@ -1,4 +1,4 @@
-# 171:20
+# 171:19
 from .chat import router as chat_router
 from .agents import router as agents_router
 from .memory import router as memory_router
@@ -203,6 +203,4 @@ def collect_doc_meta() -> list[dict]:
 #   class: security
 #   call:  python.tests.contracts.route_gating.test_every_write_route_is_gated
 # === END CONTRACTS ===
-# 171:16
-
-# 171:20
+# 171:19
