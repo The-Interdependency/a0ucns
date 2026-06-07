@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Languages:** TypeScript (Express server + React/Vite client) and Python 3.12 (FastAPI backend + cognitive engine).
 - **Key deps:** FastAPI, uvicorn, SQLAlchemy (async) + Drizzle ORM, React 18 + Vite, Stripe, and the private engine packages `pcea` (git), `aimmh-lib`, `edcmbone`. LLM SDKs: `anthropic`, `openai`/`openai-agents`, `google-genai`, `xai-sdk`.
-- **License:** Node side `package.json` declares MIT; Python `pyproject.toml` declares BUSL-1.1; the `LICENSE` file is an interim Business Source License 1.1 (BSL 1.1) notice. Treat the project as source-available, not OSI-permissive.
+- **License:** MIT — consistent across `package.json`, Python `pyproject.toml`, and the `LICENSE` file. The project is OSI-permissive (MIT).
 
 > **Naming:** `a0` = the project / runtime / repository. `a0p` = the deployed instance (used in user-facing UI copy and billing).
 
