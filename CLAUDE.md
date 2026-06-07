@@ -162,9 +162,9 @@ The top-level `a0/` package (with `a0python/`, `requirements.txt`, `run.sh`) is 
 
 ## Conventions
 
-- **File annotation** — Every Python/TS source file opens and closes with a `# N:M` or `// N:M` line (N = non-blank/non-comment lines, must stay ≤ 400; M = comment lines). Run `python scripts/annotate.py` after edits.
-- **No file over 400 lines** — `scripts/annotate.py` warns on violation but does **not** block, and CI does not enforce it (per `.agents/skills/a0p-module-doctrine/SKILL.md`); split long files for readability, not to avoid a failing build.
-- **Python route DOC blocks** — each route file includes `# DOC module:`, `# DOC label:`, `# DOC description:`, `# DOC tier:`, `# DOC endpoint:` headers.
+- **File annotation** — Every file opens/closes with `// N:M` or `# N:M` (code:comment ratio). Run `python scripts/annotate.py` after edits.
+- **Python route DOC blocks** — Each route file includes `# DOC module:`, `# DOC label:`, `# DOC description:`, `# DOC tier:`, `# DOC endpoint:` headers.
+- **No file over 400 lines** — Keep modules under this limit; `scripts/annotate.py` warns when exceeded (CI does not block on this rule).
 - **All frontend `/api/*` calls go through Express on :5000** — never call Python :8001 directly.
 - **Dynamic SQL UPDATE** — use the column-allowlist pattern already established in the codebase.
 - **Clean build** — keep `@replit` packages out of the client bundle (`clean-build-check.yml` enforces this).
