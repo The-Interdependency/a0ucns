@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Languages:** TypeScript (Express server + React/Vite client) and Python 3.12 (FastAPI backend + cognitive engine).
 - **Key deps:** FastAPI, uvicorn, SQLAlchemy (async) + Drizzle ORM, React 18 + Vite, Stripe, and the private engine packages `pcea` (git), `aimmh-lib`, `edcmbone`. LLM SDKs: `anthropic`, `openai`/`openai-agents`, `google-genai`, `xai-sdk`.
-- **License:** MIT — consistent across `package.json`, Python `pyproject.toml`, and the `LICENSE` file. The project is OSI-permissive (MIT).
+- **License:** AGPL-3.0-or-later — consistent across `package.json`, Python `pyproject.toml`, and the `LICENSE` file (relicensed from MIT; network copyleft so any hosted fork must publish source). Vendored `skill-lib/` retains its upstream MPL-2.0 license.
 
 > **Naming:** `a0` = the project / runtime / repository. `a0p` = the deployed instance (used in user-facing UI copy and billing).
 
