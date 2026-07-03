@@ -16,7 +16,7 @@ edit upstream first, re-mirror second.
 
 | Directory | Source repo | Commit | Date | Exclusions |
 |---|---|---|---|---|
-| `a0-betatest/` | The-Interdependency/a0-betatest | `cf7d3a18fbd85418972a37b15e00f03f1139868d` | 2026-06-30 | `storage/agents/` (per-agent ZFAE `zfae_core.safetensors` checkpoints — non-committable per a0-betatest doctrine), `_legacy_a0/uploads/` (~142M upload blobs) |
+| `a0-betatest/` | The-Interdependency/a0-betatest | `cf7d3a18fbd85418972a37b15e00f03f1139868d` | 2026-06-30 | `storage/agents/` (per-agent ZFAE `zfae_core.safetensors` checkpoints — non-committable per a0-betatest doctrine), `_legacy_a0/uploads/` (~142M upload blobs). Carries one upstream-first security patch ahead of the pinned SHA: the two-line weak-MD5 fix from The-Interdependency/a0-betatest#4 (`_legacy_a0/python/engine/sigma.py`, `_legacy_a0/python/services/research.py`); re-pin on next re-mirror once merged. |
 | `aimmh/` | The-Interdependency/aimmh | `54031028538b06fe1c0e0716015fb23e0f93a552` | 2026-06-30 | none |
 | `odysseus-a0/` | The-Interdependency/odysseus-a0 | `6fdbd55199973020eefafe6487a1d03f75c4a6b7` | 2026-06-06 | none |
 

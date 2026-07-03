@@ -42,7 +42,7 @@ def deduplicate_drafts(drafts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     seen: set[str] = set()
     unique = []
     for d in drafts:
-        key = hashlib.md5(d.get("title", "").encode()).hexdigest()
+        key = hashlib.md5(d.get("title", "").encode(), usedforsecurity=False).hexdigest()
         if key not in seen:
             seen.add(key)
             unique.append(d)

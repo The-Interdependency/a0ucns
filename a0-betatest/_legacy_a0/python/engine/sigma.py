@@ -50,7 +50,7 @@ def _nearest_prime(n: int) -> int:
 
 
 def _name_angle(name: str) -> float:
-    return (int(hashlib.md5(name.encode()).hexdigest()[:8], 16) % 100000) / 100000.0
+    return (int(hashlib.md5(name.encode(), usedforsecurity=False).hexdigest()[:8], 16) % 100000) / 100000.0
 
 
 def _scan_entries(root: str, resolution: int) -> list[tuple]:
