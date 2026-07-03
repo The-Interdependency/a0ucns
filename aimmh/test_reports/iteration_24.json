@@ -1,0 +1,135 @@
+{
+  "summary": "Iteration 24: Complete testing of AI visitor instructions feature. Backend: 11/11 tests PASSED. Frontend: ALL features verified working correctly.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_iteration24_ai_instructions.py",
+    "/app/test_reports/pytest/pytest_iteration24.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Backend GET /api/ai-instructions returns JSON with hub_name, goal, quickstart, patterns, operating_notes, api_endpoints",
+    "Backend GET /api/v1/ai-instructions returns identical JSON payload",
+    "Static GET /ai-instructions.txt returns plain text guide with all sections",
+    "Splash screen shows AI guide summary with endpoint references (/api/ai-instructions and /ai-instructions.txt)",
+    "Splash screen has data-testid='hub-splash-screen', 'hub-splash-ai-guide-summary', 'hub-splash-ai-guide-block', 'dismiss-hub-splash-button'",
+    "Hub page has permanent 'Hide AI guide' / 'Help for AI' toggle button with data-testid='hub-toggle-ai-guide-button'",
+    "AI Visitor Guide Panel has data-testid='ai-visitor-guide-panel' with human and agent blocks",
+    "Guide panel content updates dynamically by active tab (registry, instantiation, runs, responses, chat)",
+    "Guide panel shows hybrid style with 'Human Quickstep' and 'Agent Protocol' blocks",
+    "Machine-readable instructions section shows both /api/ai-instructions and /ai-instructions.txt endpoints",
+    "First-time users see guide panel by default, localStorage key 'aimmh-ai-guide-seen-v1' tracks seen state",
+    "All 5 tabs render correctly with no regressions: Registry, Model & Group Instantiation, Rooms/Runs/Orders & Prompts, Responses, Chat & Synthesis"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_iteration24_ai_instructions.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% - 11/11 tests passed",
+    "frontend": "100% - All features verified"
+  },
+
+  "test_credentials": {
+    "note": "Fresh users registered for each test session"
+  },
+
+  "seed_data_creation": "Test users created during UI testing",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Iteration 24 tested AI visitor instructions feature. All backend endpoints working: /api/ai-instructions (JSON), /api/v1/ai-instructions (JSON), /ai-instructions.txt (plain text). Frontend splash screen shows AI guide summary with endpoint references. Hub page has permanent 'Help for AI' toggle button (data-testid='hub-toggle-ai-guide-button'). AI Visitor Guide Panel shows tab-specific content with human and agent blocks. Guide panel visibility controlled by localStorage key 'aimmh-ai-guide-seen-v1'. All tabs render correctly with no regressions.",
+
+  "tests_executed": {
+    "backend_api_tests": {
+      "status": "PASS (11/11)",
+      "details": {
+        "test_api_ai_instructions_json_returns_200": "PASS - Returns 200 with JSON payload",
+        "test_api_ai_instructions_json_has_quickstart_steps": "PASS - Contains 5+ quickstart steps",
+        "test_api_ai_instructions_json_has_patterns": "PASS - Contains 6 orchestration patterns (fan_out, daisy_chain, room_all, room_synthesized, council, roleplay)",
+        "test_api_ai_instructions_json_has_operating_notes": "PASS - Contains 4+ operating notes",
+        "test_api_ai_instructions_json_has_api_endpoints": "PASS - Contains health, ready, hub_base, registry endpoints",
+        "test_api_v1_ai_instructions_returns_200": "PASS - Returns 200 with JSON payload",
+        "test_api_v1_ai_instructions_matches_api_ai_instructions": "PASS - Both endpoints return identical data",
+        "test_ai_instructions_txt_returns_200": "PASS - Returns 200 with text/plain content type",
+        "test_ai_instructions_txt_contains_guide_content": "PASS - Contains AIMMH Hub, Goal, Quickstart, Patterns, Operating Notes",
+        "test_ai_instructions_txt_contains_patterns": "PASS - Contains all 6 orchestration patterns",
+        "test_ai_instructions_txt_contains_endpoint_references": "PASS - Contains /api/ai-instructions, /api/health, /api/ready"
+      }
+    },
+    "frontend_splash_screen_tests": {
+      "status": "PASS",
+      "details": {
+        "splash_screen": "Found at [data-testid='hub-splash-screen']",
+        "ai_guide_summary": "Found at [data-testid='hub-splash-ai-guide-summary'] - 'Persistent isolated instances, nested groups, staged runs, and synthesis workflows. For agents: instantiate, run, compare, synthesize.'",
+        "ai_guide_block": "Found at [data-testid='hub-splash-ai-guide-block'] - Shows /api/ai-instructions and /ai-instructions.txt",
+        "dismiss_button": "Found at [data-testid='dismiss-hub-splash-button'] - 'Enter workspace'"
+      }
+    },
+    "frontend_hub_page_tests": {
+      "status": "PASS",
+      "details": {
+        "hub_page": "Found at [data-testid='aimmh-hub-page']",
+        "ai_guide_toggle_button": "Found at [data-testid='hub-toggle-ai-guide-button'] - Text toggles between 'Hide AI guide' and 'Help for AI'",
+        "ai_visitor_guide_panel": "Found at [data-testid='ai-visitor-guide-panel']",
+        "guide_title": "Found at [data-testid='ai-visitor-guide-title'] - Updates by active tab",
+        "human_block": "Found at [data-testid='ai-visitor-guide-human-block']",
+        "agent_block": "Found at [data-testid='ai-visitor-guide-agent-block']",
+        "endpoints_section": "Found at [data-testid='ai-visitor-guide-endpoints'] - Shows /api/ai-instructions and /ai-instructions.txt"
+      }
+    },
+    "frontend_tab_switching_tests": {
+      "status": "PASS",
+      "details": {
+        "registry_tab": "Guide title: 'Registry setup'",
+        "instantiation_tab": "Guide title: 'Instantiation strategy'",
+        "chat_tab": "Guide title: 'Chat + synthesis'",
+        "guide_toggle_hide": "Panel hidden successfully, button text changes to 'Help for AI'",
+        "guide_toggle_show": "Panel shown again successfully"
+      }
+    },
+    "frontend_tab_rendering_tests": {
+      "status": "PASS",
+      "details": {
+        "registry_tab": "Renders API keys and Registry sections",
+        "instantiation_tab": "Renders Instances and Groups panels",
+        "chat_tab": "Renders Direct multi-instance chat and Synthesis workspace"
+      }
+    }
+  },
+
+  "features_verified": [
+    "Backend: GET /api/ai-instructions returns JSON with quickstart, patterns, operating_notes, api_endpoints",
+    "Backend: GET /api/v1/ai-instructions returns identical JSON payload",
+    "Static: GET /ai-instructions.txt returns plain text guide",
+    "Splash screen: Shows AI guide summary with endpoint references",
+    "Splash screen: Has dismiss button to enter workspace",
+    "Hub page: Permanent 'Help for AI' toggle button in top shell",
+    "Hub page: AI Visitor Guide Panel with human and agent blocks",
+    "Hub page: Guide panel content updates by active tab",
+    "Hub page: Guide panel shows machine-readable instruction endpoints",
+    "Hub page: First-time state shows guide panel by default",
+    "Hub page: Toggle button hides/shows guide panel",
+    "No regression: All 5 tabs render correctly"
+  ],
+
+  "mocked_apis": {
+    "has_mocked_apis": true,
+    "details": "Stripe test/local key mode as noted in review request"
+  }
+}

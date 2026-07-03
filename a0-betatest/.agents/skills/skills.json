@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "repo": "The-Interdependency/skill-lib",
+  "vendored_at": "/app/.agents/skills/",
+  "skills": [
+    {
+      "name": "msdmd",
+      "path": "msdmd/SKILL.md",
+      "kind": "metadata-block",
+      "description": "Module Self-Declared Metadata in Markdown — foundational convention for declaring structured metadata in fenced comment blocks inside the code that owns it."
+    },
+    {
+      "name": "doc-build",
+      "path": "doc-build/SKILL.md",
+      "kind": "metadata-block",
+      "depends_on": ["msdmd"],
+      "description": "DOCS coverage. Modules declare # === DOCS === blocks; runner verifies paths, anchors, freshness."
+    },
+    {
+      "name": "cap-build",
+      "path": "cap-build/SKILL.md",
+      "kind": "metadata-block",
+      "depends_on": ["msdmd"],
+      "description": "CAPABILITIES inventory. Modules declare # === CAPABILITIES === blocks; runner builds a capability map and checks exposed surfaces."
+    },
+    {
+      "name": "test-build",
+      "path": "test-build/SKILL.md",
+      "kind": "metadata-block",
+      "depends_on": ["msdmd"],
+      "description": "CONTRACTS runner. Modules declare # === CONTRACTS === blocks; runner imports each call: path and executes."
+    },
+    {
+      "name": "meta-module-build",
+      "path": "meta-module-build/SKILL.md",
+      "kind": "metadata-block",
+      "depends_on": ["msdmd"],
+      "description": "MODULE_BUILD manifests. Manifest-first scaffolding: intent → manifest → file plan → tests → scaffold → reviewable change."
+    },
+    {
+      "name": "risk-boundary-build",
+      "path": "risk-boundary-build/SKILL.md",
+      "kind": "metadata-block",
+      "depends_on": ["msdmd", "meta-module-build"],
+      "description": "BOUNDARIES declarations. Modules declare # === BOUNDARIES === blocks for auth/storage/network/user_data/admin_only effects."
+    },
+    {
+      "name": "ratios",
+      "path": "ratios/SKILL.md",
+      "kind": "metadata-block",
+      "depends_on": ["msdmd"],
+      "description": "RATIOS bookend at top and bottom of each file. Runner recomputes loc_comments, imports_exports, calls_definitions and fails on drift."
+    },
+    {
+      "name": "canon",
+      "path": "canon/SKILL.md",
+      "kind": "procedural",
+      "description": "Source-backed canon vs proposed canon vs hmmm doctrine. Protects the boundary between actual canon and inferred agent claims."
+    },
+    {
+      "name": "visitor-intro",
+      "path": "visitor-intro/SKILL.md",
+      "kind": "procedural",
+      "description": "Onboarding tour for newcomers landing at any The-Interdependency repo."
+    },
+    {
+      "name": "manifest",
+      "path": "manifest/SKILL.md",
+      "kind": "metadata-block",
+      "depends_on": ["msdmd"],
+      "description": "Living-spec generator. Splices the factual half of CLAUDE.md from pyproject.toml + tree. CI --check drift gate."
+    },
+    {
+      "name": "char-compress",
+      "path": "char-compress/SKILL.md",
+      "kind": "procedural",
+      "description": "Bone/flesh char-compression for agent handoff and SKILL.md authorship. Flesh dense, bone sparse; carry hmmm; preserve negation, quantifiers, order, operators, statuses, secrets."
+    }
+  ]
+}

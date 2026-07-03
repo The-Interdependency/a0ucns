@@ -1,0 +1,69 @@
+{
+  "summary": "Comprehensive backend regression suite (27 pytest cases) executed against the public REACT_APP_BACKEND_URL. 26/27 PASS. Discovered one real defect (silent error-swallowing in aimmh.fan_out / daisy_chain) and a related curated-inventory mismatch where several emergent model_ids are not in the Emergent key's allowed-model list (notably 'anthropic:claude-sonnet-4-6' and 'openai:gpt-5.4').",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/chat/fanout (and /api/chat/daisychain, /chat/council)",
+        "issue": "Silent failure: a provider error returned via emergent_provider.chat() is dropped by interdependent_lib/aimmh/patterns.py::_invoke when wrapping the result dict into ModelResult. The function reads only content/usage/meta and never copies the 'error' key, so the API responds 200 with content='' and error=None. Reproduced 3/3 times with model_ids=['emergent:openai:gpt-4o-mini','emergent:anthropic:claude-sonnet-4-6']: the second model returns empty content and null error. Calling /api/chat/single with the same model surfaces the real underlying litellm AuthenticationError ('key not allowed to access model … Tried to access claude-sonnet-4-6').",
+        "priority": "CRITICAL"
+      },
+      {
+        "endpoint": "/api/models/inventory  AND  providers/emergent_provider.py::_INVENTORY  AND  starter agent seeds",
+        "issue": "Several curated model IDs are NOT in the Emergent LLM key's allowed list and therefore 100% fail at chat time: 'openai:gpt-5.4', 'openai:gpt-5.4-mini', 'anthropic:claude-sonnet-4-6'. Allowed substitutes (from litellm error payload) are e.g. 'gpt-5.1' / 'gpt-5' / 'gpt-5-mini' for OpenAI and 'claude-sonnet-4-5' / 'claude-sonnet-4-5-20250929' for Anthropic. The starter agents 'research-council' and 'daisy-prover' default to these invalid IDs, so the out-of-the-box agents silently produce empty responses (because of bug #1 above).",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "/api/inspector/heartbeat",
+        "issue": "intent param is accepted in body via embed=True; works fine, but undocumented. Consider making the request model a Pydantic class for clarity."
+      },
+      {
+        "endpoint": "/api/sessions PATCH",
+        "issue": "Body re-uses SessionUpsert which makes ALL fields optional via the `if v is not None` filter except updated_at — fine, but persona='' or selected_models=[] cannot be cleared because the filter strips falsy-None. Minor UX nit."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "FIX (root cause) interdependent_lib/aimmh/patterns.py::_invoke — propagate the 'error' field: ModelResult(..., error=r.get('error')). Without this, every fan_out/daisy_chain/council call swallows provider errors and returns empty content.",
+    "FIX providers/emergent_provider.py::_INVENTORY — replace invalid IDs ('gpt-5.4', 'gpt-5.4-mini', 'claude-sonnet-4-6') with allowed Emergent models (e.g. 'gpt-5.1' / 'gpt-5-mini', 'claude-sonnet-4-5' / 'claude-sonnet-4-5-20250929'). Also reconcile starter agent defaults in server.py::_on_startup (research-council, daisy-prover, zfae-classic) to use only valid IDs.",
+    "Optionally tighten emergent_provider.chat() to treat empty SDK responses as an explicit error so the dict result always carries a non-null 'error' on failure."
+  ],
+  "critical_code_review_comments": [
+    "ChatResult is a TypedDict (= plain dict at runtime); _call_model relies on **result spread. This works but is fragile — consider a Pydantic model so missing fields are explicit.",
+    "server.py is 715 lines and mixes routing, persistence, and AIMMH plumbing. Split routers (keys, vault, sessions, drafts, chat, inspector, agents, usage) into separate modules for maintainability.",
+    "emergent_provider.session_id is built from str(abs(hash((real, len(messages)))))[:10] — Python hash() is randomized per process and message-len-dependent, which makes the 'short-cache' contract opaque. Use a deterministic hash (e.g. md5) if cache semantics matter, or drop the caching note from the docstring.",
+    "usage records use {'total': 0} when routed via Emergent (Emergent SDK doesn't expose usage). This is expected per the review note; consider surfacing 'usage_unknown=true' so the UI can distinguish 'zero tokens' from 'unmeasured'.",
+    "/api/inspector/heartbeat uses embed=True for a single optional field — acceptable but a Pydantic body model is cleaner.",
+    "All endpoints use user_id='local' default — fine for single-user mode, but there is no auth boundary. Document this as an MVP constraint."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py (created)",
+    "/app/test_reports/pytest/pytest_results.xml (generated)"
+  ],
+  "success_rate": {
+    "backend": "96% (26/27 pytest cases)",
+    "frontend": "not tested (backend-only per request)"
+  },
+  "test_credentials": "n/a — single-user mode with user_id='local'. EMERGENT_LLM_KEY already in backend/.env. No login flow.",
+  "seed_data_creation": "Tests create then delete all artifacts (TEST_-prefixed keys, vault entries, sessions, drafts, and the 'prompt-synthesis-hub' agent). Usage records are append-only and intentionally left in place.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Re-run pytest after the main agent applies the _invoke() error-propagation fix and the inventory ID cleanup. Expected outcome: TestChat::test_chat_fanout passes (both models return content OR a real error). The single, daisychain (structural), and synthesize tests already pass. The pytest file is the regression source of truth — feel free to extend with: (a) explicit assertions that daisychain step content is non-empty for at least the first valid model, (b) starter-agent end-to-end smoke (load research-council → fanout against its default_models → expect content), (c) BYOK inventory error-map surface when an invalid api_key is stored. xAI remains intentionally untested (no user key).",
+  "rca of the issue": {
+    "fanout_empty_content_no_error": {
+      "reproduction": "POST /api/chat/fanout with model_ids=['emergent:openai:gpt-4o-mini','emergent:anthropic:claude-sonnet-4-6'] → results[1] = {content:'', error:null}. POST /api/chat/single with model_id='emergent:anthropic:claude-sonnet-4-6' → result.error='emergent: Failed to generate chat completion: litellm.AuthenticationError: … key not allowed to access model … Tried to access claude-sonnet-4-6'.",
+      "root_cause": "Two layered defects. (1) Inventory contains a model name ('claude-sonnet-4-6') that the Emergent LLM key cannot access (allowed list does not include 4-6; nearest valid is claude-sonnet-4-5 / claude-sonnet-4-5-20250929). (2) interdependent_lib/aimmh/patterns.py::_invoke maps a dict result into ModelResult by copying ONLY content, usage, and meta — never error. Therefore the provider's error string is dropped, the API returns 200 with empty content and null error, and the bug is invisible to clients.",
+      "mitigation": "Patch _invoke to add `error=r.get('error')` (and optionally fold a non-empty error into ModelResult.error even when content is empty). Independently, correct the curated inventory and starter-agent defaults to use models actually in the Emergent allow-list."
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "theme_and_archetype": {
+    "domain": "AI Research Instrument / Multi-Model AI Dashboard",
+    "theme": "DARK",
+    "archetype": "Archetype 4 (Swiss & High-Contrast) + Retro-Futurism Hybrid",
+    "vibe": "Mathematica meets terminal UI meets advanced IDE. Serious, scientific, deeply analytical, and data-dense. Not a generic SaaS."
+  },
+  "color_system": {
+    "backgrounds": {
+      "app_base": "#030303",
+      "surface_primary": "#0A0A0A",
+      "surface_secondary": "#121212",
+      "glass_overlay": "rgba(10, 10, 10, 0.75)"
+    },
+    "borders": {
+      "default": "rgba(255, 255, 255, 0.1)",
+      "focus": "rgba(34, 211, 238, 0.5)",
+      "active": "rgba(245, 158, 11, 0.5)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A3A3A3",
+      "muted": "#525252",
+      "inverse": "#000000"
+    },
+    "accents": {
+      "cyan_data": "#22D3EE",
+      "amber_active": "#F59E0B",
+      "emerald_success": "#10B981",
+      "rose_error": "#F43F5E"
+    },
+    "rules": [
+      "Never use pure black (#000000), always use #030303 for the deepest void.",
+      "Primary UI is monochromatic (black, grey, white). Colors are strictly reserved for data visualization, active states, and syntax highlighting.",
+      "Avoid soft shadows. Use 1px sharp borders and precise inner glows for elevation."
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "headings": "JetBrains Mono, monospace",
+      "body": "IBM Plex Sans, sans-serif",
+      "code_and_data": "JetBrains Mono, monospace"
+    },
+    "scales": {
+      "h1": "text-3xl tracking-tighter font-medium",
+      "h2": "text-xl tracking-tight font-medium",
+      "h3": "text-sm uppercase tracking-[0.2em] text-secondary",
+      "body": "text-sm leading-relaxed",
+      "small_data": "text-xs font-mono text-muted"
+    },
+    "rules": [
+      "Headings must use monospace for a scientific, terminal-first aesthetic.",
+      "Section overlines (H3) must be aggressively tracked out (uppercase, wide spacing).",
+      "Use IBM Plex Sans for long-form readability in chat outputs, but preserve JetBrains Mono for system UI and metrics."
+    ]
+  },
+  "layout_and_spacing": {
+    "strategy": "The 'Control Room Grid' (Dashboard)",
+    "container": "w-full max-w-[1600px] mx-auto px-4 md:px-8",
+    "spacing_scale": {
+      "tight": "p-3 gap-3",
+      "standard": "p-6 gap-6",
+      "loose": "p-12 gap-12"
+    },
+    "rules": [
+      "Density is key. Use CSS Grid for the main workspace. No standard 'Bootstrap' columns.",
+      "Utilize 'Grid Borders' pattern: Use 1px borders (border-white/10) to delineate every panel, creating an IDE/Architectural feel.",
+      "Ensure the chat interface leaves adequate room for side-by-side (fan-out) comparisons.",
+      "Containers with borders MUST have internal padding to prevent content from touching edges."
+    ]
+  },
+  "surface_styles": {
+    "panels": "bg-[#0A0A0A] border border-white/10 rounded-none",
+    "glass_modals": "backdrop-blur-2xl bg-black/80 border border-white/15 shadow-[0_0_40px_rgba(34,211,238,0.05)]",
+    "interactive_cards": "bg-[#121212] border border-white/10 hover:border-white/30 transition-colors duration-200 cursor-pointer",
+    "terminal_block": "bg-[#050505] border border-white/5 font-mono p-4"
+  },
+  "component_strategies": {
+    "byok_key_vault": {
+      "design": "Secure, terminal-like modal. Monospace inputs with blurred dots. Use 'emerald' micro-interactions for valid keys.",
+      "components": "Shadcn Form, Input (customized to look like terminal prompts), Button."
+    },
+    "model_inventory_browser": {
+      "design": "Data-dense bento grid. Display token limits, compute estimates, and cache states as raw data points. Use tiny inline bar charts for latency comparisons.",
+      "components": "Shadcn Table or custom CSS Grid with 1px borders."
+    },
+    "multi_model_workspace": {
+      "design": "The core. For 'Fan-out', use a horizontal scroll snap container (Carousel) of chat panels. For 'Daisy-chain', stack nodes vertically with connecting 1px lines (like a graph pipeline).",
+      "components": "Markdown renderer, Code highlighting blocks (stark high-contrast theme), MathJax/KaTeX math blocks."
+    },
+    "ptca_inference_engine_inspector": {
+      "design": "Highly visual dashboard. Use the 'ptca_rings_hero' media URL as an underlay or visual centerpiece. Surround it with raw data metrics (Φ, Ψ, Ω, Θ, Σ, Ε states).",
+      "components": "Custom SVG or Recharts for data rings, overlaying the generated background."
+    },
+    "detachable_agents_library": {
+      "design": "Card-based 'App Store' but styled like trading cards for AI models. Show 'FREE' badges as tiny pill components. 'Premium' locked features are greyed out with a subtle lock icon.",
+      "components": "Shadcn Card (heavily modified to be sharp, rounded-none, technical)."
+    },
+    "donation_cta": {
+      "design": "Subtle, non-blocking. Small amber-accented banner at the bottom left of the navigation sidebar. Text: 'Support this research instrument.'",
+      "components": "Floating badge or sidebar footer item."
+    }
+  },
+  "motion_and_interactions": {
+    "hover_states": "Crisp and instant. Change border opacities (e.g., border-white/10 to border-white/40). Do not use soft scaling/bouncing.",
+    "transitions": "transition-all duration-150 ease-in-out",
+    "loading_states": "Avoid generic spinners. Use terminal-style ASCII loaders (e.g., [=   ], [==  ]) or rapid data-scrambling text effects.",
+    "focus": "focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
+  },
+  "iconography_and_assets": {
+    "library": "@phosphor-icons/react",
+    "style": "Regular or Light weight. Keep them precise and technical.",
+    "instructions": "Run `yarn add @phosphor-icons/react` to install."
+  },
+  "media_urls": {
+    "ptca_inspector_bg": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/c2d14c10-eaf9-49ca-ad1e-339f5025b355/images/7d0ec2e194e2ca69f7eed061da0f99511eec16722c64735fbb67d3520a66f11f.png",
+      "description": "Abstract 6 glowing intersecting rings. Use as background or visual asset in the PTCA Engine Inspector section."
+    },
+    "app_background_texture": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/c2d14c10-eaf9-49ca-ad1e-339f5025b355/images/313261e583f4297cd8e1d2895f4337de4e0981bcff1edc101bfaa08003c3e4d9.png",
+      "description": "Minimalist grid pattern on obsidian black. Use as the global app body background with high opacity, or overlay behind the main workspace."
+    },
+    "agents_library_header": {
+      "url": "https://images.unsplash.com/photo-1644088379091-d574269d422f",
+      "description": "Blue lines and dots data network. Use as a subtle header background overlay in the Detachable Agents Library."
+    }
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure all text passes WCAG AA. Grey text (#A3A3A3) on #050505 passes.",
+    "testing_attributes": "CRITICAL: All interactive elements (buttons, keys vault inputs, chat inputs, model selectors) MUST have a `data-testid` attribute (e.g., `data-testid='chat-submit-btn'`).",
+    "focus_management": "Ensure all inputs and buttons have distinct focus rings, prioritizing keyboard navigability."
+  },
+  "instructions_to_main_agent": [
+    "DO NOT build a generic SaaS dashboard. This is a scientific instrument.",
+    "Install and use JetBrains Mono (via Google Fonts or similar) for headings and data elements. Use IBM Plex Sans for body text.",
+    "Implement the 'Control Room Grid'—use 1px white/10 borders to define panels instead of large drop shadows.",
+    "The Multi-model chat workspace must support Markdown, code blocks, and math rendering (MathJax/KaTeX).",
+    "For the 'Fan-out' feature, implement a horizontal scroll view (carousel) so users can compare multiple model responses side-by-side without vertical crowding.",
+    "In the PTCA Inspector, layer the provided 'ptca_inspector_bg' image behind the data metrics with an overlay to ensure text readability.",
+    "Apply `data-testid` to all forms, inputs, and primary CTAs.",
+    "Use pure HTML/Tailwind for structural layout and heavily customize Shadcn components for inputs, dropdowns, and modals to strip out standard 'Vercel-like' styling and enforce the terminal look."
+  ]
+}

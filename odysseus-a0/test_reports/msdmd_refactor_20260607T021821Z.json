@@ -1,0 +1,1926 @@
+{
+  "tool": "msdmd_refactor",
+  "root": "/home/user/odysseus-a0",
+  "phase": "all",
+  "dry_run": false,
+  "generated_at": "2026-06-07T02:18:23.314586+00:00",
+  "changed_count": 214,
+  "skipped_count": 0,
+  "changed": [
+    {
+      "file": "a0p_skills/__init__.py",
+      "ratios": true,
+      "scaffold": []
+    },
+    {
+      "file": "a0p_skills/msdmd_refactor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "app.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "companion/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "companion/pairing.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "companion/routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "integrations/claude/skills/odysseus/scripts/odysseus_api.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "integrations/codex/scripts/odysseus_api.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "interdependent_lib/__init__.py",
+      "ratios": true,
+      "scaffold": []
+    },
+    {
+      "file": "interdependent_lib/_msdmd/__init__.py",
+      "ratios": true,
+      "scaffold": []
+    },
+    {
+      "file": "mcp_servers/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "mcp_servers/_common.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "mcp_servers/email_server.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "mcp_servers/image_gen_server.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "mcp_servers/memory_server.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "mcp_servers/rag_server.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/admin_wipe_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/api_token_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/assistant_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/auth_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/backup_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/calendar_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/chat_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/chat_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/cleanup_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/codex_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/compare_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/contacts_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/cookbook_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/cookbook_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/copilot_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/diagnostics_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/document_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/document_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/editor_draft_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/email_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/email_pollers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/email_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/embedding_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/emoji_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/font_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/gallery_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/gallery_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/history_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/hwfit_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/mcp_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/memory_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/model_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/note_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/personal_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/prefs_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/preset_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/research_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/search_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/session_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/shell_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/signature_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/skills_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/stt_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/task_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/tts_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/upload_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/vault_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/webhook_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "routes/workspace_routes.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/_lib/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/_lib/cli.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/add_hwfit_models.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/claim_ownerless.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/demo_email/demo_account.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/demo_email/seed_demo_emails.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/diffusion_server.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/fix_paths.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/hf_download.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/index_documents.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/migrate_faiss_to_chroma.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/pr_blocker_audit.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "scripts/update_database.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/docs/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/docs/service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/faces/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/hwfit/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/hwfit/fit.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/hwfit/hardware.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/hwfit/image_models.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/hwfit/models.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/hwfit/profiles.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/memory.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/memory_extractor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/memory_vector.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/skill_extractor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/skill_format.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/skill_importer.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/memory/skills.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/research/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/research/research_handler.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/research/service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/analytics.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/cache.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/content.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/core.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/providers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/query.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/ranking.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/search/service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/shell/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/shell/service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/stt/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/stt/stt_service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/tts/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/tts/tts_service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/youtube/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "services/youtube/youtube_handler.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "setup.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/action_intents.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/agent_loop.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/agent_runs.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/agent_tools.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/ai_interaction.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/api_key_manager.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/app_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/app_initializer.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/assistant_log.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/auth_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/bg_jobs.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/bg_monitor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/builtin_actions.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/builtin_mcp.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/caldav_sync.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/caldav_writeback.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/chat_handler.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/chat_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/chat_processor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/chroma_client.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/cleanup_service.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/config.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/constants.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/context_budget.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/context_compactor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/cookbook_serve_lifecycle.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/copilot.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/database.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/deep_research.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/document_actions.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/document_processor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/email_thread_parser.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/embeddings.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/endpoint_resolver.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/event_bus.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/exceptions.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/generated_images.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/goal_based_extractor.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/integrations.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/llm_core.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/markitdown_runtime.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/mcp_manager.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/mcp_oauth.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/memory.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/memory_provider.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/memory_vector.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/model_context.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/model_discovery.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/pdf_form_doc.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/pdf_forms.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/pdf_runtime.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/personal_docs.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/preset_manager.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/prompt_security.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/rag_manager.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/rag_singleton.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/rag_vector.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/rate_limiter.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/readiness.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/request_models.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/research_handler.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/research_utils.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/__init__.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/analytics.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/cache.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/content.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/core.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/providers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/query.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/search/ranking.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/secret_storage.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/session_actions.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/session_search.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/settings.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/settings_scrub.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/task_endpoint.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/task_scheduler.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/teacher_escalation.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/text_helpers.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/tls_overrides.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/tool_execution.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/tool_implementations.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/tool_index.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/tool_parsing.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/tool_schemas.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/tool_security.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/topic_analyzer.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/upload_handler.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/upload_limits.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/url_safety.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/url_security.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/user_time.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/visual_report.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/webhook_manager.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    },
+    {
+      "file": "src/youtube_handler.py",
+      "ratios": true,
+      "scaffold": [
+        "MODULE_BUILD",
+        "BOUNDARIES",
+        "CAPABILITIES"
+      ]
+    }
+  ],
+  "skipped": []
+}

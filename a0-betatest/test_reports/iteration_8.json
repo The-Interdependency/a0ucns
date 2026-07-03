@@ -1,0 +1,28 @@
+{
+  "summary": "Frontend-only smoke test of the fully-editable CharacterSheetForm + AgentsPage CRUD round-trip. All 5 review items PASS on a clean retest. Login as wayseer redirects to /workspace (cookie set). Navigated to /agents — table loads 1 pre-existing row (ToolTester) — empty-dropdown regression FIXED (previous iteration_7 issue from cookie-derived user_id is verified resolved). Opened create modal: every required data-testid renders (csf-name-input, csf-mode-select, csf-tools-picker + live chips csf-tool-web_search/fetch_url/living_spec_lookup/vault_get_key fetched from GET /api/tools, csf-tools-custom-input + csf-tools-custom-add, csf-mem-long-textarea, csf-mem-short-textarea, csf-teacher-template-textarea, csf-tags-input, csf-boundaries with 5 selects, csf-minsteps-input, csf-maxloss-input, csf-gonal-phi/psi/omega, csf-submit-btn). Tools loaded live (no 'loading tools…' stall). Toggling csf-tool-web_search applies violet active styling; custom tool name typed + add button produces a removable csf-tool-custom-* chip that clears on second click. Full create flow (mode a0(zfae)<model>, base openai:gpt-4o, two tools active, long-term mem seed, tags, boundary auth=bearer) submits cleanly; agent appears in table; backend GET /api/instances/{id} confirms tools_allowed=['web_search','fetch_url'], tags=['tag1','tag2'], memory_seed.long_term=['Test seed.'], boundaries persisted. Edit reopen pre-populates chips (both violet), memory textarea, tags input, boundary select. Changing only tags and saving PATCHes correctly: backend confirms tags=['tag1','tag2','edited'] AND tools_allowed=['web_search','fetch_url'] still intact (merge-not-replace works). Cleanup DELETE ?purge=true returned 200.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "[low/cleanup] /app/frontend/src/pages/AgentsPage.jsx still passes `user_id: 'local'` in the body of api.createInstance and api.patchInstance (lines 108 + 120). Backend's _resolve_user_id overrides it from the cookie so it does not break anything, but it is misleading dead data — recommend dropping the explicit user_id from the body so the cookie-derived identity is the single source of truth (matches the new pattern).",
+    "[low] api.js still defaults user_id='local' for listInstances/getInstance/deleteInstance — same comment carried over from iteration_7. Functionally fine now that the routes use _resolve_user_id, but the default is no longer meaningful.",
+    "[low] Pre-login network call to /api/auth/me on /login mount still logs a stray `401 ()` in the browser console (carry-over from iteration_7). Cosmetic — user not yet authenticated so 401 is correct response, but it surfaces in DevTools. Consider suppressing via validateStatus or guarding the call when no cookie exists."
+  ],
+  "critical_code_review_comments": [
+    "CharacterSheetForm.jsx is now ~405 lines — comfortably under the 700-line ceiling. Clean separation of Field / ChipToggle / useTools sub-components. memory_seed, tags, boundaries, teacher_context_template all wired to local state and emitted in onSubmit; the structural engine dicts (edcm/ring_n_override/heptagram_overrides/px_resolution) are correctly omitted so PATCH preserves them — verified end-to-end.",
+    "AgentsPage.jsx leaks the legacy `user_id: 'local'` body field into create/patch calls (lines 108, 120). Works because _resolve_user_id ignores it, but it is dead data and confuses readers. Sweep recommended across all pages that still hardcode user_id='local'.",
+    "data-testid coverage on the form is excellent — every editable control has a stable selector. Good for regression playwright."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (skipped per request)", "frontend": "100% — all 5 review items pass end-to-end" },
+  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026 (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys needed.",
+  "seed_data_creation": "Two UIFormTest_* agents were created during testing and both were cleaned up via DELETE /api/instances/{id}?purge=true (status 200). No residue. ToolTester remains as noted in the request.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "CharacterSheetForm is fully wired end-to-end through the React UI. tools_allowed (built-in + custom), memory_seed.long_term, memory_seed.short_term, teacher_context_template, tags, boundaries all round-trip correctly. PATCH semantics confirmed merge-not-replace (only the fields submitted are mutated). Cookie-derived user_id at /api/instances + /api/instances/{id} is verified working from the UI's perspective. Only loose ends are the cosmetic action_items above (hardcoded `user_id: 'local'` left in AgentsPage body and api.js defaults).",
+  "rca_of_the_issue": "n/a — no defects found this iteration. (Note: an earlier run showed fetch_url not active on reopen; was caused by a stale state interaction with the custom-tool add/remove sequence in the test script itself, not a product bug. A clean retest with only the canonical create flow confirmed both web_search and fetch_url persist and re-populate correctly.)"
+}

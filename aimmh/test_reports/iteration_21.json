@@ -1,0 +1,140 @@
+{
+  "summary": "Iteration 21: Full testing of NEW features (Layout Toggle, Transcript Analysis, Chat Persistence). Backend: 11/11 tests PASSED. Frontend: All features verified working correctly.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_iteration21_analysis.py",
+    "/app/test_reports/pytest/pytest_iteration21.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Layout Toggle: All three layout buttons (Stack, Split, Carousel) working correctly",
+    "Split layout: 50/50 lock button appears when Split is selected and disappears for other layouts",
+    "Split layout: Resizable panels with react-resizable-panels working correctly",
+    "Carousel layout: embla-carousel-react integration working - prev/next navigation and model tabs visible with 2+ responses",
+    "Layout preference persists to localStorage correctly",
+    "Analysis Page: Upload tab has all required inputs (transcript textarea, model selector, goal input, constraints input, analyze button)",
+    "Analysis Page: Backend makes 2 LLM calls (parse transcript + generate narrative) - working correctly with ~30s total time",
+    "Analysis Page: Report view shows summary metrics bars, narrative summary, flagged turns, and turn cards with EDCM metrics",
+    "Analysis Page: History tab shows previous reports and clicking loads full report",
+    "Chat Persistence: sessionStorage stores current thread_id",
+    "Chat Persistence: Page reload maintains thread and messages",
+    "Chat Persistence: Thread sidebar shows all historical threads"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_iteration21_analysis.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% - 11/11 tests passed",
+    "frontend": "100% - All features verified"
+  },
+
+  "test_credentials": {
+    "username": "testbot01",
+    "password": "test123456"
+  },
+
+  "seed_data_creation": "Multiple analysis reports created during testing. Multiple chat threads created including multi-model thread with gpt-4o-mini and gemini-2.0-flash.",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Iteration 21 tested NEW features: layout toggle (Stack/Split/Carousel), transcript analysis (/api/v1/analysis/*), and chat persistence. All features working. Analysis endpoint makes 2 LLM calls and takes 30-60s. Carousel/Split layouts require 2+ model responses to show navigation/panels.",
+
+  "tests_executed": {
+    "backend_api_tests": {
+      "status": "PASS (11/11)",
+      "details": {
+        "auth_login_success": "PASS - Returns access_token and user object",
+        "analysis_transcript_endpoint": "PASS - POST /api/v1/analysis/transcript returns AnalysisReport with turns, metrics, flags, narrative",
+        "analysis_reports_list": "PASS - GET /api/v1/analysis/reports returns list of user's reports",
+        "analysis_report_by_id": "PASS - GET /api/v1/analysis/reports/{id} returns full report",
+        "analysis_report_not_found": "PASS - Invalid ID returns 404",
+        "analysis_requires_auth": "PASS - No auth returns 401",
+        "prompt_creates_thread": "PASS - POST /api/v1/a0/prompt-single creates persistent thread",
+        "thread_messages_persist": "PASS - Messages can be retrieved after creation",
+        "health_endpoint": "PASS - Returns status:ok",
+        "models_endpoint": "PASS - Returns 6 developers with models",
+        "keys_status": "PASS - Returns key status for developers"
+      }
+    },
+    "frontend_layout_toggle_tests": {
+      "status": "PASS",
+      "details": {
+        "stack_button": "Found and clickable",
+        "split_button": "Found and clickable",
+        "carousel_button": "Found and clickable",
+        "split_lock_button": "Appears when Split layout selected, hidden for other layouts",
+        "localStorage_persistence": "Layout preference saved and restored correctly"
+      }
+    },
+    "frontend_analysis_page_tests": {
+      "status": "PASS",
+      "details": {
+        "navigation_via_header_button": "FileUp button in chat header navigates to /analysis",
+        "upload_tab_elements": "Transcript textarea, model selector, goal input, constraints input, analyze button all present",
+        "history_tab": "Shows list of previous reports",
+        "report_tab": "Shows summary metrics bars, narrative summary, turn cards after analysis",
+        "submit_analysis": "Successfully analyzed sample transcript - 4 turns parsed, all flagged, narrative generated"
+      }
+    },
+    "frontend_carousel_split_tests": {
+      "status": "PASS",
+      "details": {
+        "carousel_with_2_models": "Carousel navigation (prev/next) and model tabs visible",
+        "carousel_navigation": "Clicking next/prev changes visible response",
+        "split_layout_panels": "Side-by-side panels rendered with resize handle",
+        "split_50_50_lock": "Lock button toggles 50/50 mode"
+      }
+    },
+    "frontend_chat_persistence_tests": {
+      "status": "PASS",
+      "details": {
+        "sessionStorage_thread": "Thread ID saved to sessionStorage",
+        "page_reload_persistence": "Messages visible after page reload",
+        "thread_sidebar": "All threads visible and clickable"
+      }
+    }
+  },
+
+  "mocked_apis": {
+    "has_mocked_apis": false,
+    "details": "All LLM calls are real using EMERGENT_LLM_KEY"
+  },
+
+  "features_verified": [
+    "Layout toggle: Stack button (default) visible and clickable",
+    "Layout toggle: Split button visible and clickable",
+    "Layout toggle: Carousel button visible and clickable",
+    "Layout toggle: When Split selected, 50/50 lock button appears",
+    "Layout toggle: Layout preference persists in localStorage",
+    "Multi-model prompt: Sent to gpt-4o-mini and gemini-2.0-flash, both responses received",
+    "Carousel layout: Navigation buttons and model tabs visible with 2+ responses",
+    "Split layout: Side-by-side panels with resize handle",
+    "Analysis page: Navigates via FileUp button in header",
+    "Analysis page: Upload tab has transcript textarea, model selector, goal/constraints inputs, analyze button",
+    "Analysis page: Submit transcript returns report with turns, EDCM metrics per turn, flags, narrative summary",
+    "Analysis page: History tab shows previous reports",
+    "Backend: POST /api/v1/analysis/transcript works with full EDCM analysis",
+    "Backend: GET /api/v1/analysis/reports returns user's reports",
+    "Backend: GET /api/v1/analysis/reports/{id} returns full report",
+    "Chat persistence: Thread ID saved to sessionStorage",
+    "Chat persistence: Messages persist after page reload",
+    "Existing features: Login, thread sidebar, settings, model selector developer tabs still working"
+  ]
+}

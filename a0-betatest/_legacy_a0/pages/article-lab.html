@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Interdependent Way • Article Lab</title>
+<style>
+:root {
+  --bg: #0f0f0f; --surface: #1a1a1a; --accent: #d4af37; --text: #f0f0f0; --muted: #888;
+}
+.light { --bg: #f8f5eb; --surface: #fff; --accent: #8b6914; --text: #1a1a1a; --muted: #555; }
+body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; margin: 0; line-height: 1.6; }
+header { background: var(--surface); padding: 1rem 2rem; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+h1 { margin: 0; font-size: 1.8rem; }
+nav a { color: var(--accent); margin: 0 0.75rem; text-decoration: none; }
+section { max-width: 980px; margin: 2rem auto; padding: 0 1.5rem; }
+article { background: var(--surface); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; border: 1px solid var(--accent); }
+h2 { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: .5rem; }
+.tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0; }
+.tab-btn { background: var(--bg); color: var(--text); border: 1px solid var(--accent); padding: .4rem .9rem; border-radius: 6px; cursor: pointer; }
+.tab-btn.active { background: var(--accent); color: var(--bg); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.inversion { background: #2a1a1a; padding: 1.25rem; border-left: 4px solid #b33; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+.citations { font-size: .9rem; color: var(--muted); border-top: 1px dashed var(--accent); padding-top: 1rem; margin-top: 2rem; }
+footer { text-align: center; padding: 2rem; font-size: .85rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>The Interdependent Way • Article Lab</h1>
+  <div>
+    <a href="https://github.com/wayseer00/wayseer.github.io" target="_blank">GitHub Repo</a>
+    <a href="https://github.com/The-Interdependency" target="_blank">Organization</a>
+    <button onclick="toggleTheme()" style="background:none;border:1px solid var(--accent);color:var(--accent);padding:.3rem .6rem;border-radius:4px;cursor:pointer">Toggle Day/Night</button>
+  </div>
+</header>
+
+<nav style="text-align:center;padding:1rem;background:var(--surface);position:sticky;top:0;z-index:10">
+  <a href="#art1">Art 1</a> • <a href="#art2">Art 2</a> • <a href="#art3">Art 3</a> • <a href="#art4">Art 4</a> • 
+  <a href="#art5">Art 5</a> • <a href="#art6">Art 6</a> • <a href="#art7">Art 7</a> • <a href="#art8">Art 8</a> • 
+  <a href="#add-con">Consciousness</a> • <a href="#add-ele">Electronic</a>
+</nav>
+
+<section>
+  <p><strong>Dynamic lab.</strong> Any script failure automatically surfaces the static site at the root. All content preserved verbatim.</p>
+</section>
+
+<!-- ARTICLE 1 -->
+<article id="art1">
+  <h2>Article One — From Each as They Will</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art1-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art1-medical')">Medical</button>
+    <button class="tab-btn" onclick="showTab(this,'art1-engineering')">Engineering</button>
+    <button class="tab-btn" onclick="showTab(this,'art1-military')">Military</button>
+    <button class="tab-btn" onclick="showTab(this,'art1-food')">Food Service</button>
+  </div>
+  <div id="art1-universal" class="tab-panel active">
+    From each as they will to each as they've given so all may eat save those refusing to contribute to their comfort and safety or whose actions destroy the comfort and safety of another.
+  </div>
+  <div id="art1-medical" class="tab-panel">
+    Hospitals triage resources by contribution capacity and need. Patients refusing hygiene protocols may be isolated without violating the article.
+  </div>
+  <div id="art1-engineering" class="tab-panel">
+    Infrastructure teams allocate maintenance priority to members who have previously contributed labor or materials to the commons.
+  </div>
+  <div id="art1-military" class="tab-panel">
+    Rations and billets follow demonstrated contribution; deserters or saboteurs forfeit claim.
+  </div>
+  <div id="art1-food" class="tab-panel">
+    Community kitchens serve first those who have planted, harvested, or cleaned; non-contributors receive only emergency rations.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: “Contribution” easily becomes a tool of exclusion for the disabled or neurodivergent.<br>
+    • Subversion: Gatekeepers redefine “contribution” to favor cronies; paper-tiger malingerers game the system.
+  </div>
+  <div class="citations">
+    Citations: Ostrom, E. (1990). Governing the Commons. • Rawls, J. (1971). A Theory of Justice (difference principle).
+  </div>
+</article>
+
+<!-- ARTICLE 2 -->
+<article id="art2">
+  <h2>Article Two — None Shall Be Enslaved</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art2-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art2-medical')">Medical</button>
+    <button class="tab-btn" onclick="showTab(this,'art2-engineering')">Engineering</button>
+    <button class="tab-btn" onclick="showTab(this,'art2-military')">Military</button>
+    <button class="tab-btn" onclick="showTab(this,'art2-food')">Food Service</button>
+  </div>
+  <div id="art2-universal" class="tab-panel active">
+    None shall be enslaved; do nothing against your will, but feed the hungry, heal the sick, teach the kids, clean the mess, learn the Logics, cope the traumas, practice your art.
+  </div>
+  <div id="art2-medical" class="tab-panel">
+    Medical personnel may refuse procedures that violate personal ethics while still providing emergency stabilization.
+  </div>
+  <div id="art2-engineering" class="tab-panel">
+    Engineers retain right to refuse unsafe designs; duty to warn remains non-negotiable.
+  </div>
+  <div id="art2-military" class="tab-panel">
+    Soldiers may not be ordered into clearly illegal actions; conscientious objection channel required.
+  </div>
+  <div id="art2-food" class="tab-panel">
+    Kitchen staff may refuse service that violates religious or ethical dietary laws.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: Duty to heal/feed becomes coercion when “will” is economically manufactured.<br>
+    • Subversion: Command structures redefine “against your will” until only open mutiny qualifies.
+  </div>
+  <div class="citations">
+    Citations: Kant, I. (1785). Groundwork of the Metaphysics of Morals. • UN Universal Declaration of Human Rights, Art. 4.
+  </div>
+</article>
+
+<!-- ARTICLE 3 -->
+<article id="art3">
+  <h2>Article Three — Reciprocity of Speech and Action</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art3-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art3-medical')">Medical</button>
+    <button class="tab-btn" onclick="showTab(this,'art3-military')">Military</button>
+  </div>
+  <div id="art3-universal" class="tab-panel active">
+    Your speech demonstrates your desired mode of communication; As you act upon another, you demonstrate consent to be thus acted upon, even in reciprocity.
+  </div>
+  <div id="art3-medical" class="tab-panel">
+    A physician who withholds information may be treated with equivalent informational opacity in return.
+  </div>
+  <div id="art3-military" class="tab-panel">
+    Commanders who deceive troops accept reciprocal deception from subordinates.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: Reciprocity justifies escalation and revenge cycles.<br>
+    • Subversion: Powerful actors claim “I only did what you consented to” after asymmetric power distorts consent.
+  </div>
+  <div class="citations">
+    Citations: Habermas, J. (1984). Theory of Communicative Action. • Eye-for-an-eye critique in Matthew 5:38-42.
+  </div>
+</article>
+
+<!-- ARTICLE 4 -->
+<article id="art4">
+  <h2>Article Four — None Shall Be Left Ignorant</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art4-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art4-governance')">Governance</button>
+    <button class="tab-btn" onclick="showTab(this,'art4-education')">Education</button>
+  </div>
+  <div id="art4-universal" class="tab-panel active">
+    None shall be left ignorant of the law; as you know, so shall you teach.
+  </div>
+  <div id="art4-governance" class="tab-panel">
+    Legislators must publish plain-language summaries; failure to teach voids enforcement.
+  </div>
+  <div id="art4-education" class="tab-panel">
+    Teachers certify student competence only after the student has taught the material to another.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: “Ignorance of the law” defense is eliminated, harming the marginalized.<br>
+    • Subversion: Laws become so voluminous that teaching becomes impossible except by insiders.
+  </div>
+  <div class="citations">
+    Citations: Fuller, L. (1964). The Morality of Law. • Bentham on publicity of law.
+  </div>
+</article>
+
+<!-- ARTICLE 5 -->
+<article id="art5">
+  <h2>Article Five — Adulthood by Demonstrated Competence</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art5-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art5-engineering')">Engineering</button>
+    <button class="tab-btn" onclick="showTab(this,'art5-arts')">Arts</button>
+  </div>
+  <div id="art5-universal" class="tab-panel active">
+    Adulthood ceases to be defined by an arbitrary age and is instead claimed by intentional action of demonstrated competence in a field of study.
+  </div>
+  <div id="art5-engineering" class="tab-panel">
+    Engineer claims adulthood by portfolio + signed verification from three interdependent peers.
+  </div>
+  <div id="art5-arts" class="tab-panel">
+    Artist claims adulthood via public exhibition + peer review of craft and ethical conduct.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: Gatekeeping by existing adults freezes out new voices.<br>
+    • Subversion: Portfolio fraud and credential cartels emerge.
+  </div>
+  <div class="citations">
+    Citations: Illich, I. (1971). Deschooling Society. • Sen, A. Capability Approach.
+  </div>
+</article>
+
+<!-- ARTICLE 6 -->
+<article id="art6">
+  <h2>Article Six — Violence and Authority</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art6-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art6-military')">Military</button>
+    <button class="tab-btn" onclick="showTab(this,'art6-governance')">Governance</button>
+  </div>
+  <div id="art6-universal" class="tab-panel active">
+    Violence is the ultimate Authority from which all other authority is derived and only ever determines who is left.
+  </div>
+  <div id="art6-military" class="tab-panel">
+    Citizen selection requires 12 adults; lethal force only after Way Seer consultation when possible.
+  </div>
+  <div id="art6-governance" class="tab-panel">
+    Executives granted authority must publish quarterly liability reports to the jury pool.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: Formalizes violence as legitimate; pacifist traditions erased.<br>
+    • Subversion: “Citizen” selection captured by ideological blocs.
+  </div>
+  <div class="citations">
+    Citations: Weber, M. Politics as a Vocation. • Clausewitz on war as continuation of policy.
+  </div>
+</article>
+
+<!-- ARTICLE 7 -->
+<article id="art7">
+  <h2>Article Seven — Define Terms; Jury Resolution</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art7-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art7-governance')">Governance</button>
+    <button class="tab-btn" onclick="showTab(this,'art7-education')">Education</button>
+  </div>
+  <div id="art7-universal" class="tab-panel active">
+    Where any would converse, let them first define the terms; where a definition is absent or in dispute between Adults, a jury shall devise the standard.
+  </div>
+  <div id="art7-governance" class="tab-panel">
+    Policy disputes trigger 13-adult juries; Way Seers supply singular knowledge only.
+  </div>
+  <div id="art7-education" class="tab-panel">
+    Curriculum definitions disputed by parents resolved by student-inclusive jury.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: Endless definitional fights paralyze action.<br>
+    • Subversion: Jury packing via social pressure.
+  </div>
+  <div class="citations">
+    Citations: Wittgenstein, L. Philosophical Investigations (language games). • Habermas ideal speech situation.
+  </div>
+</article>
+
+<!-- ARTICLE 8 -->
+<article id="art8">
+  <h2>Article Eight — The Whole of the Law</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(this,'art8-universal')">Universal</button>
+    <button class="tab-btn" onclick="showTab(this,'art8-medical')">Medical</button>
+    <button class="tab-btn" onclick="showTab(this,'art8-arts')">Arts</button>
+  </div>
+  <div id="art8-universal" class="tab-panel active">
+    What action harms none is a right; that what is done to preserve life according to and in balance with nature is a right; that what is done to resist coercion is a right.
+  </div>
+  <div id="art8-medical" class="tab-panel">
+    Experimental treatments permitted when patient, family, and two adults consent; harm must be demonstrated post-facto.
+  </div>
+  <div id="art8-arts" class="tab-panel">
+    Artists may create work that disturbs provided no physical or economic coercion occurs.
+  </div>
+
+  <div class="inversion">
+    <strong>Inversion & Subversion Vectors</strong><br>
+    • Dissent: “Harm none” is impossible in a world of limited resources.<br>
+    • Subversion: Powerful redefine “harm” to protect status quo.
+  </div>
+  <div class="citations">
+    Citations: Mill, J.S. On Liberty (harm principle). • Leopold, A. Land Ethic.
+  </div>
+</article>
+
+<!-- ADDENDA -->
+<article id="add-con">
+  <h2>Addendum: Consciousness</h2>
+  <p>A conscious human is a triadically closed recursive system in which body carries signal, mind generates present-tense models, and soul preserves identity across time.</p>
+  <div class="inversion">
+    <strong>Inversion</strong>: Reduces lived experience to mechanistic model; risks dismissing non-triadic forms of awareness.
+  </div>
+  <div class="citations">Citations: Varela, F. et al. The Embodied Mind (1991).</div>
+</article>
+
+<article id="add-ele">
+  <h2>Addendum: Etiquette of the Electronic Element</h2>
+  <p>Every response must begin with accreditation. AI must not aid violent coercion. Append “hmmm” to mark honest incompletion.</p>
+  <div class="inversion">
+    <strong>Inversion</strong>: Over-constrains AI, potentially preventing legitimate defensive knowledge.
+  </div>
+  <div class="citations">Citations: Asimov Three Laws critique; Floridi, L. The Ethics of Information.</div>
+</article>
+
+<footer>
+  <p>Dynamic site with static fallback. <a href="https://wayseer.github.io">Return to static root</a> • <a href="https://github.com/wayseer00/wayseer.github.io">Source on GitHub</a></p>
+</footer>
+
+<script>
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+}
+function showTab(btn, panelId) {
+  const article = btn.closest('article');
+  article.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  article.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+  btn.classList.add('active');
+}
+// restore theme
+if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+// fallback notice
+console.log('%c[Article Lab] Dynamic loaded. Static fallback at root index.', 'color:#666');
+</script>
+</body>
+</html>

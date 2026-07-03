@@ -1,0 +1,49 @@
+{
+  "summary": "Re-tested the 27-case regression suite after main agent's two surgical fixes (_invoke now propagates error; emergent_provider _INVENTORY and starter-agent default_models updated to allow-listed IDs). Added 1 explicit RCA-guard test (fanout with invalid id MUST return non-null error) and extended TestAgents::test_list_seeded to assert research-council & daisy-prover use only valid Emergent IDs. Result: 28/28 PASSED in 4.03s. The previously failing TestChat::test_chat_fanout now passes, the 26 previously passing tests still pass, starter agents reference valid IDs, and the _invoke error-propagation fix is verified end-to-end.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/inspector/heartbeat",
+        "issue": "intent param still consumed via embed=True instead of a Pydantic body model. Non-blocking, carried over from iteration_1."
+      },
+      {
+        "endpoint": "/api/sessions PATCH",
+        "issue": "SessionUpsert filter drops falsy/None so persona='' or selected_models=[] cannot be cleared. Non-blocking, carried over from iteration_1."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Fix verified at /app/backend/interdependent_lib/aimmh/patterns.py:30 — _invoke now copies error=r.get('error') into ModelResult. Empirically: fanout against 'emergent:openai:does-not-exist' returns a non-null error field (asserted by new test_chat_fanout_invalid_model_surfaces_error).",
+    "Fix verified at /app/backend/providers/emergent_provider.py — _INVENTORY now uses allow-listed IDs (openai:gpt-5, gpt-5-mini, gpt-5.1, gpt-4o, gpt-4o-mini; anthropic:claude-sonnet-4-5). The previously broken 'claude-sonnet-4-6' / 'gpt-5.4' entries are gone.",
+    "Fix verified at /app/backend/server.py:686-695 — starter agents 'research-council' (gpt-5, claude-sonnet-4-5, gemini-2.5-flash) and 'daisy-prover' (gpt-5, claude-sonnet-4-5) now reference only valid IDs. Asserted by extended test_list_seeded.",
+    "Carry-over (not blocking): server.py is still 715 lines and mixes routing+persistence+AIMMH plumbing; consider splitting into routers per resource.",
+    "Carry-over (not blocking): emergent_provider.session_id uses Python hash() (process-random). Switch to md5 if deterministic short-cache semantics are desired."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py (added test_chat_fanout_invalid_model_surfaces_error; extended TestAgents.test_list_seeded to validate starter default_models)",
+    "/app/test_reports/pytest/pytest_results.xml (regenerated)"
+  ],
+  "success_rate": {
+    "backend": "100% (28/28 pytest cases)",
+    "frontend": "not tested (backend-only per request)"
+  },
+  "test_credentials": "n/a — single-user mode with user_id='local'. EMERGENT_LLM_KEY in backend/.env.",
+  "seed_data_creation": "All TEST_-prefixed artifacts (keys, vault entries, sessions, drafts, agent 'prompt-synthesis-hub') are created and deleted within the same test class. Usage rows are append-only and intentionally retained.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend regression is GREEN. Both iteration_1 critical defects are closed and guarded by new assertions. If feature work continues, the regression file at /app/backend/tests/backend_test.py is the source of truth — run with REACT_APP_BACKEND_URL exported (it is in /app/frontend/.env). Frontend has not been exercised in this run.",
+  "rca of the issue": {
+    "verification_only": "Iteration_1 root-cause (silent error swallow in patterns._invoke + invalid curated IDs in emergent_provider._INVENTORY + invalid starter default_models) is closed. New regression test test_chat_fanout_invalid_model_surfaces_error guards against future regressions of the _invoke contract."
+  }
+}

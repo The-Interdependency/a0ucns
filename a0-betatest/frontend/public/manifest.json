@@ -1,0 +1,26 @@
+{
+  "short_name": "a0p",
+  "name": "a0p — research instrument",
+  "description": "BYOK multi-model AI workspace + PTCA/PCNA inference engine inspector. Research instrument; donation-funded.",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#030303",
+  "background_color": "#030303",
+  "categories": ["productivity", "developer", "education"]
+}

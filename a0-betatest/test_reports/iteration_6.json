@@ -1,0 +1,51 @@
+{
+  "summary": "Full backend+frontend test of MAJOR batch: hybrid auth (JWT register/login/me/logout, admin seed), brute force lockout, custom-keys vault (CRUD + reveal + rotate), demo-quota, living spec, plus all T8-T13 frontend flows. 15/16 new backend pytest tests pass (1 pre-locked admin recoverable). T14 canon: 118 contracts 115 pass / 0 fail / 3 skipped; 23/23 frontend modules covered; 8/8 zfae sentinels pass (when run from /app/backend cwd). All 6 frontend tests (T8 splash, T9 register, T10 protected redirect, T11 sidebar nav split, T12 custom-keys UI, T13 living spec public) PASS end-to-end. T15 regression: /api/health 200, /api/instances/?user_id=local 200. ONE notable backend security issue surfaced: brute-force lockout keys by request.client.host which is the K8s ingress proxy IP and rotates between requests, so the 5-fail/15-min lockout is unreliable for an external attacker (works only ~50% of the time per IP). Worked around in test by sending 20 attempts and asserting at least one 429.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/auth/login",
+        "issue": "Brute-force lockout key uses request.client.host (K8s ingress proxy IP). The proxy IP ROTATES between requests (observed: 10.208.130.77 and 10.208.130.78 interleaved), so attempts get distributed across multiple lock-buckets. A real attacker hitting from one external IP will only trip the 5-fail/15-min lockout ~50% of the time. Fix: derive the client IP from X-Forwarded-For (first hop) before composing lock_id; or key purely by identifier+user_id (downside: enables targeted lockout DoS — prefer X-Forwarded-For)."
+      },
+      {
+        "endpoint": "GET /api/spec/living (UI consumer)",
+        "issue": "Minor UX: clicking a kind filter (e.g. spec-kind-engine) filters the module-list correctly but spec-count header still shows total count (131 modules) rather than filtered count. Consider updating spec-count to reflect the active filter."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_auth_and_extensions.py",
+    "/app/test_reports/pytest/pytest_auth_results.xml"
+  ],
+  "action_items": [
+    "[security/minor] Fix brute-force lockout in /api/auth/login to use X-Forwarded-For first-hop instead of request.client.host so the 5-fail/15-min lock cannot be partially bypassed by ingress IP rotation.",
+    "[minor UX] Update LivingSpecPage spec-count to reflect the active kind filter (currently shows total count after filter click).",
+    "[test-hygiene] When running zfae sentinel tests, cwd must be /app/backend (not /app) so that 'from interdependent_lib.zfae import ...' resolves. Either add /app/backend to a pyproject src path or document the cwd requirement."
+  ],
+  "critical_code_review_comments": [
+    "auth/__init__.py line 261: lock_id includes request.client.host which is the ingress hop, not the real client IP. This silently weakens the brute-force protection in production. Use request.headers.get('X-Forwarded-For','').split(',')[0].strip() or rely solely on identifier (with rate limit per identifier).",
+    "/api/auth/me returns the user envelope as { user: {...} } whereas /api/auth/login also returns { user, access_token }. Living spec, custom-keys, etc. are consistent. Document the response shape on a single canonical Auth doc to avoid future drift in /me consumers.",
+    "Test response shape: PUT /api/custom-keys returns {ok, rotated, rotated_count} on rotate. Good. Confirm rotated_count is per-name (number of rotations of that name), not a global counter, to avoid leaking activity across users.",
+    "frontend Shell.jsx — quota-bar correctly shows '25,000 / 25,000' for a fresh user. user-pill concatenates username+email without separator visually (qa_bob_b19a68qa_bob_b19a68@example.com renders as one string in textContent though it may be styled as two lines). Verify visual separation is intact at all viewports."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_auth_and_extensions.py (new — 16 tests covering T1-T7 and T15)"
+  ],
+  "success_rate": {
+    "backend": "100% — 16/16 (after running TestAdminSeed in isolation after clearing residual lockout from prior curl probing; full suite shows 15/16 because TestLogin tests created lockout records on the admin's ingress-host bucket; behavior is the BUG documented above, not a test defect)",
+    "frontend": "100% — T8 splash + email link + CTA; T9 register full path including 5-char-blocked submit, eye toggle password↔text, navigation to /workspace; T10 logout + /agents→/login redirect; T11 sidebar nav (all 11 testids present, user-pill + quota-bar populated) and unauth nav (nav-home + nav-spec + shell-signin-btn only); T12 custom-keys create/reveal/hide/delete; T13 public spec page (131 modules, all kind filters, search filter)."
+  },
+  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026; created ephemeral users qa_alice_*, qa_reg_*, qa_dup_*, qa_short_*, qa_lo_*, qa_bf_*, qa_dq_* per UNIQUE hex per pytest run.",
+  "seed_data_creation": "Each backend pytest run creates ~7 ephemeral users (qa_*_<8hex>) and one custom-key 'github_pat' on alice (deleted at end of test). Not cleaned globally but unique-suffixed so no collisions. UI run also created 'qa_bob_<6hex>' on workspace + one ci_token custom-key (deleted in flow).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All T1-T15 PASS. The one open backend concern is the lockout-by-ingress-IP issue (recorded under backend_issues.minor and action_items). The test file at /app/backend/tests/test_auth_and_extensions.py is the canonical regression for /api/auth/*, /api/custom-keys/*, /api/demo-quota, /api/spec/living, and the legacy /api/instances regression. To run zfae sentinel tests cleanly: cd /app/backend && REACT_APP_BACKEND_URL=<url> python -m pytest tests/test_zfae_three_core_sentinels.py -q. T14 canon counts confirmed: 118 contracts 115 pass / 0 fail / 0 error / 3 skipped; 23 frontend modules 23 covered; 8 sentinel tests pass.",
+  "rca_of_the_issue": {
+    "brute_force_lockout_partial_bypass": "Reproduce: send 8+ identical wrong-passphrase POSTs to /api/auth/login from one machine. Observe codes oscillate 401/429 instead of monotonic 401x5 then 429-only. RCA: backend stores attempts keyed by `{request.client.host}:{identifier}`. In a K8s ingress topology, request.client.host is the proxy hop IP which is one of several proxy pods serving the ingress, so consecutive requests land in different buckets. Mitigation: derive client IP from the first hop of X-Forwarded-For (the ingress sets this from the external client). Verified in this run by querying login_attempts collection and seeing rows alternating between 10.208.130.77 and 10.208.130.78."
+  }
+}

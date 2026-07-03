@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+@layer base {
+    :root {
+        --background: 222.2 84% 4.9%;
+        --foreground: 0 0% 98%;
+        --card: 240 10% 9.8%;
+        --card-foreground: 0 0% 98%;
+        --popover: 240 10% 9.8%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 0 0% 98%;
+        --primary-foreground: 0 0% 9%;
+        --secondary: 0 0% 15.3%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 0 0% 15.3%;
+        --muted-foreground: 0 0% 44.7%;
+        --accent: 0 0% 15.3%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 0 0% 15.3%;
+        --input: 0 0% 15.3%;
+        --ring: 0 0% 83.1%;
+        --radius: 0.5rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-[#09090B] text-foreground;
+    }
+}
+
+@layer utilities {
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    /* Emergent platform badge can sometimes overlay the viewport and intercept clicks */
+body[data-tier="supporter"] #emergent-badge,
+body[data-tier="pro"] #emergent-badge,
+body[data-tier="team"] #emergent-badge,
+body[data-tier="supporter"] a[href*="emergent" i][style*="bottom"],
+body[data-tier="pro"] a[href*="emergent" i][style*="bottom"],
+body[data-tier="team"] a[href*="emergent" i][style*="bottom"] {
+    display: none !important;
+}
+}
+
+@layer components {
+    .model-badge-gpt {
+        @apply border-[#10A37F] text-[#10A37F];
+    }
+    .model-badge-claude {
+        @apply border-[#D97757] text-[#D97757];
+    }
+    .model-badge-gemini {
+        @apply border-[#4285F4] text-[#4285F4];
+    }
+    .model-badge-perplexity {
+        @apply border-[#22B8CF] text-[#22B8CF];
+    }
+    .model-badge-grok {
+        @apply border-white text-white;
+    }
+    .model-badge-deepseek {
+        @apply border-[#4D6BFE] text-[#4D6BFE];
+    }
+}

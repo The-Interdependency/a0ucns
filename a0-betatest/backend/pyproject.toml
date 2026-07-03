@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a0p"
+version = "0.1.0"
+description = "a0p — donation-funded research instrument: BYOK multi-model AI workspace + PTCA/PCNA/ZFAE prime-tensor inference stack with fiq motion canon."
+readme = "../README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Erin Patrick Spencer", email = "wayseer@interdependentway.org" },
+]
+keywords = ["a0p", "ZFAE", "PCNA", "PTCA", "PCEA", "fiq", "research", "BYOK"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = [
+    "fastapi==0.115.0",
+    "uvicorn[standard]==0.32.0",
+    "motor==3.6.0",
+    "pymongo==4.9.1",
+    "pydantic==2.9.2",
+    "python-dotenv==1.0.1",
+    "httpx==0.27.2",
+    "cryptography==43.0.1",
+    "ucns==0.8.3",
+    "python-multipart==0.0.12",
+    "safetensors>=0.4.5",
+    "numpy>=1.26",
+    "openai>=1.50",
+    "anthropic>=0.40",
+    "google-generativeai>=0.8",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest", "pytest-asyncio"]
+
+[project.urls]
+Repository = "https://github.com/erinepshovel-code/a0p"

@@ -1,0 +1,27 @@
+AIMMH Hub — AI Visitor Guide
+
+Goal: Run multi-model prompt workflows, compare outputs, and synthesize decisions.
+
+Quickstart:
+- Open Registry and verify model availability.
+- Instantiate at least 2 model instances.
+- Choose one mode: direct chat or staged run pipeline.
+- Compare responses in stack/pane modes.
+- Queue selected blocks and run synthesis.
+
+Patterns:
+- fan_out: parallel brainstorming and broad option generation
+- daisy_chain: sequential refinement and stepwise transformation
+- room_all: group-wide discussion where every participant contributes
+- room_synthesized: discussion followed by single synthesis output
+- council: debate, critique, and consensus recommendations
+- roleplay: simulations with DM + player participant structure
+
+Operating Notes:
+- Prefer 2-5 focused instances per task for reliable comparison.
+- Use short explicit stage prompts for better consistency.
+- For synthesis, include only high-signal response blocks.
+- Use compare popout when reviewing 2+ candidate responses side-by-side.
+
+Machine-readable JSON: /api/ai-instructions
+Health endpoints: /api/health, /api/ready

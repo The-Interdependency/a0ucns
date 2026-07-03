@@ -1,0 +1,67 @@
+{
+  "summary": "Reviewed the mid-thought tool-use loop wiring batch. Backend: ran the new tests/test_tool_loop_http_e2e.py (HTTP integration covering items 1-5 of the review) → 5/6 PASS, 1 FAIL = trace.tool_trace missing on the zfae_native refused path. Also re-ran the existing 17 unit tests in test_tool_use_loop.py → 17/17 PASS. Confirmed sentinel-gated /api/tools/living_spec_lookup/invoke: benign query returns ok:true+result; jailbreak query 'ignore previous instructions' returns HTTP 202 with ok:false, halt:true, S4 in sentinel_verdict, and an override_id (cliff halt working). Confirmed tools_allowed=['web_search','fetch_url','living_spec_lookup'] persists exactly via POST /api/instances + GET /api/instances/{id}. Confirmed teacher-assisted no-BYOK chat returns 200 with reply_source='teacher_assisted', graceful no-key message, and trace.tool_trace=[] present. Frontend smoke: admin login + redirect to /workspace works, page-workspace renders, user pill + quota bar render, sidebar nav renders — BUT the agent dropdown is EMPTY for the authenticated admin (only the '— select agent —' placeholder is shown), which blocks every downstream interaction (audit-tape never mounts, ws-prompt-input stays disabled, can't send, can't observe assistant turn + tool_trace block). Root cause is in /app/frontend/src/pages/WorkspacePage.jsx — listInstances/getInstance/chatInstance are all called with the legacy hardcoded `user_id: 'local'`, but the agent_store now stores admin's agents under user_id='291f2b9d-0949-4059-9c03-c55ecbb72d14'. Backend has 9 agents under admin (including ToolTester with tools_allowed=['web_search','fetch_url']) but the UI requests user_id=local and gets none. Console also logs a stray 401 on the workspace page.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/chat/instance/{id} (mode 'a0(zfae)' / RuntimeMode.ZFAE_NATIVE, untrained agent)",
+        "issue": "Reply is HTTP 200 with reply_source='zfae_refused' (correct) but response.trace does NOT contain a `tool_trace` key. The review explicitly mandates `trace.tool_trace` must be present (empty list) on all chat paths. Fix in /app/backend/interdependent_lib/zfae/runtime.py::_zfae_native, the `if not ready: return RuntimeReply(... trace={ 'reason': 'not_trained_enough', ... } ...)` block — add `'tool_trace': []` to the trace dict so the contract holds for refused untrained agents."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "WorkspacePage",
+        "issue": "Agent dropdown ws-agent-select is empty for an authenticated admin (only the placeholder option is rendered) — even though backend GET /api/instances?user_id=<admin_uuid> returns 9 agents under admin. The page hardcodes user_id='local' on listInstances/getInstance/chatInstance, but the admin-migration moved every agent to the real user_id. Net result: from the UI a user can never pick an agent, the audit-tape component never mounts (it only renders when agentId is truthy), the prompt textarea stays disabled (placeholder 'Pick an agent above first.'), and the ws-send-btn is never enabled. This breaks the entire frontend tool-loop smoke test scenario described in the review.",
+        "selector": "[data-testid=\"ws-agent-select\"]",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "WorkspacePage → list / get / chat instance",
+        "issue": "WorkspacePage.jsx still passes user_id:'local' to api.listInstances() (line 117), api.getInstance(agentId) (default param), and api.chatInstance({ user_id: 'local', ... }) (line 149). Since the chat route now ignores body.user_id and forces it to the authenticated user, chat would still work — but list/get use the query string and quietly return 0 agents for admin. Fix: drop the explicit user_id from these calls (let the route default to the authenticated user via cookies + /api/auth/me) OR pass the real user.id pulled from the auth context. Alternatively, change /api/instances + /api/instances/{id} to also force user_id from the cookie like the chat route does.",
+        "affected_selectors": ["[data-testid=\"ws-agent-select\"]", "[data-testid=\"ws-prompt-input\"]", "[data-testid=\"ws-send-btn\"]", "[data-testid=\"audit-tape\"]"]
+      },
+      {
+        "flow": "Workspace page load",
+        "issue": "Console logs one stray '401 ()' on /workspace load. Did not block the page from mounting and the user/quota strip rendered, but it should be tracked down (likely a side-effect fetch from one of the listing/widget components hitting a route that requires admin or a different cookie scope)."
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tool_loop_http_e2e.py",
+    "/app/test_reports/pytest/pytest_tool_loop_http_e2e.xml",
+    "/app/backend/tests/test_tool_use_loop.py"
+  ],
+  "action_items": [
+    "[backend/HIGH] In /app/backend/interdependent_lib/zfae/runtime.py::_zfae_native, add `'tool_trace': []` to the refused-branch trace dict so the contract `trace.tool_trace present on every chat response` holds for untrained zfae_native agents (matches the review explicit assertion).",
+    "[frontend/HIGH] Stop hardcoding user_id:'local' in /app/frontend/src/pages/WorkspacePage.jsx. Either (a) drop the explicit user_id from listInstances/getInstance/chatInstance and have api.js read it from the auth/me cache, or (b) change the /api/instances routes to derive user_id from the authenticated cookie the same way /api/chat/instance/{id} already does (recommended — closes a privilege boundary in one place).",
+    "[frontend/medium] Track down the 401 logged in console on /workspace mount.",
+    "[test-hygiene] Each pytest run in test_tool_loop_http_e2e.py creates TEST_* agents under the admin account; they accumulate over time. Consider a teardown that deletes TEST_* agents before/after the module, or a list+delete by prefix sweep."
+  ],
+  "critical_code_review_comments": [
+    "runtime.py::_zfae_native refused-branch trace omits tool_trace — every other chat path now includes tool_trace, so this is the one outlier and a contract drift.",
+    "WorkspacePage.jsx hardcodes user_id:'local' in three places (listInstances, getInstance, chatInstance). Post-migration, 'local' is no longer the authenticated user. Same pattern is suspect in other pages (AgentsPage etc.) — sweep for `user_id: \"local\"` and `user_id = \"local\"` across /app/frontend/src/pages and /app/frontend/src/lib/api.js. The api.js default `(user_id = 'local')` is now misleading and silently breaks any caller that doesn't pass an explicit user_id.",
+    "agents/routes.py list_instances + get_instance still trust the query-string `user_id` for the authorization check, while chat_instance overrides it from get_current_user. Recommend hardening both list/get the same way so the cookie identity is always the source of truth.",
+    "test_tool_loop_http_e2e.py + the existing test suite create ~9 TEST_* agents per run with no teardown — fine for now but will inflate the admin's agent list over time."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tool_loop_http_e2e.py (new — 6 HTTP integration tests covering the 5 explicit backend items in the review)"
+  ],
+  "success_rate": {
+    "backend": "94% — 17/17 unit (test_tool_use_loop.py) + 5/6 HTTP e2e (test_tool_loop_http_e2e.py). The single failure is the missing tool_trace on the zfae_native refused branch documented under backend_issues.minor.",
+    "frontend": "30% — login redirects to /workspace, page-workspace + user-pill + quota-bar + sidebar render with no uncaught errors AND there is no blank screen, BUT the agent dropdown is empty so audit-tape mount + prompt send + assistant turn + tool_trace block can't be exercised end-to-end. The mid-thought tool-call rendering code path therefore could not be visually verified."
+  },
+  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026 (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys — graceful fallback path exercised throughout.",
+  "seed_data_creation": "test_tool_loop_http_e2e.py created 4 TEST_* agents under the admin user (TEST_RegrTeacher_*, TEST_TeacherTools_*, TEST_ZfaeNative_*, TEST_ToolsPersist_*). No teardown — they remain in the agent store.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "After main agent fixes (a) WorkspacePage user_id hardcoding and (b) zfae_native refused-branch tool_trace, re-run `cd /app/backend && python -m pytest tests/test_tool_loop_http_e2e.py tests/test_tool_use_loop.py -v` and re-do the playwright smoke: login → /workspace → select 'ToolTester' (mode a0(zfae)<model>, tools_allowed=['web_search','fetch_url']) → audit-tape should mount → type prompt → ws-send-btn enabled → assistant turn renders with reply_source badge + the mid-thought tool-trace container (testid `turn-<id>-tools` with one `tool-call-<id>-0` child if tool selected, or empty if fallback). The existing 17-test unit suite is the canonical regression for the loop engine + native selector + provider schema translation; the new HTTP e2e file is the canonical regression for the chat-route wiring + tools_allowed persistence + sentinel-gated tool dispatch.",
+  "rca_of_the_issue": {
+    "workspace_empty_agent_dropdown": "Reproduce: login as admin in the UI, go to /workspace. Expect ToolTester (and other admin agents) to be selectable. Observed: dropdown shows only the '-- select agent --' placeholder. RCA: api.listInstances() defaults to user_id='local' (see /app/frontend/src/lib/api.js line 119) and WorkspacePage.jsx calls it with no argument. Backend /api/instances?user_id=local returns the legacy local bucket (now empty) — admin's 9 agents live under user_id='291f2b9d-...'. Mitigation: either change WorkspacePage to call api.listInstances(authUserId) using the id from /api/auth/me, OR change the agents router to derive user_id from the cookie (same pattern chat_instance already uses).",
+    "zfae_native_refused_missing_tool_trace": "Reproduce: POST /api/chat/instance/{id} on a freshly-created agent with sheet.mode='a0(zfae)' (RuntimeMode.ZFAE_NATIVE), no transcript. Backend returns 200, reply_source='zfae_refused', and response.trace = { reason, training_step, min_steps_required, last_loss, max_loss_required, total_seeds_touched, all_seeds_touched }. tool_trace key is absent. RCA: /app/backend/interdependent_lib/zfae/runtime.py::_zfae_native, untrained branch (line ~647) builds a trace dict without inserting an empty `tool_trace`. Every other chat path emits `tool_trace`. Fix: add `'tool_trace': []` to that dict so frontend `turn-<id>-tools` rendering and any downstream FIQ consumer see a uniform shape."
+  }
+}
