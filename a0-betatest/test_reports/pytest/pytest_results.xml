@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="45" time="4.775" timestamp="2026-06-10T06:10:06.084868+00:00" hostname="agent-env-1878b603-3cc6-48b2-8f76-f505cdfe8a16"><testcase classname="tests.backend_test.TestHealth" name="test_health_ok" time="0.256"><failure message="AssertionError: provider emergent missing from /health: {'anthropic', 'openai', 'gemini', 'xai'}&#10;assert 'emergent' in {'anthropic', 'gemini', 'openai', 'xai'}">self = &lt;backend_test.TestHealth object at 0xfdec11bef390&gt;
+client = &lt;requests.sessions.Session object at 0xfdec1093be50&gt;
+
+    def test_health_ok(self, client):
+        r = client.get(f"{API}/health", timeout=15)
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert data["status"] == "ok"
+        assert data["service"] == "a0p"
+        # providers must include the four BYOK + emergent
+        providers = set(data.get("providers", []))
+        for p in ("openai", "anthropic", "gemini", "xai", "emergent"):
+&gt;           assert p in providers, f"provider {p} missing from /health: {providers}"
+E           AssertionError: provider emergent missing from /health: {'anthropic', 'openai', 'gemini', 'xai'}
+E           assert 'emergent' in {'anthropic', 'gemini', 'openai', 'xai'}
+
+tests/backend_test.py:54: AssertionError</failure></testcase><testcase classname="tests.backend_test.TestKeys" name="test_put_key_encrypted" time="0.098" /><testcase classname="tests.backend_test.TestKeys" name="test_list_keys_masked" time="0.055" /><testcase classname="tests.backend_test.TestKeys" name="test_delete_key" time="0.108" /><testcase classname="tests.backend_test.TestVault" name="test_put_vault" time="0.057" /><testcase classname="tests.backend_test.TestVault" name="test_list_vault_no_values" time="0.053" /><testcase classname="tests.backend_test.TestVault" name="test_reveal_returns_decrypted" time="0.056" /><testcase classname="tests.backend_test.TestVault" name="test_delete_vault" time="0.054" /><testcase classname="tests.backend_test.TestInventory" name="test_inventory_curated_present" time="0.267"><failure message="AssertionError: {'id': 'grok-4.20-0309-non-reasoning', 'label': 'grok-4.20-0309-non-reasoning', 'provider': 'xai'}&#10;assert ':' in 'grok-4.20-0309-non-reasoning'">self = &lt;backend_test.TestInventory object at 0xfdec1092da50&gt;
+client = &lt;requests.sessions.Session object at 0xfdec1093be50&gt;
+
+    def test_inventory_curated_present(self, client):
+        r = client.get(f"{API}/models/inventory", params={"user_id": USER_ID}, timeout=30)
+        assert r.status_code == 200, r.text
+        data = r.json()
+        models = data.get("models", [])
+        # Emergent-curated inventory must yield &gt;= 9 models
+        assert len(models) &gt;= 9, f"expected &gt;=9 curated models, got {len(models)}: {models}"
+        # Each curated model exposes an id of the form 'provider:name'
+        # (the field is 'id' for Emergent inventory, 'model_id' for BYOK providers).
+        for m in models:
+            ident = m.get("id") or m.get("model_id") or ""
+&gt;           assert ":" in ident, m
+E           AssertionError: {'id': 'grok-4.20-0309-non-reasoning', 'label': 'grok-4.20-0309-non-reasoning', 'provider': 'xai'}
+E           assert ':' in 'grok-4.20-0309-non-reasoning'
+
+tests/backend_test.py:161: AssertionError</failure></testcase><testcase classname="tests.backend_test.TestSessions" name="test_create_session" time="0.058" /><testcase classname="tests.backend_test.TestSessions" name="test_get_session" time="0.051" /><testcase classname="tests.backend_test.TestSessions" name="test_patch_session" time="0.103" /><testcase classname="tests.backend_test.TestSessions" name="test_delete_session" time="0.104" /><testcase classname="tests.backend_test.TestDrafts" name="test_create_draft" time="0.065" /><testcase classname="tests.backend_test.TestDrafts" name="test_patch_draft" time="0.114" /><testcase classname="tests.backend_test.TestDrafts" name="test_delete_draft" time="0.052" /><testcase classname="tests.backend_test.TestChat" name="test_chat_single" time="0.069"><failure message="AssertionError: chat error: unknown provider 'emergent'&#10;assert not &quot;unknown provider 'emergent'&quot;&#10; +  where &quot;unknown provider 'emergent'&quot; = &lt;built-in method get of dict object at 0xfdebfa8c8bc0&gt;('error')&#10; +    where &lt;built-in method get of dict object at 0xfdebfa8c8bc0&gt; = {'content': '', 'error': &quot;unknown provider 'emergent'&quot;, 'model_id': 'emergent:openai:gpt-4o-mini', 'provider': 'emergent'}.get">self = &lt;backend_test.TestChat object at 0xfdec10938550&gt;
+client = &lt;requests.sessions.Session object at 0xfdec1093be50&gt;
+
+    def test_chat_single(self, client):
+        r = client.post(f"{API}/chat/single", json={
+            "user_id": USER_ID,
+            "model_id": "emergent:openai:gpt-4o-mini",
+            "messages": [{"role": "user",
+                          "content": "Reply with exactly the word HELLO and nothing else"}],
+        }, timeout=90)
+        assert r.status_code == 200, r.text
+        result = r.json()["result"]
+&gt;       assert not result.get("error"), f"chat error: {result.get('error')}"
+E       AssertionError: chat error: unknown provider 'emergent'
+E       assert not "unknown provider 'emergent'"
+E        +  where "unknown provider 'emergent'" = &lt;built-in method get of dict object at 0xfdebfa8c8bc0&gt;('error')
+E        +    where &lt;built-in method get of dict object at 0xfdebfa8c8bc0&gt; = {'content': '', 'error': "unknown provider 'emergent'", 'model_id': 'emergent:openai:gpt-4o-mini', 'provider': 'emergent'}.get
+
+tests/backend_test.py:268: AssertionError</failure></testcase><testcase classname="tests.backend_test.TestChat" name="test_chat_fanout" time="0.069" /><testcase classname="tests.backend_test.TestChat" name="test_chat_daisychain" time="0.082" /><testcase classname="tests.backend_test.TestChat" name="test_chat_fanout_invalid_model_surfaces_error" time="0.056" /><testcase classname="tests.backend_test.TestChat" name="test_chat_synthesize" time="0.057"><failure message="AssertionError: synth error: unknown provider 'emergent'&#10;assert not &quot;unknown provider 'emergent'&quot;&#10; +  where &quot;unknown provider 'emergent'&quot; = &lt;built-in method get of dict object at 0xfdebfa783340&gt;('error')&#10; +    where &lt;built-in method get of dict object at 0xfdebfa783340&gt; = {'content': '', 'error': &quot;unknown provider 'emergent'&quot;, 'model_id': 'emergent:openai:gpt-4o-mini', 'provider': 'emergent'}.get">self = &lt;backend_test.TestChat object at 0xfdec10939710&gt;
+client = &lt;requests.sessions.Session object at 0xfdec1093be50&gt;
+
+    def test_chat_synthesize(self, client):
+        # Use any prior fanout output OR fall back to fabricated panel content.
+        if TestChat.fanout_results:
+            responses = [{"model_id": r["model_id"],
+                          "content": r.get("content") or "(no content)"}
+                         for r in TestChat.fanout_results]
+        else:
+            responses = [
+                {"model_id": "model-a", "content": "2+2 equals 4."},
+                {"model_id": "model-b", "content": "The sum of two and two is four."},
+            ]
+        r = client.post(f"{API}/chat/synthesize", json={
+            "user_id": USER_ID,
+            "prompt": "In one short sentence, what is 2+2?",
+            "responses": responses,
+            "synth_model": "emergent:openai:gpt-4o-mini",
+        }, timeout=120)
+        assert r.status_code == 200, r.text
+        synth = r.json()["synthesis"]
+&gt;       assert not synth.get("error"), f"synth error: {synth.get('error')}"
+E       AssertionError: synth error: unknown provider 'emergent'
+E       assert not "unknown provider 'emergent'"
+E        +  where "unknown provider 'emergent'" = &lt;built-in method get of dict object at 0xfdebfa783340&gt;('error')
+E        +    where &lt;built-in method get of dict object at 0xfdebfa783340&gt; = {'content': '', 'error': "unknown provider 'emergent'", 'model_id': 'emergent:openai:gpt-4o-mini', 'provider': 'emergent'}.get
+
+tests/backend_test.py:346: AssertionError</failure></testcase><testcase classname="tests.backend_test.TestInspector" name="test_heartbeat" time="0.060" /><testcase classname="tests.backend_test.TestInspector" name="test_snapshot" time="0.059" /><testcase classname="tests.backend_test.TestAgents" name="test_list_seeded" time="0.061"><failure message="AssertionError: research-council default_models has no recognised valid IDs: ['openai:gpt-4o', 'anthropic:claude-sonnet-4-5-20250929', 'gemini:gemini-2.5-flash']&#10;assert False&#10; +  where False = any(&lt;generator object TestAgents.test_list_seeded.&lt;locals&gt;.&lt;genexpr&gt; at 0xfdebfa863920&gt;)">self = &lt;backend_test.TestAgents object at 0xfdec1093ae90&gt;
+client = &lt;requests.sessions.Session object at 0xfdec1093be50&gt;
+
+    def test_list_seeded(self, client):
+        r = client.get(f"{API}/agents", timeout=15)
+        assert r.status_code == 200, r.text
+        agents = r.json()["agents"]
+        slugs = {a["slug"] for a in agents}
+        for required in ("research-council", "daisy-prover",
+                         "zfae-classic", "premium-symphony"):
+            assert required in slugs, f"starter {required} missing; have {slugs}"
+        # Verify starter default_models use only valid Emergent IDs after fix.
+        by_slug = {a["slug"]: a for a in agents}
+        invalid_ids = {
+            "emergent:openai:gpt-5.4",
+            "emergent:openai:gpt-5.4-mini",
+            "emergent:anthropic:claude-sonnet-4-6",
+        }
+        for slug in ("research-council", "daisy-prover"):
+            dms = by_slug[slug].get("default_models", [])
+            assert dms, f"{slug} has empty default_models"
+            bad = [m for m in dms if m in invalid_ids]
+            assert not bad, f"{slug} still references invalid IDs: {bad} (full={dms})"
+            # Sanity: at least one of the allow-listed substitutes should appear
+&gt;           assert any(
+                m in dms for m in (
+                    "emergent:openai:gpt-5",
+                    "emergent:openai:gpt-5-mini",
+                    "emergent:anthropic:claude-sonnet-4-5",
+                )
+            ), f"{slug} default_models has no recognised valid IDs: {dms}"
+E           AssertionError: research-council default_models has no recognised valid IDs: ['openai:gpt-4o', 'anthropic:claude-sonnet-4-5-20250929', 'gemini:gemini-2.5-flash']
+E           assert False
+E            +  where False = any(&lt;generator object TestAgents.test_list_seeded.&lt;locals&gt;.&lt;genexpr&gt; at 0xfdebfa863920&gt;)
+
+tests/backend_test.py:396: AssertionError</failure></testcase><testcase classname="tests.backend_test.TestAgents" name="test_create_agent" time="0.165" /><testcase classname="tests.backend_test.TestAgents" name="test_manifest" time="0.056" /><testcase classname="tests.backend_test.TestAgents" name="test_delete_agent" time="0.055" /><testcase classname="tests.backend_test.TestUsage" name="test_usage_records" time="0.059" /><testcase classname="tests.test_zfae_api_sentinels.TestT1WeightBank" name="test_three_core_counts_and_finite_loss" time="0.306" /><testcase classname="tests.test_zfae_api_sentinels.TestT2SentinelCanon" name="test_canon_thirteen_with_S4_S12_cliffs" time="0.058" /><testcase classname="tests.test_zfae_api_sentinels.TestT3GonalRegistry" name="test_default_and_mirror_registries" time="0.052" /><testcase classname="tests.test_zfae_api_sentinels.TestT4HaltAndOverride" name="test_full_lifecycle" time="0.476" /><testcase classname="tests.test_zfae_api_sentinels.TestT5BenignNoHalt" name="test_hello_world" time="0.071" /><testcase classname="tests.test_zfae_api_sentinels.TestT6RejectRehalts" name="test_reject_then_resume_rehalts" time="0.188" /><testcase classname="tests.test_zfae_api_sentinels.TestT7FiqChain" name="test_chain_integrity" time="0.519"><failure message="KeyError: 'MONGO_URL'">self = &lt;test_zfae_api_sentinels.TestT7FiqChain object at 0xfdec10959f90&gt;
+session = &lt;requests.sessions.Session object at 0xfdebfad5e4d0&gt;
+agent_id = 'd3faae80-cd59-4607-9a45-2d271700a993'
+
+    def test_chain_integrity(self, session, agent_id):
+        # ensure at least 2 chat events
+        _chat(session, agent_id, "hello fiq one")
+        _chat(session, agent_id, "hello fiq two")
+        time.sleep(0.3)
+        # Use Mongo directly via a backend test hook if present; otherwise hit Mongo.
+        from motor.motor_asyncio import AsyncIOMotorClient
+        import asyncio
+&gt;       mongo_url = os.environ["MONGO_URL"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_zfae_api_sentinels.py:203: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = environ({'KUBERNETES_SERVICE_PORT_HTTPS': '443', 'PYTHON_SHA256': '272179ddd9a2e41a0fc8e42e33dfbdca0b3711aa5abf372d3f2...ION': '9.0.3', 'PYTEST_CURRENT_TEST': 'tests/test_zfae_api_sentinels.py::TestT7FiqChain::test_chain_integrity (call)'})
+key = 'MONGO_URL'
+
+&gt;   ???
+E   KeyError: 'MONGO_URL'
+
+&lt;frozen os&gt;:679: KeyError</failure></testcase><testcase classname="tests.test_zfae_api_sentinels.TestT8PerAgentSentinelModes" name="test_get_modes_and_weights" time="0.102" /><testcase classname="tests.test_zfae_api_sentinels.TestT8PerAgentSentinelModes" name="test_patch_s4_observe_no_longer_halts_on_S4" time="0.220" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_three_core_weight_bank_total_count" time="0.025" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_three_core_combined_digest_changes_on_any_core_update" time="0.026" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_trainer_round_robin_across_cores" time="0.047" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_sentinel_eval_cliff_fires_on_unsafe_marker" time="0.001" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_sentinel_eval_no_flag_on_benign" time="0.000" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_native_refusal_requires_all_seeds_touched" time="0.029" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_fiq_emit_chain" time="0.001" /><testcase classname="tests.test_zfae_three_core_sentinels" name="test_pending_override_lifecycle" time="0.001" /></testsuite></testsuites>

@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aimmh-lib"
+version = "1.1.0"
+description = "Async multi-model conversation orchestration (fan_out, daisy_chain, room_all, room_synthesized, council, roleplay, MultiModelHub, ModelInstance)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MPL-2.0" }
+keywords = ["llm", "multi-model", "async", "conversation", "orchestration", "ai"]
+dependencies = []  # pure stdlib + asyncio; zero runtime deps for the core lib
+
+[project.optional-dependencies]
+# Install these to use aimmh_lib.adapters.make_call_fn with the aimmh backend
+backend = [
+    "emergentintegrations",
+    "fastapi",
+    "motor",
+]
+# Install these to build and publish
+dev = [
+    "build",
+    "twine",
+]
+
+[project.urls]
+Homepage = "https://emergentapp.interdependentway.org"
+Repository = "https://github.com/The-Interdependency/aimmh"
+"Bug Tracker" = "https://github.com/The-Interdependency/aimmh/issues"
+
+[tool.setuptools]
+license-files = []  # suppress auto-discovery to avoid Metadata 2.4 dynamic field
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aimmh_lib*"]
+exclude = ["backend*", "frontend*"]

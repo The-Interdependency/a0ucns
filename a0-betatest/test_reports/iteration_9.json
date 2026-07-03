@@ -1,0 +1,27 @@
+{
+  "summary": "Frontend-only smoke test of the two new UI changes: (1) Inventory page 'action' column + per-row 'create agent' button (inv-create-agent-<provider>-<id>); (2) CharacterSheetForm base_model / outer_model converted to a ModelSelect dropdown sourced from useInventory() with an auto text-input fallback (csf-base-input) when the inventory is empty. All 4 review items PASS. Login as wayseer (form-submit via Enter on passphrase) -> /workspace. /inventory renders with data-testid=page-inventory; <thead> columns now read ['id','label','provider','context','modality','action'] — the new 'action' header is present. Because admin has no BYOK provider keys, the catalog is empty, so 0 rows render and 0 inv-create-agent-* buttons exist (expected). Open create-agent modal on /agents via data-testid=agents-create-btn; CharacterSheetForm appears. Selecting mode 'a0(zfae)<model>' surfaces the base-model field; with the inventory empty, the component correctly renders the text-input fallback data-testid=csf-base-input (count=1) and NO csf-base-select (count=0). Typing 'openai:gpt-4o' is accepted (input_value matches). Submit (csf-submit-btn) closes the modal and PullDownTest appears in the /agents table. Reopen via row Edit: csf-base-input is pre-populated with 'openai:gpt-4o' — base_model PERSISTED. GET /api/instances confirmed (response shape is {agents:[...]}; user_id resolved from auth cookie to 291f2b9d-…). Cleanup DELETE /api/instances/{id}?purge=true returned 200. JS console on /inventory + /agents shows zero errors specific to these features; only carry-over noise is the pre-login 401 from /api/auth/me when bouncing through /login (same cosmetic noted in iteration_7/8). ToolTester remains as expected.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "[low/observation] On /inventory with count=0, the empty-state CTA copy ('No models in the inventory yet… open the Key Vault and add a key…') did not surface in the rendered DOM (inner_text on [data-testid=page-inventory] contained neither 'BYOK' nor 'Key Vault'). The 'No models match the current filter.' tbody-fallback row is shown instead. The conditional is `{data.count === 0 && !loading && (...)}` — please verify that `data.count` is being populated from /api/models/inventory response (or simplify to `data.models?.length === 0`). Not a functional blocker, but the CTA-to-Key-Vault is the documented onboarding path for a brand-new BYOK install.",
+    "[low/carry-over] Pre-login GET /api/auth/me on /login mount still logs a stray 401 in the browser console (same as iteration_7 and iteration_8). Cosmetic; consider validateStatus or skipping the probe when no auth cookie is present."
+  ],
+  "critical_code_review_comments": [
+    "ModelSelect logic in CharacterSheetForm.jsx (lines 104-149) is sound: `showCustom = customMode || opts.length === 0` correctly forces the text-input fallback when the BYOK inventory is empty, and the '+ custom…' option + 'list' toggle round-trip cleanly between modes. The useEffect that auto-flips to customMode when `value && opts.length && !opts.includes(value)` is the right defense against displaying an empty <select> for legacy custom-typed models — good.",
+    "InventoryPage.jsx createAgentFor() builds a sane teacher-assisted sheet (mode 'a0(zfae)<model>', base_model = `${provider}:${id}`) and navigates to /workspace?agent=<id> on success — could not be exercised live because the inventory is empty; recommend the main agent self-verifies once a key is saved.",
+    "InventoryPage.jsx still depends on `data.count` for its empty-state CTA gate — if the backend ever drops the `count` field (or returns it as 0 transiently before the fetch completes), the CTA either won't render or will flicker. Consider `(data.models?.length ?? 0) === 0` for robustness."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (skipped per request)", "frontend": "100% — all 4 review items pass" },
+  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026 (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys (expected for this build).",
+  "seed_data_creation": "Created 1 agent 'PullDownTest' (id d1da5cc4-6a47-4922-b6f4-115b1a7767d4) and cleaned up via DELETE /api/instances/{id}?purge=true (status 200). ToolTester remains as noted in the request.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Both new UI changes are wired end-to-end. ModelSelect renders csf-base-input (text fallback) when inventory empty, and csf-base-select (dropdown) when models exist (only the empty-state path was exercised live because admin has no BYOK keys; please add a key + retest to exercise the dropdown path). InventoryPage action column header is present; per-row create button + navigate to /workspace?agent=<id> is implemented but not live-exercised — see action_items for the minor empty-state CTA observation. The /api/instances response shape is {agents: [...]} (not {items: [...]} or a bare list) — cleanup loops should accept that shape.",
+  "rca_of_the_issue": "n/a — no defects found this iteration."
+}

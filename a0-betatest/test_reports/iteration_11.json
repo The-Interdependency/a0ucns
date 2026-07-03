@@ -1,0 +1,36 @@
+{
+  "summary": "Frontend-only verification of the agent naming nomenclature feature (canonical owner-namespaced agent identity a0(<energy>)<auditor>). All 7 requested behaviours pass end-to-end against the live preview URL using admin wayseer/nospecialcharacters.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "tests_performed": [
+    {"id": "login", "result": "PASS", "detail": "POST /api/auth/login with identifier=wayseer, passphrase=nospecialcharacters -> /workspace"},
+    {"id": "agents-create-modal-prefill-default", "result": "PASS", "detail": "csf-name-input prefilled with 'wayseer(a0(zfae))' for default mode a0(zfae)"},
+    {"id": "mode-dropdown-six-options", "result": "PASS", "detail": "csf-mode-select contains exactly 6 options including new 'a0(<model>) - bare model (model as pure energy)'"},
+    {"id": "live-update-a0(zfae)<model>", "result": "PASS", "detail": "Mode a0(zfae)<model> + base openai:gpt-4o yields 'wayseer(a0(zfae)gpt-4o)' (provider prefix stripped, live update)"},
+    {"id": "live-update-a0(<model>)", "result": "PASS", "detail": "New bare-model mode a0(<model>) + base gemini:gemini-2.5-flash yields 'wayseer(a0(gemini-2.5-flash))'"},
+    {"id": "dirty-and-auto-reset", "result": "PASS", "detail": "Typing custom name marks dirty, csf-name-auto button appears; clicking restores canonical suggestion"},
+    {"id": "create-agent-persists-and-uniqueness", "result": "PASS", "detail": "Submitting prefilled wayseer(a0(zfae)) created a new row; backend appended numeric suffix (' 3' after existing ' 2'), confirming _unique_name()"},
+    {"id": "inventory-create-agent-canonical", "result": "PASS", "detail": "Clicking inv-create-agent-openai-gpt-3.5-turbo navigated to /workspace?agent=<id> and produced canonical name 'wayseer(a0(zfae)gpt-3.5-turbo)' (NOT bare 'gpt-3.5-turbo')"}
+  ],
+  "test_report_links": [],
+  "action_items": [
+    "Optional: /app/memory/test_credentials.md still lists the old admin passphrase 'ChangeMeOnFirstLogin2026'. Backend .env now uses ADMIN_PASSWORD=nospecialcharacters. Update the docs to match so future testing agents don't get blocked by 401."
+  ],
+  "critical_code_review_comments": [
+    "CharacterSheetForm.jsx hint text still says 'The 5-mode lattice' (line 265) but the lattice now has 6 modes. Minor copy drift.",
+    "sentinels.js header comment says 'the 13 sentinels and the 6 lattice modes' which is correct, but the JSDoc block at line 37 still says '5 lattice modes'. Cosmetic only.",
+    "needsOuter regex /a0\\(<model>\\)<model>|a0\\(zfae\\)<model>/ correctly distinguishes the new a0(<model>) mode from a0(<model>)<model> via the trailing '<model>' literal - verified empirically (a0(<model>) does NOT show the outer field).",
+    "useEffect that syncs name from suggestedName depends only on [suggestedName, nameDirty]; OK because suggestedName itself memoises (username, mode, baseModel, outerModel)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per instructions)", "frontend": "100% (8/8 checks)"},
+  "test_credentials": "wayseer / nospecialcharacters (from backend/.env). NOTE: /app/memory/test_credentials.md is stale (lists ChangeMeOnFirstLogin2026).",
+  "seed_data_creation": "Created 2 agents during this run: one wayseer(a0(zfae)) (suffix ' 3' applied) via the form, and one wayseer(a0(zfae)gpt-3.5-turbo) via Inventory. Neither needs cleanup; both are owned by wayseer and demonstrate the nomenclature.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All naming-nomenclature acceptance criteria verified on the preview URL with admin wayseer/nospecialcharacters. Backend was previously curl-verified by E1 (login 200, uniqueness suffix works, canonical composition correct for all modes). Frontend prefill, live mode/model-driven update, dirty-detection + auto-reset, form-submit persistence, and Inventory create-agent canonical-name flow are all working. Only nits are stale doc strings (test_credentials.md and a '5-mode lattice' hint) - no functional bugs."
+}

@@ -1,0 +1,40 @@
+================================================================================
+INTERIM LICENSE NOTICE  —  ACTION REQUIRED BEFORE MERGE / PUBLIC RELEASE
+================================================================================
+
+This platform will be offered under the Business Source License 1.1 (BSL 1.1),
+a source-available license that converts to an open-source license on a fixed
+Change Date.
+
+  SPDX-License-Identifier: BUSL-1.1
+  Canonical template: https://mariadb.com/bsl11/
+
+License parameters for this work:
+
+  Licensor:             Erin Patrick Spencer
+  Licensed Work:        This repository and its contents.
+                        Copyright (c) 2026 Erin Patrick Spencer.
+  Additional Use Grant: You may make production use of the Licensed Work,
+                        provided that such use does not constitute a
+                        competing commercial hosted or managed offering of
+                        the Licensed Work.
+  Change Date:          2030-01-01
+  Change License:       Apache License, Version 2.0
+
+On the Change Date, the terms above are superseded and the Licensed Work
+becomes available under the Change License (Apache-2.0).
+
+--------------------------------------------------------------------------------
+STATUS — FULL TEXT NOT YET INSERTED
+
+The full verbatim BSL 1.1 license body has NOT been pasted into this file. The
+automated environment that produced this branch had no outbound network access
+and could not retrieve the canonical template.
+
+Before this branch is merged or the work is released publicly, replace the
+marker line below with the full BSL 1.1 boilerplate from https://mariadb.com/bsl11/
+populated with the parameters above. Confirm the Additional Use Grant wording
+reflects your commercial intent.
+--------------------------------------------------------------------------------
+
+>>> INSERT FULL VERBATIM BSL 1.1 BODY (with parameters above) HERE <<<

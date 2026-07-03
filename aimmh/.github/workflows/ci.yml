@@ -1,0 +1,43 @@
+name: ci
+
+# CI for the zero-dependency `aimmh_lib` package only. The backend/ suites are
+# live-integration tests (they hit a deployed REACT_APP_BACKEND_URL) and are
+# intentionally not run here.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lib:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Editable install (zero runtime deps)
+        run: python -m pip install -e .
+      - name: Public API + async functional smoke
+        run: |
+          python - <<'PY'
+          import asyncio, aimmh_lib
+          from aimmh_lib import fan_out, ModelResult
+          for name in aimmh_lib.__all__:
+              assert hasattr(aimmh_lib, name), f"missing export: {name}"
+          async def _call(model_id, messages):
+              return f"echo:{model_id}"
+          async def _main():
+              rs = await fan_out(_call, ["m1", "m2"], [{"role": "user", "content": "hi"}])
+              assert [r.model for r in rs] == ["m1", "m2"], rs
+              assert all(isinstance(r, ModelResult) for r in rs)
+          asyncio.run(_main())
+          print("aimmh_lib smoke OK")
+          PY

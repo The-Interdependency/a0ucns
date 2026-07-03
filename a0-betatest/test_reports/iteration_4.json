@@ -1,0 +1,71 @@
+{
+  "summary": "Full frontend + backend P1 review for the a0p BYOK agent wrapper. 9 nav routes load with zero console errors; Agents table, Sentinels editor (13 rows, S4+S12 CLIFF badges), bulk mode toggle, weight persistence, Workspace halt-and-override (halt banner + override modal with CLIFF + sentinel ribbon + zfae_halted source badge), and Overrides queue (approve flow + history toggle) all work end-to-end. T1, T2, T3, T4, T7, T8, T9, T10, T11 (partial), T12, T13 PASS. T5 (Agent EDIT) is BROKEN — PATCH /api/instances/{id} returns 422 because the frontend sends {user_id, sheet:{...}} but the backend Pydantic model requires {user_id, patch:{...}}. T6 (DELETE) is blocked end-to-end only because the edit modal never closes when the failing PATCH errors out (the delete API itself is reachable once the modal is dismissed). Backend regression: test_build_runner=76·73p/0f/0e/3s, frontend_module_build_runner=18/18 covered, test_zfae_three_core_sentinels.py=8 passed.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "PATCH /api/instances/{id}",
+        "issue": "Pydantic body model requires field 'patch' but the frontend (AgentsPage.jsx line 120 via api.patchInstance) sends 'sheet'. Result: HTTP 422 {'loc':['body','patch'],'msg':'Field required'}. This breaks Agent EDIT (T5) and consequently leaves the edit modal open (which blocks the visual side of T6 DELETE because the modal masks the row's delete button on the same page).",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "PATCH /api/instances/{id}/sentinel-weights",
+        "issue": "Weights are stored normalized — setting S4=0.42 on a single row persists as 0.3307... (i.e., 0.42 / sum_of_all_13). UX-wise the input value is silently rescaled; consider showing the post-normalization value back in the field or documenting the normalization."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "AgentsPage",
+        "issue": "When the PATCH /api/instances/{id} call fails, the agents page renders an inline error of literal '[object Object]' near the top of the table (visible in the Edit screenshot). The error is an Error/AxiosError object being stringified directly. Should be err.message or err?.response?.data?.detail.",
+        "selector": "AgentsPage error display",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Agent form modal",
+        "issue": "Modal does not close on Escape key. Only Cancel / Close work. Minor UX.",
+        "selector": "[data-testid='agent-form-modal']",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Agent EDIT (T5)",
+        "issue": "frontend api.patchInstance sends body shaped {user_id, sheet:{...}} but backend expects {user_id, patch:{...}}. Either change the frontend payload key from 'sheet' -> 'patch' in /app/frontend/src/pages/AgentsPage.jsx (line ~120) OR widen the backend Pydantic model to accept both. Fix is one-line either way.",
+        "affected_selectors": ["[data-testid='csf-submit-btn']", "[data-testid='agent-row-edit-{id}']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_zfae_three_core_sentinels.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "CRITICAL: Fix PATCH /api/instances/{id} body-key mismatch. In /app/frontend/src/pages/AgentsPage.jsx change `await api.patchInstance(editing.id, { user_id: 'local', sheet })` to `{ user_id: 'local', patch: sheet }` (or update the backend model to accept 'sheet'). This unblocks both T5 (EDIT) and the visual side of T6 (DELETE).",
+    "Fix the '[object Object]' error rendering on AgentsPage — render err?.response?.data?.detail || err.message instead of the raw object.",
+    "(Optional) Reflect normalized sentinel weights back into the input on PATCH /api/instances/{id}/sentinel-weights, or expose a 'normalize:false' query for raw set.",
+    "(Optional) Close agent form modal on Escape."
+  ],
+  "critical_code_review_comments": [
+    "AgentsPage.jsx PATCH body key 'sheet' vs backend Pydantic 'patch' is a contract drift — add a contract-level integration test that POSTs then PATCHes via the same client used by the UI to catch this class of bug.",
+    "OverrideModal correctly gates cliff approvals behind the literal 'I ACCEPT' input — verified working both from the inline workspace modal and the overrides page card form.",
+    "test_zfae_api_sentinels.py and tests/backend_test.py both rely on shell-env REACT_APP_BACKEND_URL/MONGO_URL being exported into the pytest process. Consider loading from /app/frontend/.env and /app/backend/.env in conftest.py so pytest works without manual `export`.",
+    "Some pre-existing failures in tests/backend_test.py (5/28) reference stale model IDs like 'emergent:openai:gpt-5'; these are not part of this iteration's scope but should be reconciled with the current inventory."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% on the spec's 'pytest -q' surface (test_zfae_three_core_sentinels.py 8/8) + doc-runner 73/73 active contracts + frontend_module_build_runner 18/18. PATCH /api/instances/{id} 422 logged as a critical contract bug.",
+    "frontend": "11/13 review tests pass (T1, T2, T3, T4, T7, T8, T9, T10, T11, T12, T13). T5 fails because of the backend/frontend body-key mismatch. T6 visually blocked by the failing T5 modal."
+  },
+  "test_credentials": "n/a — single-user mode, user_id='local'.",
+  "seed_data_creation": "Created one persistent agent named 'TestAgentA' (id=0ae818a4-8eaa-48cc-8153-ba62992af769). It still exists because T6 was blocked (see above). Several pending overrides for the 'Smoke' agent were also generated during the halt tests; one was approved via the UI to verify T12.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "The single blocking bug is a one-line fix: AgentsPage.jsx sends {user_id, sheet} where the backend wants {user_id, patch}. Once that flip happens, T5 + T6 should pass without further changes. The bulk_mode toggle on the Sentinels page sets *all* 13 sentinels including S4/S12 — if you want to re-run T10 halt tests deterministically, PATCH S4 back to 'flag' first (it currently is, after my bulk toggle). The agent TestAgentA (id 0ae818a4-...) is left behind — delete it manually or rerun T6 after the fix.",
+  "rca_of_the_issue": {
+    "T5_edit_422": "Frontend /app/frontend/src/pages/AgentsPage.jsx ~line 120 builds `await api.patchInstance(editing.id, { user_id: 'local', sheet })`. api.js forwards as-is. Backend response: {'detail':[{'type':'missing','loc':['body','patch'],'msg':'Field required'}]}. Root cause: contract drift between FE payload key ('sheet') and BE Pydantic field name ('patch'). Mitigation: rename to 'patch' on the FE OR add `sheet: Optional[...]` alias on the BE."
+  }
+}

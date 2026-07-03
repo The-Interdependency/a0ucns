@@ -1,0 +1,47 @@
+{
+  "summary": "Verified the ZFAE three-core + sentinel halt-and-override refactor end-to-end. All 10 review tests pass: 8 unit tests in test_zfae_three_core_sentinels.py (8 passed), 9 new API integration tests in test_zfae_api_sentinels.py (T1..T8 — 9 passed), doc-as-code runner reports '75 contracts · 72 pass / 0 fail / 0 error / 3 skipped'. Halt-and-override pipeline (HTTP 202 → /api/overrides/{id}/approve → resume w/ override_id) works, FIQ audit log is hash-chained, gonal & sentinel canon endpoints serve the expected canonical shape, three-core weight bank reports 1,223,187 total / 407,729 per-core with finite loss, and S4 'observe' patch correctly suppresses S4 flagging while S12 still cliffs.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/instances/{id}/sentinel-modes (PATCH)",
+        "issue": "Sentinel mode 'enforce' is silently accepted by PATCH but does not behave as a flagging mode — only 'flag' triggers sentinel halts (and 'observe' suppresses). The endpoint should either reject unknown modes (400) or document the canonical set {flag,observe,off}. This caused stale 'observe' to leak across test runs when the cleanup PATCHed 'enforce' instead of 'flag'. Test code now uses 'flag' for restore; backend should still validate the enum."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_zfae_three_core_sentinels.py",
+    "/app/backend/tests/test_zfae_api_sentinels.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional, minor) Validate the sentinel-mode enum on PATCH /api/instances/{id}/sentinel-modes so invalid values (e.g. 'enforce') return 400 instead of being silently stored."
+  ],
+  "critical_code_review_comments": [
+    "Response shape consistency: /api/instances/ returns {'agents':[…], 'count':N}, /api/sentinels/canon returns {'sentinels':[…], 'count':13}, /api/gonals returns {'gonals':[…]}. All three are flat-named-array envelopes — consider a single API convention ({'items', 'count'}) for forward-compat.",
+    "Per project note, the /api/gonals 'private' entry returns counts='hmmm' / n='hmmm'. This is intentional but it does mean clients must special-case the literal 'hmmm' string when consuming the gonal registry — recommend at minimum a is_resolved boolean alongside.",
+    "test_zfae_three_core_sentinels.py's _Col stubs (for fiq_emit and overrides) are reasonable but tightly coupled to the current Motor surface; if the collection signatures change, tests will silently pass — consider asserting collection calls.",
+    "Sentinel halt-and-override security model is sound: a rejected override forces a NEW pending_override_id on resume (verified by T6), so there is no silent bypass."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_zfae_api_sentinels.py (new — 9 API integration tests for T1..T8)",
+    "/app/test_reports/pytest/pytest_results.xml (regenerated; 17 passed)"
+  ],
+  "success_rate": {
+    "backend": "100% (17/17 pytest cases; 10/10 review tests including doc-runner)",
+    "frontend": "not tested (backend-only per request)"
+  },
+  "test_credentials": "n/a — single-user mode with user_id='local'.",
+  "seed_data_creation": "No new persistent seed data was created. T8 transiently patches sentinel mode S4 on the first agent and restores to 'flag' in a finally block. T4/T6 create pending_override rows that get approved/rejected within the same test.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend regression is GREEN. The test_zfae_api_sentinels.py module is the canonical e2e suite for the halt-and-override pipeline. Note: PATCH /api/instances/{id}/sentinel-modes silently accepts unknown mode strings (e.g. 'enforce'); use 'flag' to restore canonical behavior. The first agent_id used for tests is the one returned first by GET /api/instances/?user_id=local. Doc-as-code runner: `python -m a0p_skills.test_build_runner` from /app/backend must print '75 contracts · 72 pass / 0 fail / 0 error / 3 skipped'.",
+  "rca_of_the_issue": {
+    "initial_failure_in_combined_run": "TestT4HaltAndOverride.test_full_lifecycle failed once when run after a prior test session, returning flagged=['S12'] instead of ['S4','S12']. RCA: the previous run's T8 cleanup PATCHed S4 back to 'enforce' — but 'enforce' is not a recognized sentinel mode; only 'flag' acts as the cliff-triggering mode. Thus the agent's S4 stayed in 'observe' from the inner PATCH, suppressing S4 cliffs on subsequent unsafe prompts. Mitigation applied in tests: (a) T4 now PATCHes S4 → 'flag' before issuing the unsafe prompt, (b) T8 restores S4 → 'flag' instead of 'enforce'. Recommended backend mitigation: reject unknown sentinel modes with HTTP 400 in PATCH /api/instances/{id}/sentinel-modes."
+  }
+}

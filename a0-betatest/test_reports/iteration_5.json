@@ -1,0 +1,39 @@
+{
+  "summary": "Targeted retest of T5 (Agent EDIT) and T6 (Agent DELETE) from iteration_4, plus T13 smoke. All three PASS. Backend fix verified: PATCH /api/instances/{id} now accepts {sheet:{...}} (200), {patch:{...}} (200, back-compat), and rejects empty body (400) per UpdateAgentRequest.merged_patch(). Full UI flow: create EditTestAgent → edit persona → modal closes cleanly with no error toast → reload shows persisted persona='persona-after-edit' → delete via native confirm → row vanishes within 2s → agent no longer in GET /api/instances. T13 smoke unchanged: a0p_skills.test_build_runner = 76 contracts · 73 pass / 0 fail / 0 error / 3 skipped; a0p_skills.frontend_module_build_runner = 18 covered / 0 missing; backend pytest test_zfae_three_core_sentinels.py = 8 passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "PATCH /api/instances/{id}/sentinel-weights",
+        "issue": "Carry-over from iteration_4 (out of scope): weights silently normalized after PATCH; UX should reflect normalized value back into the field or document the behaviour."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_zfae_three_core_sentinels.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "UpdateAgentRequest.merged_patch() correctly handles three cases: sheet-only, patch-only, both (sheet wins on key conflict). Consider adding a single inline integration test in tests/ that creates → patches via {sheet} → patches via {patch} → asserts 400 on empty body, to prevent future contract drift (the very bug this iteration fixed).",
+    "AgentsPage error rendering from iteration_4 ('[object Object]') is now moot for this flow because the PATCH no longer errors, but the rendering bug (renders raw error object) still technically lives in handleEdit/handleCreate/handleDelete catch blocks — current code does use err?.response?.data?.detail || err.message so it should be fine; iteration_4's '[object Object]' was likely because detail was an array. Consider stringifying arrays explicitly."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% — PATCH 200/200/400 verified via curl for all three body shapes; DELETE 200, GET-after-delete 404.",
+    "frontend": "100% — T5 + T6 PASS end-to-end through the UI (create, edit-with-sheet payload, modal close, persistence after reload, delete via native confirm, row vanishes, list excludes id)."
+  },
+  "test_credentials": "n/a — single-user mode, user_id='local'.",
+  "seed_data_creation": "No leftover seed data. Test created two ephemeral agents during the run and cleaned both up via the UI DELETE flow (the second pass) and a curl-equivalent eval cleanup (the first pass after my f-string bug aborted that script). The pre-existing iteration_4 leftover 'TestAgentA' (id=0ae818a4-...) was already removed by the user before this run; current list contains only TestAgentA-new (ac1b911a...), Smoke (e6288f68...), and two Smoke Test agents — all pre-existing, untouched by this iteration.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "T5 and T6 are fully fixed and verified end-to-end. Backend PATCH model accepts both {sheet} (frontend's payload) and {patch} (back-compat). If iteration_4's optional follow-ups (sentinel-weight normalization UX, Escape-to-close on modal) are picked up later, they are independent of this fix.",
+  "rca_of_the_issue": {
+    "T5_edit_422_fix_verified": "Root cause from iteration_4: backend UpdateAgentRequest required 'patch' while frontend api.patchInstance posts {user_id, sheet}. Backend was widened: UpdateAgentRequest now declares both `patch` and `sheet` as Optional[dict[str, Any]] with a `merged_patch()` helper that returns sheet ∪ patch (sheet wins on conflict) and the route raises 400 when both are absent. curl verification: {sheet:{persona:X}} → 200 persona=X; {patch:{persona:Y}} → 200 persona=Y; {} → 400 'request body must include `sheet` or `patch`'. End-to-end UI verification: create+edit+reload shows persona='persona-after-edit' persisted; delete works and removes from list."
+  }
+}
