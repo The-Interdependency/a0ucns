@@ -13,6 +13,7 @@ from db import db
 from models.chat import ChatRequest, MessageFeedback, ConversationResponse, CatchupRequest
 from services.auth import get_current_user, get_user_id
 from services.llm import get_api_key_for_developer, stream_emergent, stream_openai_compatible
+from services.secrets import SecretDecryptionError
 from services.audit import append_audit_event
 
 logger = logging.getLogger(__name__)
@@ -265,36 +266,41 @@ def _build_messages_context(
 
 def _resolve_stream_iterator(current_user: dict, model_spec: str, messages_context: List[Dict[str, str]], conversation_id: str):
     model_lower = model_spec.lower()
-    if "gpt" in model_lower or model_lower.startswith("o"):
-        api_key = get_api_key_for_developer(current_user, "gpt")
-        if not api_key:
-            return None, "No API key configured"
-        return stream_emergent(api_key, model_spec, "openai", messages_context, conversation_id), None
-    if "claude" in model_lower:
-        api_key = get_api_key_for_developer(current_user, "claude")
-        if not api_key:
-            return None, "No API key configured"
-        return stream_emergent(api_key, model_spec, "anthropic", messages_context, conversation_id), None
-    if "gemini" in model_lower:
-        api_key = get_api_key_for_developer(current_user, "gemini")
-        if not api_key:
-            return None, "No API key configured"
-        return stream_emergent(api_key, model_spec, "gemini", messages_context, conversation_id), None
-    if "grok" in model_lower:
-        api_key = get_api_key_for_developer(current_user, "grok")
-        if not api_key:
-            return None, "No API key configured"
-        return stream_openai_compatible("https://api.x.ai/v1", api_key, model_spec, messages_context), None
-    if "deepseek" in model_lower:
-        api_key = get_api_key_for_developer(current_user, "deepseek")
-        if not api_key:
-            return None, "No API key configured"
-        return stream_openai_compatible("https://api.deepseek.com", api_key, model_spec, messages_context), None
-    if "perplexity" in model_lower or "sonar" in model_lower:
-        api_key = get_api_key_for_developer(current_user, "perplexity")
-        if not api_key:
-            return None, "No API key configured"
-        return stream_openai_compatible("https://api.perplexity.ai", api_key, model_spec, messages_context), None
+    try:
+        if "gpt" in model_lower or model_lower.startswith("o"):
+            api_key = get_api_key_for_developer(current_user, "gpt")
+            if not api_key:
+                return None, "No API key configured"
+            return stream_emergent(api_key, model_spec, "openai", messages_context, conversation_id), None
+        if "claude" in model_lower:
+            api_key = get_api_key_for_developer(current_user, "claude")
+            if not api_key:
+                return None, "No API key configured"
+            return stream_emergent(api_key, model_spec, "anthropic", messages_context, conversation_id), None
+        if "gemini" in model_lower:
+            api_key = get_api_key_for_developer(current_user, "gemini")
+            if not api_key:
+                return None, "No API key configured"
+            return stream_emergent(api_key, model_spec, "gemini", messages_context, conversation_id), None
+        if "grok" in model_lower:
+            api_key = get_api_key_for_developer(current_user, "grok")
+            if not api_key:
+                return None, "No API key configured"
+            return stream_openai_compatible("https://api.x.ai/v1", api_key, model_spec, messages_context), None
+        if "deepseek" in model_lower:
+            api_key = get_api_key_for_developer(current_user, "deepseek")
+            if not api_key:
+                return None, "No API key configured"
+            return stream_openai_compatible("https://api.deepseek.com", api_key, model_spec, messages_context), None
+        if "perplexity" in model_lower or "sonar" in model_lower:
+            api_key = get_api_key_for_developer(current_user, "perplexity")
+            if not api_key:
+                return None, "No API key configured"
+            return stream_openai_compatible("https://api.perplexity.ai", api_key, model_spec, messages_context), None
+    except SecretDecryptionError:
+        # Return the structured (None, message) shape the caller already cleans
+        # up, instead of raising past the placeholder-message setup.
+        return None, "Stored API key could not be decrypted; re-enter it or fix API_KEY_ENCRYPTION_KEY"
     return None, f"Unsupported model '{model_spec}'"
 
 

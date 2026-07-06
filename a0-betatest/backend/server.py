@@ -1,4 +1,4 @@
-# ratios: loc_comments=839:116 imports_exports=48:56 calls_definitions=306:65
+# ratios: loc_comments=846:126 imports_exports=48:55 calls_definitions=311:64
 # === MODULE_BUILD ===
 # id: a0p_server
 #   module_name: server
@@ -7,7 +7,7 @@
 #   owner: a0p maintainer
 #   public_surface: app, api, AGENT
 #   internal_surface: _call_model, _split_model, _get_key, _record_usage, _utc_now_iso
-#   auth_boundary: none
+#   auth_boundary: bearer
 #   storage_boundary: write
 #   network_boundary: external
 #   user_data_boundary: write
@@ -21,7 +21,7 @@
 # === BOUNDARIES ===
 # id: a0p_server_boundaries
 #   summary: FastAPI app — keys, vault, inventory, sessions, drafts, chat (single/fanout/daisy/synth), inspector, agents, usage, skill report
-#   auth_boundary: none
+#   auth_boundary: bearer
 #   storage_boundary: write
 #   network_boundary: external
 #   user_data_boundary: write
@@ -32,7 +32,7 @@
 # id: a0p_server
 #   summary: FastAPI app — keys, vault, inventory, sessions, drafts, chat (single/fanout/daisy/synth), inspector, agents, usage, skill report
 #   exposes: app, api, AGENT
-#   boundaries: auth:none, storage:write, network:external, user_data:write
+#   boundaries: auth:bearer, storage:write, network:external, user_data:write
 #   owner: a0p maintainer
 # === END CAPABILITIES ===
 """
@@ -144,24 +144,24 @@ async def health():
 
 
 # ---------- BYOK keys ----------
-async def _auth_uid(request: Request, fallback: str = "local") -> str:
-    """Resolve the acting user id from the auth cookie; fall back when unauth.
+async def _auth_uid(request: Request) -> str:
+    """Resolve the acting user id from the auth cookie only.
 
     The BYOK key vault, env vault and inventory are per authenticated user — the
     chat runtime looks keys up under the same id, so these routes must NOT trust
-    the client-supplied ``user_id`` (which legacy clients hardcode to 'local').
+    the client-supplied ``user_id``. A valid cookie yields the authenticated
+    user's id; without one the id is the shared demo bucket ``"local"`` (via
+    ``get_current_user_or_demo``) — never a caller-supplied value, so a request
+    cannot select another user's id to read/spend their data.
     """
-    from auth import get_current_user
-    try:
-        user = await get_current_user(request)
-        return user["id"]
-    except Exception:
-        return fallback
+    from auth import get_current_user_or_demo
+    user = await get_current_user_or_demo(request)
+    return user["id"]
 
 
 @api.get("/keys")
 async def list_keys(request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     out: list[KeyPublic] = []
     async for doc in keys_col.find({"user_id": user_id}).sort("provider", 1):
         try:
@@ -184,7 +184,7 @@ async def list_keys(request: Request, user_id: str = "local"):
 
 @api.put("/keys")
 async def upsert_key(body: KeyUpsert, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     if body.provider not in PROVIDERS:
         raise HTTPException(400, f"provider must be one of {PROVIDERS}")
     if not body.api_key or len(body.api_key) < 8:
@@ -215,7 +215,7 @@ async def upsert_key(body: KeyUpsert, request: Request):
 
 @api.delete("/keys/{key_id}")
 async def delete_key(key_id: str, request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     r = await keys_col.delete_one({"_id": key_id, "user_id": user_id})
     return {"ok": r.deleted_count == 1}
 
@@ -233,7 +233,7 @@ async def _get_key(user_id: str, provider: str) -> str:
 # ---------- Site .env vault ----------
 @api.get("/vault")
 async def list_vault(request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     out: list[SiteAccountPublic] = []
     async for doc in vault_col.find({"user_id": user_id}).sort([("site", 1), ("account_label", 1)]):
         # do not return encrypted values; just keys
@@ -252,7 +252,7 @@ async def list_vault(request: Request, user_id: str = "local"):
 
 @api.put("/vault")
 async def upsert_vault(body: SiteAccountUpsert, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     now = _utc_now_iso()
     enc_env = {k: cv.encrypt(v) for k, v in body.env.items() if v}
     existing = await vault_col.find_one({"user_id": uid, "site": body.site, "account_label": body.account_label})
@@ -286,7 +286,7 @@ class VaultRevealRequest(BaseModel):
 
 @api.post("/vault/reveal")
 async def reveal_vault(body: VaultRevealRequest, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     doc = await vault_col.find_one({"_id": body.id, "user_id": uid})
     if not doc:
         raise HTTPException(404, "vault entry not found")
@@ -296,7 +296,7 @@ async def reveal_vault(body: VaultRevealRequest, request: Request):
 
 @api.delete("/vault/{vault_id}")
 async def delete_vault(vault_id: str, request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     r = await vault_col.delete_one({"_id": vault_id, "user_id": user_id})
     return {"ok": r.deleted_count == 1}
 
@@ -305,7 +305,7 @@ async def delete_vault(vault_id: str, request: Request, user_id: str = "local"):
 @api.get("/models/inventory")
 async def model_inventory(request: Request, user_id: str = "local"):
     """Aggregate live model inventory across BYOK providers the user has keys for."""
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     inv: list[dict] = []
     errors: dict[str, str] = {}
 
@@ -331,7 +331,7 @@ async def model_inventory(request: Request, user_id: str = "local"):
 # ---------- Sessions (editable context) ----------
 @api.get("/sessions")
 async def list_sessions(request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     out = []
     async for d in sessions_col.find({"user_id": user_id}).sort("updated_at", -1).limit(50):
         out.append({
@@ -350,7 +350,7 @@ async def list_sessions(request: Request, user_id: str = "local"):
 
 @api.post("/sessions")
 async def create_session(body: SessionUpsert, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     now = _utc_now_iso()
     _id = new_id()
     doc = {
@@ -370,8 +370,9 @@ async def create_session(body: SessionUpsert, request: Request):
 
 
 @api.get("/sessions/{session_id}")
-async def get_session(session_id: str, user_id: str = "local"):
-    d = await sessions_col.find_one({"_id": session_id, "user_id": user_id})
+async def get_session(session_id: str, request: Request, user_id: str = "local"):
+    uid = await _auth_uid(request)
+    d = await sessions_col.find_one({"_id": session_id, "user_id": uid})
     if not d:
         raise HTTPException(404, "session not found")
     return {**d, "id": d.pop("_id")}
@@ -379,7 +380,7 @@ async def get_session(session_id: str, user_id: str = "local"):
 
 @api.patch("/sessions/{session_id}")
 async def update_session(session_id: str, body: SessionUpsert, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     now = _utc_now_iso()
     upd = {
         "title": body.title,
@@ -401,7 +402,7 @@ async def update_session(session_id: str, body: SessionUpsert, request: Request)
 
 @api.delete("/sessions/{session_id}")
 async def delete_session(session_id: str, request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     r = await sessions_col.delete_one({"_id": session_id, "user_id": user_id})
     return {"ok": r.deleted_count == 1}
 
@@ -409,7 +410,7 @@ async def delete_session(session_id: str, request: Request, user_id: str = "loca
 # ---------- Drafts ----------
 @api.get("/drafts")
 async def list_drafts(request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     out = []
     async for d in drafts_col.find({"user_id": user_id}).sort("updated_at", -1).limit(100):
         out.append({"id": d["_id"], **{k: d[k] for k in d if k != "_id"}})
@@ -418,7 +419,7 @@ async def list_drafts(request: Request, user_id: str = "local"):
 
 @api.post("/drafts")
 async def create_draft(body: DraftUpsert, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     now = _utc_now_iso()
     _id = new_id()
     doc = {
@@ -436,7 +437,7 @@ async def create_draft(body: DraftUpsert, request: Request):
 
 @api.patch("/drafts/{draft_id}")
 async def update_draft(draft_id: str, body: DraftUpsert, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     now = _utc_now_iso()
     upd = {k: v for k, v in body.model_dump().items() if k != "user_id"}
     upd["updated_at"] = now
@@ -451,7 +452,7 @@ async def update_draft(draft_id: str, body: DraftUpsert, request: Request):
 
 @api.delete("/drafts/{draft_id}")
 async def delete_draft(draft_id: str, request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     r = await drafts_col.delete_one({"_id": draft_id, "user_id": user_id})
     return {"ok": r.deleted_count == 1}
 
@@ -517,23 +518,24 @@ class SingleChatRequest(BaseModel):
 
 
 @api.post("/chat/single")
-async def chat_single(body: SingleChatRequest):
+async def chat_single(body: SingleChatRequest, request: Request):
+    uid = await _auth_uid(request)
     AGENT.receive((body.messages[-1]["content"] if body.messages else "") or "")
     r = await _call_model(
-        user_id=body.user_id,
+        user_id=uid,
         model_id=body.model_id,
         messages=body.messages,
         system=body.system or None,
     )
     AGENT.absorb(body.model_id, r.get("content", ""), r.get("usage"))
-    await _record_usage(body.user_id, body.model_id, r.get("usage", {}), "single")
+    await _record_usage(uid, body.model_id, r.get("usage", {}), "single")
 
     if body.session_id:
         turn_user = ChatTurn(role="user", content=body.messages[-1]["content"]).model_dump() if body.messages else None
         turn_asst = ChatTurn(role="assistant", content=r.get("content", ""), model_id=body.model_id, usage=r.get("usage", {})).model_dump()
         push_turns = [t for t in [turn_user, turn_asst] if t]
         await sessions_col.update_one(
-            {"_id": body.session_id, "user_id": body.user_id},
+            {"_id": body.session_id, "user_id": uid},
             {"$push": {"turns": {"$each": push_turns}},
              "$set": {"updated_at": _utc_now_iso()}},
         )
@@ -542,13 +544,14 @@ async def chat_single(body: SingleChatRequest):
 
 # ---------- Fan-out ----------
 @api.post("/chat/fanout")
-async def chat_fanout(body: FanOutRequest):
+async def chat_fanout(body: FanOutRequest, request: Request):
+    uid = await _auth_uid(request)
     AGENT.receive(body.prompt)
     messages = [{"role": "user", "content": body.prompt}]
     system = body.system_context or None
 
     async def call_fn(model_id: str, msgs: list[dict]):
-        return await _call_model(body.user_id, model_id, msgs, system)
+        return await _call_model(uid, model_id, msgs, system)
 
     results = await aimmh_fan_out(call_fn, body.model_ids, messages)
 
@@ -556,7 +559,7 @@ async def chat_fanout(body: FanOutRequest):
     run_id = new_id()
     record = {
         "_id": run_id,
-        "user_id": body.user_id,
+        "user_id": uid,
         "session_id": body.session_id,
         "prompt": body.prompt,
         "system_context": body.system_context,
@@ -572,7 +575,7 @@ async def chat_fanout(body: FanOutRequest):
 
     for r in results:
         AGENT.absorb(r.model_id, r.content, r.usage)
-        await _record_usage(body.user_id, r.model_id, r.usage or {}, "fanout")
+        await _record_usage(uid, r.model_id, r.usage or {}, "fanout")
 
     if body.session_id:
         turns = [ChatTurn(role="user", content=body.prompt).model_dump()]
@@ -580,7 +583,7 @@ async def chat_fanout(body: FanOutRequest):
             turns.append(ChatTurn(role="assistant", content=r.content,
                                   model_id=r.model_id, usage=r.usage).model_dump())
         await sessions_col.update_one(
-            {"_id": body.session_id, "user_id": body.user_id},
+            {"_id": body.session_id, "user_id": uid},
             {"$push": {"turns": {"$each": turns}},
              "$set": {"updated_at": _utc_now_iso()}},
         )
@@ -594,14 +597,15 @@ async def chat_fanout(body: FanOutRequest):
 
 # ---------- Daisy chain ----------
 @api.post("/chat/daisychain")
-async def chat_daisychain(body: DaisyChainRequest):
+async def chat_daisychain(body: DaisyChainRequest, request: Request):
+    uid = await _auth_uid(request)
     AGENT.receive(body.prompt)
     messages = [{"role": "user", "content": body.prompt}]
     system = body.system_context or None
     rounds = max(1, min(body.rounds, 6))
 
     async def call_fn(model_id: str, msgs: list[dict]):
-        return await _call_model(body.user_id, model_id, msgs, system)
+        return await _call_model(uid, model_id, msgs, system)
 
     results = await aimmh_daisy(call_fn, body.model_ids, messages, rounds=rounds)
 
@@ -615,7 +619,7 @@ async def chat_daisychain(body: DaisyChainRequest):
     } for i, r in enumerate(results)]
     await chain_col.insert_one({
         "_id": run_id,
-        "user_id": body.user_id,
+        "user_id": uid,
         "session_id": body.session_id,
         "prompt": body.prompt,
         "system_context": body.system_context,
@@ -627,7 +631,7 @@ async def chat_daisychain(body: DaisyChainRequest):
 
     for r in results:
         AGENT.absorb(r.model_id, r.content, r.usage)
-        await _record_usage(body.user_id, r.model_id, r.usage or {}, "daisy")
+        await _record_usage(uid, r.model_id, r.usage or {}, "daisy")
 
     if body.session_id:
         turns = [ChatTurn(role="user", content=body.prompt).model_dump()]
@@ -635,7 +639,7 @@ async def chat_daisychain(body: DaisyChainRequest):
             turns.append(ChatTurn(role="assistant", content=r.content,
                                   model_id=r.model_id, usage=r.usage).model_dump())
         await sessions_col.update_one(
-            {"_id": body.session_id, "user_id": body.user_id},
+            {"_id": body.session_id, "user_id": uid},
             {"$push": {"turns": {"$each": turns}},
              "$set": {"updated_at": _utc_now_iso()}},
         )
@@ -645,7 +649,8 @@ async def chat_daisychain(body: DaisyChainRequest):
 
 # ---------- Synthesize selected responses ----------
 @api.post("/chat/synthesize")
-async def chat_synthesize(body: SynthesizeRequest):
+async def chat_synthesize(body: SynthesizeRequest, request: Request):
+    uid = await _auth_uid(request)
     panel = "\n\n".join(f"[{r.get('model_id')}]:\n{r.get('content','')}" for r in body.responses)
     synth_prompt = (
         "You are the synthesizer. Below are responses from multiple models to the same prompt. "
@@ -654,13 +659,13 @@ async def chat_synthesize(body: SynthesizeRequest):
         f"ORIGINAL PROMPT:\n{body.prompt}\n\nMODEL RESPONSES:\n{panel}\n\nSYNTHESIS:"
     )
     r = await _call_model(
-        user_id=body.user_id,
+        user_id=uid,
         model_id=body.synth_model,
         messages=[{"role": "user", "content": synth_prompt}],
         system=None,
     )
     AGENT.absorb(body.synth_model, r.get("content", ""), r.get("usage"))
-    await _record_usage(body.user_id, body.synth_model, r.get("usage", {}), "synthesis")
+    await _record_usage(uid, body.synth_model, r.get("usage", {}), "synthesis")
     return {"synthesis": r}
 
 
@@ -729,7 +734,7 @@ async def delete_agent(slug: str):
 # ---------- Usage log ----------
 @api.get("/usage")
 async def list_usage(request: Request, user_id: str = "local", limit: int = 100):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     out = []
     async for d in usage_col.find({"user_id": user_id}).sort("created_at", -1).limit(limit):
         out.append({"id": d["_id"], **{k: d[k] for k in d if k != "_id"}})
@@ -752,13 +757,6 @@ async def list_usage(request: Request, user_id: str = "local", limit: int = 100)
 #   class: observability
 #   call: a0p_skills.contracts.skill_report_visibility_holds
 # === END CONTRACTS ===
-@api.get("/skill/capabilities/report")
-async def skill_capabilities_report(block: str = "CAPABILITIES"):
-    """Legacy CAPABILITIES coverage report (deprecated; here for migration view)."""
-    from pathlib import Path
-    return msdmd_report(Path("/app/backend"), block)
-
-
 @api.get("/skill/contracts/report")
 async def skill_contracts_report():
     """test-build runner — imports each CONTRACTS `call:` path and runs it."""
@@ -789,7 +787,11 @@ async def skill_boundaries_report():
 
 
 @api.get("/skill/capabilities/report")
-async def skill_capabilities_report_v2():
+async def skill_capabilities_report():
+    """cap-build runner — CAPABILITIES coverage + gap list (Tier 5).
+
+    The legacy msdmd CAPABILITIES view stays at /api/skill/report?block=CAPABILITIES.
+    """
     from pathlib import Path
     return capabilities_runner.run(Path("/app/backend"))
 
@@ -873,7 +875,7 @@ async def sentinels_canon():
 
 @sentinels_api.get("/instances/{agent_id}/sentinel-modes")
 async def get_sentinel_modes(agent_id: str, request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     doc = await agent_instances_col.find_one({"_id": agent_id, "user_id": user_id})
     if not doc:
         raise HTTPException(404, f"agent {agent_id} not found")
@@ -893,7 +895,7 @@ class SentinelModesPatch(BaseModel):
 
 @sentinels_api.patch("/instances/{agent_id}/sentinel-modes")
 async def patch_sentinel_modes(agent_id: str, body: SentinelModesPatch, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     try:
         zfae_sentinel_modes.validate_modes(body.modes)
     except ValueError as e:
@@ -914,7 +916,7 @@ class SentinelBulkMode(BaseModel):
 
 @sentinels_api.post("/instances/{agent_id}/sentinel-modes/bulk")
 async def bulk_sentinel_modes(agent_id: str, body: SentinelBulkMode, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     try:
         bulk = zfae_sentinel_modes.bulk_set(body.mode)
     except ValueError as e:
@@ -931,7 +933,7 @@ async def bulk_sentinel_modes(agent_id: str, body: SentinelBulkMode, request: Re
 
 @sentinels_api.get("/instances/{agent_id}/sentinel-weights")
 async def get_sentinel_weights(agent_id: str, request: Request, user_id: str = "local"):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     doc = await agent_instances_col.find_one({"_id": agent_id, "user_id": user_id})
     if not doc:
         raise HTTPException(404, f"agent {agent_id} not found")
@@ -955,7 +957,7 @@ class SentinelWeightsPatch(BaseModel):
 
 @sentinels_api.patch("/instances/{agent_id}/sentinel-weights")
 async def patch_sentinel_weights(agent_id: str, body: SentinelWeightsPatch, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     try:
         zfae_sentinel_weights.validate_weights(body.weights)
     except ValueError as e:
@@ -972,7 +974,7 @@ async def patch_sentinel_weights(agent_id: str, body: SentinelWeightsPatch, requ
 # ---------- Pending overrides endpoints ----------
 @sentinels_api.get("/overrides")
 async def list_overrides(request: Request, user_id: str = "local", status: str = "pending", limit: int = 100):
-    user_id = await _auth_uid(request, user_id)
+    user_id = await _auth_uid(request)
     if status == "pending":
         records = await zfae_overrides.list_pending(pending_overrides_col, user_id=user_id, limit=limit)
         return {"overrides": [r.__dict__ for r in records], "count": len(records)}
@@ -1000,7 +1002,7 @@ class OverrideApprove(BaseModel):
 
 @sentinels_api.post("/overrides/{override_id}/approve")
 async def approve_override(override_id: str, body: OverrideApprove, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     rec = await zfae_overrides.approve(pending_overrides_col, override_id, uid, body.justification)
     if rec is None:
         raise HTTPException(404, f"override {override_id} not found or not pending")
@@ -1014,7 +1016,7 @@ class OverrideReject(BaseModel):
 
 @sentinels_api.post("/overrides/{override_id}/reject")
 async def reject_override(override_id: str, body: OverrideReject, request: Request):
-    uid = await _auth_uid(request, body.user_id)
+    uid = await _auth_uid(request)
     rec = await zfae_overrides.reject(pending_overrides_col, override_id, uid, body.reason)
     if rec is None:
         raise HTTPException(404, f"override {override_id} not found or not pending")
@@ -1081,6 +1083,20 @@ async def _on_startup():
             if _moved:
                 import logging as _lgk
                 _lgk.getLogger("a0p").info("migrated %d legacy local %s to admin", _moved, _label)
+        # Migrate the other per-user collections that are now resolved strictly
+        # from the cookie user (previously reachable via the legacy client
+        # user_id='local'). These rows are id-keyed with no uniqueness
+        # constraint, so a bulk move is safe and idempotent — without it,
+        # pre-auth sessions/drafts/usage/overrides would vanish from the UI.
+        for _c, _lbl in ((sessions_col, "sessions"), (drafts_col, "drafts"),
+                         (usage_col, "usage rows"),
+                         (pending_overrides_col, "pending overrides")):
+            _rm = await _c.update_many(
+                {"user_id": "local"}, {"$set": {"user_id": admin["_id"]}},
+            )
+            if _rm.modified_count:
+                import logging as _lgm
+                _lgm.getLogger("a0p").info("migrated %d legacy local %s to admin", _rm.modified_count, _lbl)
     # Regenerate README.md from the living spec
     try:
         from readme_writer import write_readme
@@ -1123,4 +1139,4 @@ async def _on_startup():
         for a in starters:
             await agents_col.insert_one({"_id": new_id(), **a.model_dump(),
                                          "created_at": now, "updated_at": now})
-# ratios: loc_comments=839:116 imports_exports=48:56 calls_definitions=306:65
+# ratios: loc_comments=846:126 imports_exports=48:55 calls_definitions=311:64

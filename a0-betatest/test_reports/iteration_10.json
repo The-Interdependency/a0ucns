@@ -25,7 +25,7 @@
     "backend": "n/a (skipped per request)",
     "frontend": "5/5 Training Room items PASS; 2/2 CTA items not-exercisable-in-this-env (inventory catalog non-empty by design) — code review confirms wiring"
   },
-  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026 (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys (expected). /api/models/inventory returned 112 public catalog entries (OpenAI/xAI) — note this for next agent.",
+  "test_credentials": "admin wayseer / <redacted> (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys (expected). /api/models/inventory returned 112 public catalog entries (OpenAI/xAI) — note this for next agent.",
   "seed_data_creation": "None this iteration. Did NOT clean up the 4 TEST_* agents left over from prior iterations (TEST_ToolsPersist_, TEST_ZfaeNative_, TEST_TeacherTools_, TEST_RegrTeacher_) — they were used as the agent in the Training Room dropdown but no new data was written by this pass besides the one /train call against TEST_ToolsPersist_ which returned all-error steps (no zfae step bump occurs on error). ToolTester remains as documented in the request.",
   "retest_needed": false,
   "main_agent_can_self_test": true,

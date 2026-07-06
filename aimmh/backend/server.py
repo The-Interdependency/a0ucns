@@ -67,13 +67,21 @@ if not cors_origins_raw:
     raise RuntimeError('CORS_ORIGINS is required')
 
 cors_origins = [o.strip() for o in cors_origins_raw.split(',') if o.strip()]
-allow_all_origins = '*' in cors_origins
+
+# A wildcard origin must not be combined with credentialed requests: the auth
+# cookie is SameSite=None, so allowing every origin while sending credentials
+# would let any site read authenticated API responses. Require an explicit
+# origin allowlist instead of silently reflecting every origin.
+if '*' in cors_origins:
+    raise RuntimeError(
+        "CORS_ORIGINS='*' cannot be combined with credentialed auth cookies; "
+        "set an explicit comma-separated origin allowlist"
+    )
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=[] if allow_all_origins else cors_origins,
-    allow_origin_regex=r'https?://.*' if allow_all_origins else None,
+    allow_origins=cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -19,7 +19,7 @@
   ],
   "updated_files": [],
   "success_rate": { "backend": "n/a (skipped per request)", "frontend": "100% — all 5 review items pass end-to-end" },
-  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026 (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys needed.",
+  "test_credentials": "admin wayseer / <redacted> (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys needed.",
   "seed_data_creation": "Two UIFormTest_* agents were created during testing and both were cleaned up via DELETE /api/instances/{id}?purge=true (status 200). No residue. ToolTester remains as noted in the request.",
   "retest_needed": false,
   "main_agent_can_self_test": true,

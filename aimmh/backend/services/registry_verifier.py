@@ -11,6 +11,7 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 from models.registry import VerificationResponse, VerificationResult
 from services.llm import EMERGENT_PROVIDER_MAP, get_api_key_for_developer
+from services.secrets import SecretDecryptionError
 
 
 class RegistryVerificationError(Exception):
@@ -111,7 +112,20 @@ async def verify_single_model(current_user: dict, registry: dict, developer_id: 
             verification_mode=mode,
         )
 
-    api_key = get_api_key_for_developer(current_user, developer_id)
+    try:
+        api_key = get_api_key_for_developer(current_user, developer_id)
+    except SecretDecryptionError:
+        return VerificationResult(
+            scope="model",
+            developer_id=developer_id,
+            developer_name=developer.get("name"),
+            model_id=model_id,
+            status="error",
+            message="Stored API key could not be decrypted; re-enter it or fix API_KEY_ENCRYPTION_KEY",
+            verification_mode=mode,
+            website=developer.get("website"),
+            base_url=developer.get("base_url"),
+        )
     if not api_key:
         return VerificationResult(
             scope="model",
@@ -171,8 +185,24 @@ async def verify_developer_models(current_user: dict, registry: dict, developer_
             results.append(await verify_single_model(current_user, registry, developer_id, model_id, mode="strict"))
     else:
         if developer.get("auth_type", "emergent") == "openai_compatible" and developer.get("base_url"):
-            api_key = get_api_key_for_developer(current_user, developer_id)
-            if not api_key:
+            try:
+                api_key = get_api_key_for_developer(current_user, developer_id)
+            except SecretDecryptionError:
+                api_key = None
+                results = [VerificationResult(
+                    scope="developer",
+                    developer_id=developer_id,
+                    developer_name=developer.get("name"),
+                    model_id=model_id,
+                    status="error",
+                    message="Stored API key could not be decrypted; re-enter it or fix API_KEY_ENCRYPTION_KEY",
+                    verification_mode="light",
+                    website=developer.get("website"),
+                    base_url=developer.get("base_url"),
+                ) for model_id in normalized_models]
+            if api_key is None:
+                pass  # decryption failed; results already populated above
+            elif not api_key:
                 results = [VerificationResult(
                     scope="developer",
                     developer_id=developer_id,

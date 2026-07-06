@@ -40,7 +40,7 @@
     "backend": "100% — 16/16 (after running TestAdminSeed in isolation after clearing residual lockout from prior curl probing; full suite shows 15/16 because TestLogin tests created lockout records on the admin's ingress-host bucket; behavior is the BUG documented above, not a test defect)",
     "frontend": "100% — T8 splash + email link + CTA; T9 register full path including 5-char-blocked submit, eye toggle password↔text, navigation to /workspace; T10 logout + /agents→/login redirect; T11 sidebar nav (all 11 testids present, user-pill + quota-bar populated) and unauth nav (nav-home + nav-spec + shell-signin-btn only); T12 custom-keys create/reveal/hide/delete; T13 public spec page (131 modules, all kind filters, search filter)."
   },
-  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026; created ephemeral users qa_alice_*, qa_reg_*, qa_dup_*, qa_short_*, qa_lo_*, qa_bf_*, qa_dq_* per UNIQUE hex per pytest run.",
+  "test_credentials": "admin wayseer / <redacted>; created ephemeral users qa_alice_*, qa_reg_*, qa_dup_*, qa_short_*, qa_lo_*, qa_bf_*, qa_dq_* per UNIQUE hex per pytest run.",
   "seed_data_creation": "Each backend pytest run creates ~7 ephemeral users (qa_*_<8hex>) and one custom-key 'github_pat' on alice (deleted at end of test). Not cleaned globally but unique-suffixed so no collisions. UI run also created 'qa_bob_<6hex>' on workspace + one ci_token custom-key (deleted in flow).",
   "retest_needed": false,
   "main_agent_can_self_test": true,

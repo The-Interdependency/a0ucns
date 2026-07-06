@@ -1,4 +1,4 @@
-# ratios: loc_comments=115:48 imports_exports=5:8 calls_definitions=23:9
+# ratios: loc_comments=115:53 imports_exports=5:8 calls_definitions=23:9
 # === MODULE_BUILD ===
 # id: zfae_overrides
 #   module_name: overrides
@@ -111,9 +111,13 @@ async def create_override(
 
 
 async def approve(col, override_id: str, user_id: str, justification: str = "") -> Optional[PendingOverride]:
+    # Scope by owner (user_id) as well as id+status: a pending safety override
+    # may only be resolved by the user who owns it. Without the user_id
+    # predicate any authenticated caller holding another user's override id
+    # could approve their gate. The owner is also recorded as the resolver.
     now = _utc_now_ms()
     r = await col.find_one_and_update(
-        {"_id": override_id, "status": "pending"},
+        {"_id": override_id, "status": "pending", "user_id": user_id},
         {"$set": {
             "status": "approved",
             "resolved_ms": now,
@@ -126,9 +130,10 @@ async def approve(col, override_id: str, user_id: str, justification: str = "") 
 
 
 async def reject(col, override_id: str, user_id: str, reason: str = "") -> Optional[PendingOverride]:
+    # Scope by owner (user_id) as well as id+status — see approve().
     now = _utc_now_ms()
     r = await col.find_one_and_update(
-        {"_id": override_id, "status": "pending"},
+        {"_id": override_id, "status": "pending", "user_id": user_id},
         {"$set": {
             "status": "rejected",
             "resolved_ms": now,
@@ -186,4 +191,4 @@ __all__ = [
 #   call: a0p_skills.contracts.module_imports_cleanly_holds
 # === END CONTRACTS ===
 
-# ratios: loc_comments=115:48 imports_exports=5:8 calls_definitions=23:9
+# ratios: loc_comments=115:53 imports_exports=5:8 calls_definitions=23:9

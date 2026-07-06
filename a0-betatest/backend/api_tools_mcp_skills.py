@@ -1,4 +1,4 @@
-# ratios: loc_comments=223:52 imports_exports=14:20 calls_definitions=87:21
+# ratios: loc_comments=235:62 imports_exports=14:20 calls_definitions=95:21
 # === MODULE_BUILD ===
 # id: api_tools_mcp_skills_routes
 #   module_name: api_tools_mcp_skills
@@ -81,11 +81,25 @@ class InvokeToolBody(BaseModel):
 
 
 async def _hydrate_user_tools(user_id: str) -> None:
-    """Pull user-owned webhook/mcp tool records from Mongo into the in-process registry."""
+    """Sync this user's Mongo tool records into the in-process registry.
+
+    Reconciles both ways: registry entries owned by the user that no longer
+    exist in Mongo are evicted (so a deleted tool stops being invokable/listable
+    without a restart), and a user tool never overwrites a global built-in of
+    the same name.
+    """
+    current: dict[str, dict] = {}
     async for d in user_tools_col.find({"user_id": user_id}):
+        current[d["name"]] = d
+    # Evict registry entries this user owns that are gone from Mongo.
+    for stale in tools_pkg.user_tool_names(user_id) - set(current):
+        tools_pkg.unregister(stale)
+    for name, d in current.items():
+        if tools_pkg.is_global(name):
+            continue  # never shadow a built-in
         kind = d.get("kind") or TOOL_KIND_WEBHOOK
         tools_pkg.register(Tool(
-            name=d["name"], kind=kind,
+            name=name, kind=kind,
             description=d.get("description", ""),
             input_schema=d.get("input_schema") or {},
             webhook_url=d.get("webhook_url"),
@@ -126,6 +140,8 @@ async def register_webhook_tool(body: WebhookToolBody, user=Depends(get_current_
         "tags": body.tags or [], "source": "user",
         "created_at_ms": int(time.time() * 1000),
     }
+    if tools_pkg.is_global(body.name):
+        raise HTTPException(409, f"tool name {body.name!r} is reserved by a built-in tool")
     if await user_tools_col.find_one({"user_id": user["id"], "name": body.name}):
         raise HTTPException(409, f"tool {body.name!r} already exists for this user")
     await user_tools_col.insert_one(doc)
@@ -138,6 +154,13 @@ async def delete_tool(name: str, user=Depends(get_current_user)):
     r = await user_tools_col.delete_one({"user_id": user["id"], "name": name})
     if r.deleted_count == 0:
         raise HTTPException(404, "tool not found (cannot delete built-ins)")
+    # Evict from the in-process registry so the deleted tool (and its webhook
+    # secret) can no longer be invoked or listed before the next restart — but
+    # only when the current registry entry is this user's own tool, never a
+    # built-in or another user's entry that happens to share the name.
+    existing = tools_pkg.lookup(name)
+    if existing is not None and existing.owner_user_id == user["id"]:
+        tools_pkg.unregister(name)
     return {"ok": True}
 
 
@@ -323,4 +346,4 @@ async def mark_publishable(skill_id: str, publishable: bool = True, user=Depends
 
 
 __all__ = ["router"]
-# ratios: loc_comments=223:52 imports_exports=14:20 calls_definitions=87:21
+# ratios: loc_comments=235:62 imports_exports=14:20 calls_definitions=95:21

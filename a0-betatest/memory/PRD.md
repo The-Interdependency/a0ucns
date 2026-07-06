@@ -239,7 +239,7 @@
   name so the backend composes the canonical form. (`lib/sentinels.js`): exports
   `canonicalAgentName` / `composeAgentName`.
 - **Migration**: all 13 existing agents renamed to canonical form.
-- **Auth**: admin login changed to **wayseer / `nospecialcharacters`** (`.env`
+- **Auth**: admin login changed to **wayseer / `<redacted-see-env-ADMIN_PASSWORD>`** (`.env`
   `ADMIN_PASSWORD`; re-seeded on boot). `test_credentials.md` updated.
 - **Verified**: ratios 121/121 · 0 drift; module-build 121 valid; test-build 135
   pass; 35 unit tests pass; testing-agent iteration_11 → **8/8 frontend checks

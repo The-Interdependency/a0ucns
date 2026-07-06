@@ -47,7 +47,7 @@ REQUIRED_FIELDS = (
     "user_data_boundary", "admin_only",
 )
 
-_AUTH = {"none", "read", "write", "admin", "hmmm"}
+_AUTH = {"none", "read", "write", "admin", "bearer", "hmmm"}
 _STORAGE = {"none", "read", "write", "delete", "migration", "hmmm"}
 _NETWORK = {"none", "internal", "external", "hmmm"}
 _USER_DATA = {"none", "read", "write", "delete", "hmmm"}
