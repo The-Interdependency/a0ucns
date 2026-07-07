@@ -6,6 +6,7 @@ import { registryApi } from '../../lib/registryApi';
 function statusMeta(status) {
   if (status === 'configured') return { label: 'Configured', className: 'text-emerald-400', icon: CheckCircle };
   if (status === 'universal') return { label: 'Universal Key', className: 'text-blue-400', icon: Shield };
+  if (status === 'error') return { label: "Can't decrypt — re-enter key or fix API_KEY_ENCRYPTION_KEY", className: 'text-red-400', icon: AlertCircle };
   return { label: 'Missing', className: 'text-amber-400', icon: AlertCircle };
 }
 
@@ -98,8 +99,8 @@ export function KeyManager({ compact = false }) {
                       <button onClick={() => setEditDev(item.developer_id)} className="rounded-xl border border-zinc-800 px-3 py-2 text-xs text-zinc-300 hover:border-zinc-700 hover:text-white">
                         {item.status === 'missing' ? 'Add key' : 'Change key'}
                       </button>
-                      {item.status === 'configured' && (
-                        <button onClick={() => removeKey(item.developer_id)} className="rounded-xl border border-zinc-800 p-2 text-zinc-500 hover:border-red-500/30 hover:text-red-300">
+                      {(item.status === 'configured' || item.status === 'error') && (
+                        <button onClick={() => removeKey(item.developer_id)} title="Remove this key" className="rounded-xl border border-zinc-800 p-2 text-zinc-500 hover:border-red-500/30 hover:text-red-300">
                           <Trash2 size={13} />
                         </button>
                       )}

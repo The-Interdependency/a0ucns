@@ -16,8 +16,8 @@ edit upstream first, re-mirror second.
 
 | Directory | Source repo | Commit | Date | Exclusions |
 |---|---|---|---|---|
-| `a0-betatest/` | The-Interdependency/a0-betatest | `cf7d3a18fbd85418972a37b15e00f03f1139868d` | 2026-06-30 | `storage/agents/` (per-agent ZFAE `zfae_core.safetensors` checkpoints — non-committable per a0-betatest doctrine), `_legacy_a0/uploads/` (~142M upload blobs). Carries one upstream-first security patch ahead of the pinned SHA: the two-line weak-MD5 fix from The-Interdependency/a0-betatest#4 (`_legacy_a0/python/engine/sigma.py`, `_legacy_a0/python/services/research.py`); re-pin on next re-mirror once merged. |
-| `aimmh/` | The-Interdependency/aimmh | `54031028538b06fe1c0e0716015fb23e0f93a552` | 2026-06-30 | none |
+| `a0-betatest/` | The-Interdependency/a0-betatest | `b6dd2c031c23c5b02a8740c22d3c76ab59af8658` | 2026-07-06 | `storage/agents/` (per-agent ZFAE `zfae_core.safetensors` checkpoints — non-committable per a0-betatest doctrine), `_legacy_a0/uploads/` (~142M upload blobs). Both replaced by a short exclusion-marker file. Re-pinned to merged `main` after the security triage — carries the merged weak-MD5 (#4), admin-passphrase scrub (#5), auth-bypass (#6), tools-layer hardening (#7: override-gate binding, SSRF guard, MCP-relay status check, tool eviction, built-in shadowing), and cap-report reachability (#8) fixes. |
+| `aimmh/` | The-Interdependency/aimmh | `0d4e69e08269fd62690e215c97fd59f0f30d5268` | 2026-07-06 | none. Re-pinned to merged `main` after the security triage — carries the JWT-secret-required, wildcard-CORS-with-credentials rejection, and BYOK-keys-encrypted-at-rest fixes (#12). |
 | `odysseus-a0/` | The-Interdependency/odysseus-a0 | `6fdbd55199973020eefafe6487a1d03f75c4a6b7` | 2026-06-06 | none |
 
 The previous full contents of `a0ucns` live under `archive/` (moved intact, history

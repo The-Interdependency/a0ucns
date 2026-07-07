@@ -1,11 +1,11 @@
-# ratios: loc_comments=82:62 imports_exports=4:7 calls_definitions=20:8
+# ratios: loc_comments=90:66 imports_exports=4:10 calls_definitions=23:11
 # === MODULE_BUILD ===
 # id: tools_registry
 #   module_name: registry
 #   module_kind: engine
 #   summary: in-process Tool registry + invocation surface — Tool, ToolError, register, lookup, list_tools, invoke; every invocation routes through the sentinel evaluator (gated_invoke) so cliff-mode S4/S12 etc. can halt before any side effect; tools may be native (python callable), webhook (user-registered URL with HMAC), or mcp (relayed to a registered MCP server)
 #   owner: Erin Spencer
-#   public_surface: Tool, ToolError, register, lookup, list_tools, invoke, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP
+#   public_surface: Tool, ToolError, register, lookup, unregister, is_global, user_tool_names, list_tools, invoke, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP
 #   internal_surface: _REG, _validate_input
 #   auth_boundary: bearer
 #   storage_boundary: none
@@ -29,7 +29,7 @@
 # === CAPABILITIES ===
 # id: tools_registry
 #   summary: tool spec + registry + invocation entry point
-#   exposes: Tool, ToolError, register, lookup, list_tools, invoke, TOOL_KIND_*
+#   exposes: Tool, ToolError, register, lookup, unregister, is_global, user_tool_names, list_tools, invoke, TOOL_KIND_*
 #   boundaries: auth:bearer, storage:none, network:none, user_data:read
 #   owner: Erin Spencer
 # === END CAPABILITIES ===
@@ -101,6 +101,23 @@ def lookup(name: str) -> Optional[Tool]:
     return _REG.get(name)
 
 
+def unregister(name: str) -> bool:
+    """Remove a tool from the in-process registry. Returns True if present."""
+    return _REG.pop(name, None) is not None
+
+
+def is_global(name: str) -> bool:
+    """True iff a global (built-in, owner_user_id=None) tool holds this name.
+    Used to stop a user tool from shadowing a built-in across the process."""
+    t = _REG.get(name)
+    return t is not None and t.owner_user_id is None
+
+
+def user_tool_names(user_id: str) -> set[str]:
+    """Names of registry entries owned by this user (for hydrate reconciliation)."""
+    return {n for n, t in _REG.items() if t.owner_user_id == user_id}
+
+
 def list_tools(*, user_id: Optional[str] = None, include_globals: bool = True) -> list[Tool]:
     out: list[Tool] = []
     for t in _REG.values():
@@ -165,7 +182,8 @@ async def invoke(
 
 
 __all__ = [
-    "Tool", "ToolError", "register", "lookup", "list_tools", "invoke",
+    "Tool", "ToolError", "register", "lookup", "unregister", "is_global",
+    "user_tool_names", "list_tools", "invoke",
     "TOOL_KIND_NATIVE", "TOOL_KIND_WEBHOOK", "TOOL_KIND_MCP",
 ]
-# ratios: loc_comments=82:62 imports_exports=4:7 calls_definitions=20:8
+# ratios: loc_comments=90:66 imports_exports=4:10 calls_definitions=23:11

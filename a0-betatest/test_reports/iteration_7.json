@@ -55,7 +55,7 @@
     "backend": "94% — 17/17 unit (test_tool_use_loop.py) + 5/6 HTTP e2e (test_tool_loop_http_e2e.py). The single failure is the missing tool_trace on the zfae_native refused branch documented under backend_issues.minor.",
     "frontend": "30% — login redirects to /workspace, page-workspace + user-pill + quota-bar + sidebar render with no uncaught errors AND there is no blank screen, BUT the agent dropdown is empty so audit-tape mount + prompt send + assistant turn + tool_trace block can't be exercised end-to-end. The mid-thought tool-call rendering code path therefore could not be visually verified."
   },
-  "test_credentials": "admin wayseer / ChangeMeOnFirstLogin2026 (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys — graceful fallback path exercised throughout.",
+  "test_credentials": "admin wayseer / <redacted> (id 291f2b9d-0949-4059-9c03-c55ecbb72d14). No BYOK provider keys — graceful fallback path exercised throughout.",
   "seed_data_creation": "test_tool_loop_http_e2e.py created 4 TEST_* agents under the admin user (TEST_RegrTeacher_*, TEST_TeacherTools_*, TEST_ZfaeNative_*, TEST_ToolsPersist_*). No teardown — they remain in the agent store.",
   "retest_needed": true,
   "main_agent_can_self_test": true,

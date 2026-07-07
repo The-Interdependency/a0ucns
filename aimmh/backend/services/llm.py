@@ -1,4 +1,4 @@
-# ratios: loc_comments=296:18 imports_exports=9:9 calls_definitions=58:10
+# ratios: loc_comments=296:18 imports_exports=10:9 calls_definitions=58:10
 """LLM integration service — Emergent + OpenAI-compatible providers.
 
 Model registry defines which provider/auth to use for each model.
@@ -15,6 +15,8 @@ from copy import deepcopy
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+
+from services.secrets import SecretDecryptionError, decrypt_secret
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +179,11 @@ def get_api_key_for_developer(user: dict, developer_id: str) -> str:
     Others use user-provided keys.
     """
     user_keys = user.get("api_keys", {})
-    user_key = user_keys.get(developer_id, "")
+    # Let a decryption failure propagate: a user who configured BYOK must not be
+    # silently downgraded to the shared EMERGENT_LLM_KEY when their stored key
+    # cannot be decrypted (missing/rotated API_KEY_ENCRYPTION_KEY). Empty and
+    # legacy-plaintext values pass through without raising.
+    user_key = decrypt_secret(user_keys.get(developer_id, ""))
 
     emergent_devs = {"openai", "anthropic", "google"}
     if developer_id in emergent_devs:
@@ -316,7 +322,15 @@ async def generate_response(
         yield f"[ERROR] Unknown model: {model_id}. Add it via the model registry."
         return
 
-    api_key = get_api_key_for_developer(user, info["developer_id"])
+    try:
+        api_key = get_api_key_for_developer(user, info["developer_id"])
+    except SecretDecryptionError:
+        # Stored BYOK key cannot be decrypted (missing/rotated
+        # API_KEY_ENCRYPTION_KEY). Surface a structured error via the [ERROR]
+        # convention instead of a shared-key fallback or an unhandled 500.
+        yield (f"[ERROR] Stored API key for {info['developer_id']} could not be decrypted. "
+               f"Re-enter it in Settings, or fix API_KEY_ENCRYPTION_KEY.")
+        return
     if not api_key:
         yield f"[ERROR] No API key for {info['developer_id']}. Add one in Settings."
         return
@@ -355,4 +369,4 @@ async def validate_universal_key() -> dict:
         msg = str(e)
         status = "invalid" if any(w in msg.lower() for w in ["invalid", "auth", "unauthorized", "401"]) else "error"
         return {"status": status, "message": msg}
-# ratios: loc_comments=296:18 imports_exports=9:9 calls_definitions=58:10
+# ratios: loc_comments=296:18 imports_exports=10:9 calls_definitions=58:10

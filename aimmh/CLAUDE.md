@@ -81,8 +81,9 @@ pip install -r requirements.txt
 # Required env vars
 export MONGO_URL="mongodb://localhost:27017"
 export DB_NAME="aimmh"
-export CORS_ORIGINS="*"                   # REQUIRED — comma-separated origins; server.py raises if unset ('*' uses an allow-all regex)
-export JWT_SECRET="your-secret"          # falls back to an insecure default if unset (config.py)
+export CORS_ORIGINS="http://localhost:3000"  # REQUIRED — explicit comma-separated origins; server.py raises if unset OR if it contains '*' (wildcard cannot combine with credentialed cookies)
+export JWT_SECRET="your-secret"          # REQUIRED — no default; config.py raises at startup if unset
+export API_KEY_ENCRYPTION_KEY="..."      # REQUIRED for BYOK key storage — Fernet key (python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"); POST /api/v1/keys returns 503 until set
 export EMERGENT_LLM_KEY="..."            # managed LLM access for openai/anthropic/google
 export STRIPE_API_KEY="sk_..."           # optional: payments
 export AUTH_SERVICE_URL="..."            # optional: external auth service
@@ -90,8 +91,11 @@ export AUTH_SERVICE_URL="..."            # optional: external auth service
 uvicorn server:app --reload              # run from inside backend/ (imports are flat: routes, services, db)
 ```
 
-`MONGO_URL` and `DB_NAME` are read at import time in `db.py` (no defaults) and `CORS_ORIGINS`
-is required at startup in `server.py` — all three must be set or the app fails fast.
+`MONGO_URL` and `DB_NAME` are read at import time in `db.py` (no defaults); `CORS_ORIGINS`
+(must be an explicit allowlist, not `*`) and `JWT_SECRET` (no default) are required at startup
+in `server.py` / `config.py` — all must be set or the app fails fast. `API_KEY_ENCRYPTION_KEY`
+is required only to store BYOK provider keys (`POST /api/v1/keys` returns 503 until it is set);
+existing plaintext keys remain readable and are re-encrypted on next save.
 
 API surface is mounted under `/api/...`; the modern surface is versioned under `/api/v1/...`.
 `server.py` wires these routers: auth, agent_zero, v1_a0, v1_edcm, v1_system, registry, keys,

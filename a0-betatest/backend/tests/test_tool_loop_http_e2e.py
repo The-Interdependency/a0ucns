@@ -18,21 +18,30 @@ from __future__ import annotations
 
 import os
 import time
+import uuid
 import requests
 import pytest
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://byok-inference.preview.emergentagent.com").rstrip("/")
-
-ADMIN_IDENT = "wayseer"
-ADMIN_PASS = "ChangeMeOnFirstLogin2026"
 
 
 @pytest.fixture(scope="module")
 def session():
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
-    r = s.post(f"{BASE_URL}/api/auth/login", json={"identifier": ADMIN_IDENT, "passphrase": ADMIN_PASS}, timeout=20)
-    assert r.status_code == 200, f"admin login failed: {r.status_code} {r.text[:200]}"
+    # Register a disposable user rather than logging in as the seeded admin.
+    # These regressions only need an authenticated caller — chat is scoped to
+    # the cookie user and /api/tools/.../invoke is bearer/cookie-gated, not
+    # admin-only — so a throwaway account gives the same coverage without
+    # depending on (or transmitting) the admin secret.
+    uniq = uuid.uuid4().hex[:12]
+    reg = {
+        "username": f"e2e_{uniq}",
+        "email": f"e2e_{uniq}@example.com",
+        "passphrase": f"e2e-disposable-{uniq}-passphrase",
+    }
+    r = s.post(f"{BASE_URL}/api/auth/register", json=reg, timeout=20)
+    assert r.status_code == 200, f"disposable-user register failed: {r.status_code} {r.text[:200]}"
     me = s.get(f"{BASE_URL}/api/auth/me", timeout=15)
     assert me.status_code == 200, f"/auth/me failed: {me.status_code} {me.text[:200]}"
     body = me.json()

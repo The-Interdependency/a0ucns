@@ -226,7 +226,7 @@ class SetKeyRequest(BaseModel):
 
 class KeyStatusResponse(BaseModel):
     developer_id: str
-    status: str  # configured | missing | universal
+    status: str  # configured | missing | universal | error
     masked_key: Optional[str] = None
 
 

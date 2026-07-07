@@ -1,18 +1,25 @@
 # Test Credentials — a0p
 
+> **Do not commit real secrets to this file.** Values below are placeholders.
+> Set the actual admin credentials via environment variables (`.env`, not tracked)
+> or your deployment secret store. `seed_admin()` in `backend/auth/__init__.py`
+> **resets the admin password hash to `ADMIN_PASSWORD` on every backend start**, so
+> any value written here that matches a live deployment is a working admin login.
+
 ## Admin (seeded from `.env` on boot — idempotent)
 
 | Field | Value |
 |---|---|
-| username | `wayseer` |
-| email | `wayseer@interdependentway.org` |
-| passphrase | `nospecialcharacters` |
+| username | `<ADMIN_USERNAME>` |
+| email | `<ADMIN_EMAIL>` |
+| passphrase | `<ADMIN_PASSWORD>` (set in `.env`; never commit) |
 | role | `admin` |
 
-The admin user is re-seeded on every backend start from these `.env` vars:
-- `ADMIN_USERNAME=wayseer`
-- `ADMIN_EMAIL=wayseer@interdependentway.org`
-- `ADMIN_PASSWORD=nospecialcharacters`
+The admin user is re-seeded on every backend start from these `.env` vars
+(kept out of version control):
+- `ADMIN_USERNAME=<your-admin-username>`
+- `ADMIN_EMAIL=<your-admin-email>`
+- `ADMIN_PASSWORD=<a-strong-secret-not-checked-in>`
 
 ## Test user (created by testing-agent flows)
 
@@ -20,11 +27,12 @@ The admin user is re-seeded on every backend start from these `.env` vars:
 |---|---|
 | username | `alice` |
 | email | `alice@example.com` |
-| passphrase | `sixteenchars-and-more-passphrase` |
+| passphrase | `<TEST_USER_PASSPHRASE>` (choose locally; ≥ 16 chars) |
 | role | `user` |
 
 If the user does not yet exist, register them with
-`POST /api/auth/register` body `{"username":"alice","email":"alice@example.com","passphrase":"sixteenchars-and-more-passphrase"}`.
+`POST /api/auth/register` body
+`{"username":"alice","email":"alice@example.com","passphrase":"<TEST_USER_PASSPHRASE>"}`.
 
 ## Auth endpoints
 

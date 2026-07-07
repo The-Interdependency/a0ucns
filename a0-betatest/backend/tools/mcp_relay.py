@@ -1,4 +1,4 @@
-# ratios: loc_comments=48:46 imports_exports=6:4 calls_definitions=18:4
+# ratios: loc_comments=54:49 imports_exports=6:4 calls_definitions=22:4
 # === MODULE_BUILD ===
 # id: tools_mcp_relay
 #   module_name: mcp_relay
@@ -58,13 +58,22 @@ async def _post_rpc(url: str, method: str, params: Optional[dict] = None,
     h.update(headers or {})
     async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as cli:
         r = await cli.post(url, json=payload, headers=h)
+    # A non-2xx response (e.g. FastAPI 401/404 with a {"detail": ...} body) is a
+    # transport failure, not a JSON-RPC result — surface it instead of parsing
+    # the error body and reporting an empty success.
+    if r.status_code >= 400:
+        raise ToolError(f"mcp server http {r.status_code}: {r.text[:200]}")
     try:
         data = r.json()
     except Exception as e:
         raise ToolError(f"mcp server returned non-JSON ({r.status_code}): {e}")
+    if not isinstance(data, dict):
+        raise ToolError(f"mcp server returned unexpected JSON ({type(data).__name__})")
     if "error" in data:
         err = data["error"] or {}
         raise ToolError(f"mcp error {err.get('code')}: {err.get('message') or err}")
+    if "result" not in data:
+        raise ToolError(f"mcp server returned no JSON-RPC result (status {r.status_code})")
     return data.get("result") or {}
 
 
@@ -105,4 +114,4 @@ async def invoke(tool: Tool, params: dict, *, user: dict) -> Any:
 
 
 __all__ = ["invoke", "list_remote_tools", "ping_server"]
-# ratios: loc_comments=48:46 imports_exports=6:4 calls_definitions=18:4
+# ratios: loc_comments=54:49 imports_exports=6:4 calls_definitions=22:4
