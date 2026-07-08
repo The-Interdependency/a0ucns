@@ -1,11 +1,11 @@
-# ratios: loc_comments=90:66 imports_exports=4:10 calls_definitions=23:11
+# ratios: loc_comments=91:66 imports_exports=4:10 calls_definitions=23:11
 # === MODULE_BUILD ===
 # id: tools_registry
 #   module_name: registry
 #   module_kind: engine
 #   summary: in-process Tool registry + invocation surface — Tool, ToolError, register, lookup, list_tools, invoke; every invocation routes through the sentinel evaluator (gated_invoke) so cliff-mode S4/S12 etc. can halt before any side effect; tools may be native (python callable), webhook (user-registered URL with HMAC), or mcp (relayed to a registered MCP server)
 #   owner: Erin Spencer
-#   public_surface: Tool, ToolError, register, lookup, unregister, is_global, user_tool_names, list_tools, invoke, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP
+#   public_surface: Tool, ToolError, register, lookup, unregister, is_global, user_tool_names, list_tools, invoke, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP, TOOL_KIND_ODYSSEUS
 #   internal_surface: _REG, _validate_input
 #   auth_boundary: bearer
 #   storage_boundary: none
@@ -51,6 +51,7 @@ from typing import Any, Awaitable, Callable, Optional
 TOOL_KIND_NATIVE = "native"
 TOOL_KIND_WEBHOOK = "webhook"
 TOOL_KIND_MCP = "mcp"
+TOOL_KIND_ODYSSEUS = "odysseus"
 
 
 class ToolError(Exception):
@@ -184,6 +185,6 @@ async def invoke(
 __all__ = [
     "Tool", "ToolError", "register", "lookup", "unregister", "is_global",
     "user_tool_names", "list_tools", "invoke",
-    "TOOL_KIND_NATIVE", "TOOL_KIND_WEBHOOK", "TOOL_KIND_MCP",
+    "TOOL_KIND_NATIVE", "TOOL_KIND_WEBHOOK", "TOOL_KIND_MCP", "TOOL_KIND_ODYSSEUS",
 ]
-# ratios: loc_comments=90:66 imports_exports=4:10 calls_definitions=23:11
+# ratios: loc_comments=91:66 imports_exports=4:10 calls_definitions=23:11

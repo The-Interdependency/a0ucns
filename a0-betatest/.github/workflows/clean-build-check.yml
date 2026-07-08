@@ -8,9 +8,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   check-replit-refs:
-    name: Verify no @replit packages in build output
+    name: Verify no @replit packages in frontend build output
     runs-on: ubuntu-latest
 
     steps:
@@ -21,20 +24,19 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "22"
-          cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install frontend dependencies
+        run: npm install --prefix frontend
 
-      - name: Build without REPL_ID
-        run: env -u REPL_ID NODE_ENV=production npx tsx script/build.ts
+      - name: Build frontend without REPL_ID
+        run: env -u REPL_ID CI=false npm run build --prefix frontend
 
-      - name: Check for @replit references in client bundle
+      - name: Check for @replit references in frontend bundle
         run: |
-          MATCHES=$( (grep -r "@replit" dist/public/assets/ || true) )
+          MATCHES=$( (grep -r "@replit" frontend/build/static/ || true) )
           if [ -n "$MATCHES" ]; then
-            echo "::error::@replit packages leaked into the client bundle. Run 'env -u REPL_ID NODE_ENV=production npx tsx script/build.ts' locally and check vite.config.ts for static @replit imports."
+            echo "::error::@replit packages leaked into the frontend bundle. Run 'env -u REPL_ID CI=false npm run build --prefix frontend' locally and check frontend imports for static @replit references."
             echo "$MATCHES"
             exit 1
           fi
-          echo "Clean build confirmed: zero @replit references in client bundle."
+          echo "Clean build confirmed: zero @replit references in frontend bundle."

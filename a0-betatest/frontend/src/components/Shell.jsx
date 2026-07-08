@@ -36,7 +36,7 @@
 
 import React, { useEffect, useState } from "react";
 import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
-import { Atom, KeyReturn, Brain, Cards, Vault, FileText, Pulse, Lightning, Coin, ShieldCheck, ShieldWarning, ScrollIcon as Scroll, SignOut, User as UserIcon, BookOpen, Wrench, Plug, Sparkle, GraduationCap } from "@phosphor-icons/react";
+import { Atom, KeyReturn, Brain, Cards, Vault, FileText, Pulse, Lightning, Coin, ShieldCheck, ShieldWarning, ScrollIcon as Scroll, SignOut, User as UserIcon, BookOpen, Wrench, Plug, Sparkle, GraduationCap, CirclesThree, Flask } from "@phosphor-icons/react";
 import { useAuth } from "../lib/auth";
 import { demoQuota } from "../lib/api";
 
@@ -44,6 +44,8 @@ const authedItems = [
   { to: "/workspace",  label: "Workspace",  icon: <Brain size={18} />, testid: "nav-workspace" },
   { to: "/agents",     label: "Agents",     icon: <Lightning size={18} />, testid: "nav-agents" },
   { to: "/training",   label: "Training",   icon: <GraduationCap size={18} />, testid: "nav-training" },
+  { to: "/chat-training", label: "Chat Training", icon: <CirclesThree size={18} />, testid: "nav-chat-training" },
+  { to: "/agent-lab",  label: "Agent Lab",  icon: <Flask size={18} />, testid: "nav-agent-lab" },
   { to: "/sentinels",  label: "Sentinels",  icon: <ShieldCheck size={18} />, testid: "nav-sentinels" },
   { to: "/overrides",  label: "Overrides",  icon: <ShieldWarning size={18} />, testid: "nav-overrides" },
   { to: "/tools",      label: "Tools",      icon: <Wrench size={18} />, testid: "nav-tools" },

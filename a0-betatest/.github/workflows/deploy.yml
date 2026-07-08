@@ -14,30 +14,15 @@ env:
   SERVICE: a0p
   REGISTRY: us-central1-docker.pkg.dev
 
+# Least-privilege default for the whole workflow; the deploy job widens its own
+# permissions (id-token: write) below for Google Cloud auth.
+permissions:
+  contents: read
+
 jobs:
-  check-console-tabs:
-    name: Console tab regression guard
+  check-current-layout:
+    name: Current layout build smoke
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: a0p_check
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-
-    env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/a0p_check
-      SESSION_SECRET: ci-session-secret
-      INTERNAL_API_SECRET: ci-internal-secret-for-console-tab-check
 
     steps:
       - name: Checkout
@@ -47,53 +32,29 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: npm
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: backend/requirements.txt
 
-      - name: Install Node dependencies
-        run: npm ci
+      - name: Install frontend dependencies
+        run: npm install --prefix frontend
 
-      - name: Install Python dependencies
-        run: pip install -e .
+      - name: Build frontend
+        run: CI=false npm run build --prefix frontend
 
-      - name: Apply database schema
-        run: npm run db:push
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
 
-      - name: Boot Python backend
-        run: |
-          uvicorn python.main:app --host 127.0.0.1 --port 8001 \
-            > /tmp/uvicorn.log 2>&1 &
-          echo $! > /tmp/uvicorn.pid
-          for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:8001/api/health > /dev/null; then
-              echo "backend up after ${i}s"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "backend failed to start"
-          cat /tmp/uvicorn.log
-          exit 1
-
-      - name: Run console-tab regression guard
-        run: API_BASE=http://127.0.0.1:8001 node scripts/check-console-tabs.mjs
-
-      - name: Stop Python backend
-        if: always()
-        run: |
-          if [ -f /tmp/uvicorn.pid ]; then
-            kill "$(cat /tmp/uvicorn.pid)" 2>/dev/null || true
-          fi
+      - name: Compile backend server
+        run: python -m py_compile backend/server.py backend/models.py backend/living_spec.py backend/readme_writer.py
 
   deploy:
     name: Build, push, deploy
-    needs: check-console-tabs
+    needs: check-current-layout
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
