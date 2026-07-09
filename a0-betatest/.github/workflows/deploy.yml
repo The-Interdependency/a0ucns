@@ -49,8 +49,28 @@ jobs:
       - name: Install backend dependencies
         run: python -m pip install -r backend/requirements.txt
 
-      - name: Compile backend server
-        run: python -m py_compile backend/server.py backend/models.py backend/living_spec.py backend/readme_writer.py
+      - name: Backend import smoke (startup)
+        # py_compile only byte-compiles — it never runs server.py's imports, so an
+        # import-time failure in any router (api_training, api_agent_lab,
+        # api_tools_mcp_skills, ...) or its deps would slip past. Actually import
+        # the app + standalone modules so those failures gate the deploy. Dummy
+        # env satisfies the fail-fast startup checks (db/config/server/vault);
+        # motor connects lazily, so no live Mongo is needed. Importing server also
+        # constructs the agent store at module load, which mkdir's its storage root
+        # (default /app/storage/agents — not writable on the runner), so point the
+        # storage roots at the runner temp dir.
+        working-directory: backend
+        env:
+          MONGO_URL: mongodb://localhost:27017
+          DB_NAME: import_smoke
+          JWT_SECRET: ci-import-smoke-not-a-real-secret
+          CORS_ORIGINS: http://localhost:3000
+          A0P_AGENTS_ROOT: ${{ runner.temp }}/a0p-import-smoke/agents
+          A0P_AUDIT_STORAGE_ROOT: ${{ runner.temp }}/a0p-import-smoke/audit
+          A0P_TRAFFIC_LOG: ${{ runner.temp }}/a0p-import-smoke/traffic.log
+        run: |
+          export A0P_KEY_VAULT_SECRET="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')"
+          python -c "import server, models, living_spec, readme_writer"
 
   deploy:
     name: Build, push, deploy
