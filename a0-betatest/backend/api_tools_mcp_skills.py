@@ -1,4 +1,4 @@
-# ratios: loc_comments=373:118 imports_exports=19:25 calls_definitions=157:29
+# ratios: loc_comments=376:123 imports_exports=19:25 calls_definitions=159:29
 # === MODULE_BUILD ===
 # id: api_tools_mcp_skills_routes
 #   module_name: api_tools_mcp_skills
@@ -321,6 +321,12 @@ async def add_mcp_server(body: MCPServerBody, user=Depends(get_current_user)):
            "created_at_ms": int(time.time() * 1000), "tools_count": 0}
     await mcp_servers_col.insert_one(doc)
     refresh = await _refresh_mcp_tools(user["id"], doc)
+    # Reconcile the in-process registry now (as the Odysseus path does): refresh
+    # rewrites the Mongo tool rows + migrates agent allow-lists to the new names,
+    # but the chat/tool runtime resolves allow-lists through the registry, so
+    # without this the process still advertises the old names (and migrated agents
+    # resolve to nothing) until someone happens to call /api/tools.
+    await _hydrate_user_tools(user["id"])
     return {"ok": True, "id": doc["_id"], "refresh": refresh}
 
 
@@ -329,7 +335,9 @@ async def refresh_mcp_server(server_id: str, user=Depends(get_current_user)):
     server = await mcp_servers_col.find_one({"_id": server_id, "user_id": user["id"]})
     if not server:
         raise HTTPException(404, "mcp server not found")
-    return await _refresh_mcp_tools(user["id"], server)
+    result = await _refresh_mcp_tools(user["id"], server)
+    await _hydrate_user_tools(user["id"])   # reconcile the registry (see add_mcp_server)
+    return result
 
 
 @router.delete("/mcp/servers/{server_id}")
@@ -562,4 +570,4 @@ async def mark_publishable(skill_id: str, publishable: bool = True, user=Depends
 
 
 __all__ = ["router"]
-# ratios: loc_comments=373:118 imports_exports=19:25 calls_definitions=157:29
+# ratios: loc_comments=376:123 imports_exports=19:25 calls_definitions=159:29
