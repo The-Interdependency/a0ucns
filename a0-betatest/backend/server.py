@@ -1,4 +1,4 @@
-# ratios: loc_comments=846:126 imports_exports=48:55 calls_definitions=311:64
+# ratios: loc_comments=850:128 imports_exports=50:55 calls_definitions=313:64
 # === MODULE_BUILD ===
 # id: a0p_server
 #   module_name: server
@@ -826,6 +826,15 @@ _init_auth(app)
 from api_extensions import router as _ext_router
 app.include_router(_ext_router)
 
+# ---------- Chat Training tab: embedding / EDCM / cylindrical disk-stack ----
+from api_training import router as _training_router
+app.include_router(_training_router)
+
+# ---------- Agent Creation Lab: permutation catalogue + planner + sub-memory ----
+from api_agent_lab import router as _agent_lab_router
+app.include_router(_agent_lab_router)
+
+
 # ---------- Tools / MCP (server + client) / Skills ----------
 from api_tools_mcp_skills import router as _tools_router
 from tools.mcp_server import router as _mcp_server_router
@@ -1139,4 +1148,4 @@ async def _on_startup():
         for a in starters:
             await agents_col.insert_one({"_id": new_id(), **a.model_dump(),
                                          "created_at": now, "updated_at": now})
-# ratios: loc_comments=846:126 imports_exports=48:55 calls_definitions=311:64
+# ratios: loc_comments=850:128 imports_exports=50:55 calls_definitions=313:64

@@ -51,6 +51,8 @@ import DraftsPage from "./pages/DraftsPage";
 import InspectorPage from "./pages/InspectorPage";
 import AgentsPage from "./pages/AgentsPage";
 import TrainingRoom from "./pages/TrainingRoom";
+import ChatTrainingPage from "./pages/ChatTrainingPage";
+import AgentLabPage from "./pages/AgentLabPage";
 import SentinelsPage from "./pages/SentinelsPage";
 import OverridesPage from "./pages/OverridesPage";
 import ToolsPage from "./pages/ToolsPage";
@@ -77,6 +79,8 @@ export default function App() {
             <Route path="/workspace" element={<Protected><WorkspacePage /></Protected>} />
             <Route path="/agents" element={<Protected><AgentsPage /></Protected>} />
             <Route path="/training" element={<Protected><TrainingRoom /></Protected>} />
+            <Route path="/chat-training" element={<Protected><ChatTrainingPage /></Protected>} />
+            <Route path="/agent-lab" element={<Protected><AgentLabPage /></Protected>} />
             <Route path="/sentinels" element={<Protected><SentinelsPage /></Protected>} />
             <Route path="/overrides" element={<Protected><OverridesPage /></Protected>} />
             <Route path="/tools" element={<Protected><ToolsPage /></Protected>} />

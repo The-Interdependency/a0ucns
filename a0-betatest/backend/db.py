@@ -1,4 +1,4 @@
-# ratios: loc_comments=48:43 imports_exports=2:1 calls_definitions=24:1
+# ratios: loc_comments=50:43 imports_exports=2:1 calls_definitions=25:1
 # === MODULE_BUILD ===
 # id: a0p_db_motor
 #   module_name: db
@@ -64,6 +64,7 @@ demo_quota_col = db["demo_quota"]
 custom_keys_col = db["custom_keys"]
 user_tools_col = db["user_tools"]
 mcp_servers_col = db["mcp_servers"]
+odysseus_servers_col = db["odysseus_servers"]
 skills_col = db["skills"]
 
 
@@ -86,6 +87,7 @@ async def ensure_indexes():
     await custom_keys_col.create_index([("user_id", 1), ("name", 1)], unique=True)
     await user_tools_col.create_index([("user_id", 1), ("name", 1)], unique=True)
     await mcp_servers_col.create_index([("user_id", 1), ("name", 1)], unique=True)
+    await odysseus_servers_col.create_index([("user_id", 1), ("name", 1)], unique=True)
     await skills_col.create_index([("name", 1)])
     await skills_col.create_index([("owner_user_id", 1)])
 
@@ -96,4 +98,4 @@ async def ensure_indexes():
 #   class: integration
 #   call: a0p_skills.contracts.module_imports_cleanly_holds
 # === END CONTRACTS ===
-# ratios: loc_comments=48:43 imports_exports=2:1 calls_definitions=24:1
+# ratios: loc_comments=50:43 imports_exports=2:1 calls_definitions=25:1

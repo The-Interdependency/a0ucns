@@ -1,11 +1,11 @@
-# ratios: loc_comments=12:43 imports_exports=2:1 calls_definitions=1:0
+# ratios: loc_comments=13:43 imports_exports=2:1 calls_definitions=1:0
 # === MODULE_BUILD ===
 # id: tools_pkg
 #   module_name: tools
 #   module_kind: service
 #   summary: tools subpackage entry — re-exports the registry public surface and triggers register_builtins() so native tools are available immediately on import
 #   owner: Erin Spencer
-#   public_surface: Tool, ToolError, register, lookup, unregister, is_global, user_tool_names, list_tools, invoke, register_builtins, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP
+#   public_surface: Tool, ToolError, register, lookup, unregister, is_global, user_tool_names, list_tools, invoke, register_builtins, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP, TOOL_KIND_ODYSSEUS
 #   internal_surface: none
 #   auth_boundary: none
 #   storage_boundary: none
@@ -44,7 +44,7 @@
 from .registry import (
     Tool, ToolError, register, lookup, unregister, is_global, user_tool_names,
     list_tools, invoke,
-    TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP,
+    TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP, TOOL_KIND_ODYSSEUS,
 )
 from .builtin import register_builtins
 
@@ -55,5 +55,6 @@ __all__ = [
     "Tool", "ToolError", "register", "lookup", "unregister", "is_global",
     "user_tool_names", "list_tools", "invoke",
     "register_builtins", "TOOL_KIND_NATIVE", "TOOL_KIND_WEBHOOK", "TOOL_KIND_MCP",
+    "TOOL_KIND_ODYSSEUS",
 ]
-# ratios: loc_comments=12:43 imports_exports=2:1 calls_definitions=1:0
+# ratios: loc_comments=13:43 imports_exports=2:1 calls_definitions=1:0

@@ -1,4 +1,4 @@
-# ratios: loc_comments=113:64 imports_exports=11:2 calls_definitions=25:2
+# ratios: loc_comments=116:64 imports_exports=12:2 calls_definitions=26:2
 # === MODULE_BUILD ===
 # id: tools_gated_invoke
 #   module_name: gated_invoke
@@ -51,7 +51,7 @@ from interdependent_lib.zfae.sentinel_eval import evaluate as evaluate_sentinels
 from interdependent_lib.zfae import overrides as zfae_overrides
 from interdependent_lib.zfae import fiq_emit
 
-from .registry import Tool, ToolError, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP
+from .registry import Tool, ToolError, TOOL_KIND_NATIVE, TOOL_KIND_WEBHOOK, TOOL_KIND_MCP, TOOL_KIND_ODYSSEUS
 
 
 async def _dispatch(tool: Tool, params: dict, user: dict) -> Any:
@@ -69,6 +69,9 @@ async def _dispatch(tool: Tool, params: dict, user: dict) -> Any:
     if tool.kind == TOOL_KIND_MCP:
         from . import mcp_relay
         return await mcp_relay.invoke(tool, params, user=user)
+    if tool.kind == TOOL_KIND_ODYSSEUS:
+        from . import odysseus_relay
+        return await odysseus_relay.invoke(tool, params, user=user)
     raise ToolError(f"unknown tool kind {tool.kind!r}")
 
 
@@ -190,4 +193,4 @@ async def gated_invoke(
 
 
 __all__ = ["gated_invoke"]
-# ratios: loc_comments=113:64 imports_exports=11:2 calls_definitions=25:2
+# ratios: loc_comments=116:64 imports_exports=12:2 calls_definitions=26:2

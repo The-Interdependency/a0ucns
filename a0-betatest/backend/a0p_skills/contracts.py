@@ -1,4 +1,4 @@
-# ratios: loc_comments=1254:282 imports_exports=182:97 calls_definitions=500:112
+# ratios: loc_comments=1449:320 imports_exports=195:103 calls_definitions=575:123
 # Ensure backend/.env is loaded before any contract import logic runs.
 # Without this, contracts that import modules reading env at module-top (e.g.
 # `db`, `api_extensions`, `crypto_vault`) fail in fresh shells / CI runs.
@@ -1612,6 +1612,277 @@ async def _tools_mcp_relay_request_async() -> None:
     assert isinstance(r["error"], str) and r["error"]
 
 
+def gonal_stack_recompose_holds() -> None:
+    """Disk stack: one disk/rung, chapter psi == phase-product fold, firewalls set."""
+    import functools
+    from interdependent_lib.gonal_stack import (
+        build_disk_stack, GRAIN_LADDER, GEOMETRY_STATUS)
+    from interdependent_lib.ucns_embed import embed_text, phase_compose
+    turns = ["keep the loop closed", "we must not open it", "hold the frontier line"]
+    st = build_disk_stack(turns, agent_id="t1")
+    assert tuple(d.grain for d in st.disks) == GRAIN_LADDER
+    assert st.carrier_arity == 157 and st.recompose_only is True
+    assert st.geometry_status == GEOMETRY_STATUS == "ucns-g:non-absolute"
+    assert st.session_turns == 3
+    for d in st.disks:
+        assert d.carrier == 157 and d.embedding_hash
+        assert d.face_plus + d.face_minus == 53      # chirality faces over the 53 lanes
+        assert 0.0 <= d.psi <= 1.0                    # psi is a unit-circle coherence
+    # chapter psi == coherence of the ⊠ (phase-product) fold of utterance embeddings
+    chapter_emb = functools.reduce(phase_compose, [embed_text(u) for u in turns])
+    chapter = [d for d in st.disks if d.grain == "chapter"][0]
+    assert abs(chapter.psi - st.chapter_psi) < 1e-12
+    assert abs(chapter.psi - chapter_emb.coherence()) < 1e-12
+    assert chapter.psi > 0.0                          # a real, nonzero recomposition
+
+
+def edcm_readout_bounds_holds() -> None:
+    """EDCM six-family readout is bounded [0,1], deterministic, banded, prior-safe."""
+    from interdependent_lib.edcm_readout import readout, EDCM_METRICS, ALERT_HIGH, ALERT_LOW
+    r1 = readout("we must not break the closed loop", "keep the loop open and running")
+    r2 = readout("we must not break the closed loop", "keep the loop open and running")
+    first = readout("a lone opening turn with no prior")
+    empty = readout("")
+    assert set(r1.metrics) == set(EDCM_METRICS) == set(first.metrics)
+    for rd in (r1, first, empty):
+        for k, v in rd.metrics.items():
+            assert 0.0 <= v <= 1.0, (k, v)
+            exp = "high" if v >= ALERT_HIGH else "low" if v <= ALERT_LOW else "nominal"
+            assert rd.alerts[k] == exp, (k, v, rd.alerts[k])
+    assert r1.metrics == r2.metrics                      # deterministic
+    assert first.metrics["drift"] == 0.0 and first.metrics["tbf"] == 0.5  # no-prior handling
+    assert r1.raised_field_count >= 1                    # "must"/"not"/"the" are bones
+    assert r1.metrics["da"] > 0.0                        # "not" -> dissonance
+
+
+def ucns_embed_deterministic_holds() -> None:
+    """UCNS-native embedding is deterministic, unit-norm, and text-distinct."""
+    from interdependent_lib.ucns_embed import embed_text, EMBED_LANES
+    e1 = embed_text("the quick brown fox jumps")
+    e2 = embed_text("the quick brown fox jumps")
+    e3 = embed_text("a wholly unrelated clause")
+    assert e1.angle_bits == e2.angle_bits and e1.canonical_hash == e2.canonical_hash
+    assert e1.canonical_hash != e3.canonical_hash
+    assert e1.lanes == EMBED_LANES == len(e1.angle_bits) == len(e1.chirality)
+    assert abs(e1.similarity(e2) - 1.0) < 1e-9      # identical phases -> cos == 1
+    assert all(c in (1, -1) for c in e1.chirality)  # chirality is a Mobius face bit
+
+
+def agent_lab_plan_holds():
+    """Agent Lab: catalogue tags native/cross-repo; plan maps stages to real
+    routes/primitives (cross-repo plan-only); identity composes a0(<energy>);
+    sub-memory folds spawn_sub items into the ST ring."""
+    return _agent_lab_plan_async()
+
+
+async def _agent_lab_plan_async() -> None:
+    from api_agent_lab import (
+        permutations, identity_preview, plan, sub_memory,
+        IdentityBody, LabRecipe, SubMemoryBody, build_plan,
+    )
+    user = {"id": "contract-user"}
+
+    cat = await permutations(user=user)
+    ids = {s["id"] for s in cat["stages"]}
+    assert {"identity_mode", "create", "checkpoint", "sub_memory", "cross_repo_merge"} <= ids
+    xrepo = [s for s in cat["stages"] if s["id"] == "cross_repo_merge"][0]
+    assert xrepo["native"] is False and xrepo["kind"] == "plan_only"
+
+    # Identity composition (the 6-lattice grammar).
+    idp = await identity_preview(IdentityBody(mode="a0(zfae)<model>", base_model="openai:gpt-4o",
+                                              username="erin"), user=user)
+    assert idp["canonical"] == "a0(zfae)gpt-4o"
+    assert idp["agent_name"] == "erin(a0(zfae)gpt-4o)"
+    # A mode that needs a base model but is given none -> a warning, not a crash.
+    idp2 = await identity_preview(IdentityBody(mode="a0(<model>)"), user=user)
+    assert idp2["warnings"]
+
+    # Plan mixes a native + the cross-repo stage; ladder order preserved.
+    pl = await plan(LabRecipe(identity=IdentityBody(mode="a0(zfae)"),
+                              stages=["distill_unlock", "sub_memory", "cross_repo_merge"]), user=user)
+    step_ids = [s["id"] for s in pl["steps"]]
+    assert step_ids.index("create") < step_ids.index("checkpoint")
+    assert "cross_repo_merge" in pl["plan_only_steps"]
+    assert all(s["executable_here"] for s in pl["steps"] if s["id"] == "create")
+
+    # Volatile sub-memory: items fold into the short-term ring.
+    sm = await sub_memory(SubMemoryBody(items_by_sub={"probe": ["a", "b"]},
+                                        seed_short_term=["s0"]), user=user)
+    assert sm["merged"]["probe"] == ["a", "b"]
+    assert "a" in sm["snapshot"]["st"] and "b" in sm["snapshot"]["st"]
+    assert "probe" not in sm["snapshot"]["sub_keys"]      # merged out
+
+
+def api_training_readout_holds():
+    """Training route: /readout and /disk-stack compute the expected shapes."""
+    return _api_training_readout_async()
+
+
+async def _api_training_readout_async() -> None:
+    """Calls the handler coroutines directly (a stub user, bypassing the ingress)
+    so the contract runner needs no live server. Pins that /readout returns the
+    three panels (embedding + EDCM + gonal disk) and /disk-stack returns a
+    cylindrical disk stack whose chapter psi is the phase-product recomposition.
+    """
+    from api_training import training_readout, training_disk_stack, ReadoutBody, DiskStackBody
+    from interdependent_lib.edcm_readout import EDCM_METRICS
+    from interdependent_lib.gonal_stack import GRAIN_LADDER
+
+    user = {"id": "contract-user"}
+    rd = await training_readout(
+        ReadoutBody(text="we must not open the closed loop",
+                    prev_text="keep the loop running"), user=user)
+    assert set(rd["embedding"]) >= {"angle_bits", "chirality", "carrier", "lanes"}
+    assert rd["embedding"]["carrier"] == 157 and rd["embedding"]["lanes"] == 53
+    assert set(rd["edcm"]["metrics"]) == set(EDCM_METRICS)
+    assert rd["disk"]["carrier"] == 157 and 0.0 <= rd["disk"]["psi"] <= 1.0
+    assert rd["recompose_only"] is True
+    assert rd["geometry_status"] == "ucns-g:non-absolute"
+
+    st = await training_disk_stack(DiskStackBody(
+        turns=["hold the frontier", "we must not cross it", "close the loop"],
+        agent_id="t1"), user=user)
+    assert tuple(d["grain"] for d in st["disks"]) == GRAIN_LADDER
+    assert st["carrier_arity"] == 157 and st["recompose_only"] is True
+    assert st["geometry_status"] == "ucns-g:non-absolute"
+    assert st["chapter_psi"] > 0.0
+
+
+def tools_odysseus_relay_request_holds():
+    """Odysseus relay: round-trips a stubbed /api/codex/* call, guards path/scope."""
+    return _tools_odysseus_relay_request_async()
+
+
+async def _tools_odysseus_relay_request_async() -> None:
+    import httpx
+    from tools import odysseus_relay as od
+    from tools.registry import ToolError
+
+    seen: dict = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["auth"] = request.headers.get("authorization")
+        if request.url.path == "/api/codex/capabilities":
+            return httpx.Response(200, json={"token_scopes": ["memory:read"]})
+        if request.url.path == "/api/codex/emails/send":
+            return httpx.Response(403, json={"detail": "scope"})
+        return httpx.Response(404, json={"detail": "nope"})
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    try:
+        # 200 round-trip with the Bearer token attached (allow_private opts the
+        # stub self-hosted host past the SSRF guard).
+        data = await od.request("http://odysseus.local", "tkn", "GET",
+                                "/api/codex/capabilities", allow_private=True, client=client)
+        assert data.get("token_scopes") == ["memory:read"], data
+        assert seen["auth"] == "Bearer tkn", seen
+
+        # non-2xx surfaces as ToolError (not a silent empty result)
+        try:
+            await od.request("http://odysseus.local", "tkn", "POST", "/api/codex/emails/send",
+                             json_body={}, allow_private=True, client=client)
+            raise AssertionError("403 did not raise ToolError")
+        except ToolError:
+            pass
+
+        # a path outside /api/codex/ is refused before any network call
+        try:
+            await od.request("http://odysseus.local", "tkn", "GET", "/etc/passwd",
+                             allow_private=True, client=client)
+            raise AssertionError("non-codex path was not refused")
+        except ToolError:
+            pass
+
+        # an unsupported method is refused
+        try:
+            await od.request("http://odysseus.local", "tkn", "TRACE", "/api/codex/capabilities",
+                             allow_private=True, client=client)
+            raise AssertionError("bad method was not refused")
+        except ToolError:
+            pass
+
+        # SSRF guard: a non-global base_url is refused unless allow_private is set
+        try:
+            await od.request("http://169.254.169.254", "tkn", "GET", "/api/codex/capabilities",
+                             allow_private=False, client=client)
+            raise AssertionError("SSRF guard did not refuse a link-local host")
+        except ToolError as e:
+            assert "non-global" in str(e), str(e)
+
+        # Path-normalization guard: dot-segments that escape /api/codex/ are
+        # refused, raw and percent-encoded, before any network call.
+        for bad in ("/api/codex/../admin", "/api/codex/%2e%2e/admin", "/api/codex/a/../../admin"):
+            try:
+                await od.request("http://odysseus.local", "tkn", "GET", bad,
+                                 allow_private=True, client=client)
+                raise AssertionError(f"path-escape not refused: {bad!r}")
+            except ToolError:
+                pass
+
+        # base_url that carries a query/fragment or has no host is refused (the
+        # former would push the guarded path into the query; the latter is unusable).
+        for bad_base in ("http://odysseus.local/latest?x=", "http://odysseus.local/p#f",
+                         "http:///nohost"):
+            try:
+                await od.request(bad_base, "tkn", "GET", "/api/codex/capabilities",
+                                 allow_private=True, client=client)
+                raise AssertionError(f"bad base_url not refused: {bad_base!r}")
+            except ToolError:
+                pass
+
+        # a malformed port is a ToolError (not a bare ValueError -> 500)
+        try:
+            await od.request("http://odysseus.local:notaport", "tkn", "GET",
+                             "/api/codex/capabilities", allow_private=True, client=client)
+            raise AssertionError("malformed port not refused")
+        except ToolError:
+            pass
+    finally:
+        await client.aclose()
+
+    # a transport failure (offline workspace) surfaces as ToolError, not httpx.*
+    def _boom(request):
+        raise httpx.ConnectError("refused", request=request)
+    boom_client = httpx.AsyncClient(transport=httpx.MockTransport(_boom))
+    try:
+        await od.request("http://odysseus.local", "tkn", "GET", "/api/codex/capabilities",
+                         allow_private=True, client=boom_client)
+        raise AssertionError("transport error not wrapped as ToolError")
+    except ToolError:
+        pass
+    finally:
+        await boom_client.aclose()
+
+    # a large JSON result is capped (preview + truncated flag) so it cannot blow
+    # the agent context when the tool loop serializes it back into the request.
+    big = {"items": ["x" * 1000 for _ in range(100)]}
+    big_client = httpx.AsyncClient(transport=httpx.MockTransport(
+        lambda request: httpx.Response(200, json=big)))
+    try:
+        capped = await od.request("http://odysseus.local", "tkn", "GET", "/api/codex/memory",
+                                  allow_private=True, client=big_client)
+        assert capped.get("truncated") is True and len(capped.get("preview", "")) <= 16384, capped
+    finally:
+        await big_client.aclose()
+
+    # catalogue exposes the generic passthrough + capability probe, and matches
+    # the real Odysseus endpoints (calendar needs start/end; memory is a list).
+    assert "request" in od.ODYSSEUS_CATALOGUE and "capabilities" in od.ODYSSEUS_CATALOGUE
+    assert od.ODYSSEUS_CATALOGUE["calendar_events"]["input_schema"]["required"] == ["start", "end"]
+    assert "memory_list" in od.ODYSSEUS_CATALOGUE and "memory_search" not in od.ODYSSEUS_CATALOGUE
+
+    # provider-safe tool names: [A-Za-z0-9_-] only, <= 64 chars, even for a
+    # workspace name full of characters providers reject.
+    nm = od.safe_tool_name("my:weird/workspace name!", "memory_list", "srv-1")
+    import re as _re
+    assert _re.fullmatch(r"[A-Za-z0-9_-]+", nm) and len(nm) <= 64, nm
+    long_nm = od.safe_tool_name("x" * 200, "calendar_events", "srv-1")
+    assert _re.fullmatch(r"[A-Za-z0-9_-]+", long_nm) and len(long_nm) <= 64, long_nm
+    # same workspace name on two different connections (e.g. two users' "home")
+    # must produce distinct names — the disambiguator hashes the server id.
+    assert od.safe_tool_name("home", "memory_list", "srv-A") != od.safe_tool_name("home", "memory_list", "srv-B")
+
+
 def tools_mcp_server_initialize_holds():
     """JSON-RPC `initialize` is open and returns serverInfo + protocolVersion."""
     return _tools_mcp_server_initialize_async()
@@ -1896,4 +2167,4 @@ def traffic_log_append_only_holds() -> None:
                 os.environ.pop("A0P_TRAFFIC_LOG", None)
             else:
                 os.environ["A0P_TRAFFIC_LOG"] = prev
-# ratios: loc_comments=1254:282 imports_exports=182:97 calls_definitions=500:112
+# ratios: loc_comments=1449:320 imports_exports=195:103 calls_definitions=575:123
