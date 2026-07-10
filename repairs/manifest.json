@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "slug": "shared-agent-state-privacy",
+    "title": "Eliminate cross-user leakage through the process-global inspector agent",
+    "priority": "P0 — release blocker",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "01-shared-agent-state-privacy/repair.md"
+  },
+  {
+    "id": 2,
+    "slug": "agent-owner-isolation",
+    "title": "Make all agent CRUD derive ownership exclusively from authenticated identity",
+    "priority": "P0 — release blocker",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "02-agent-owner-isolation/repair.md"
+  },
+  {
+    "id": 3,
+    "slug": "override-record-authorization",
+    "title": "Owner-scope pending override reads and restrict global expiration",
+    "priority": "P0 — release blocker",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "03-override-record-authorization/repair.md"
+  },
+  {
+    "id": 4,
+    "slug": "tenant-safe-tool-registry",
+    "title": "Namespace the in-process tool registry by owner and enforce ownership at dispatch",
+    "priority": "P0 — release blocker",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "04-tenant-safe-tool-registry/repair.md"
+  },
+  {
+    "id": 5,
+    "slug": "outbound-ssrf-boundary",
+    "title": "Apply one fail-closed SSRF and redirect boundary to all outbound connectors",
+    "priority": "P0 — release blocker",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "05-outbound-ssrf-boundary/repair.md"
+  },
+  {
+    "id": 6,
+    "slug": "connector-secret-encryption",
+    "title": "Encrypt connector tokens and webhook secrets at rest with an idempotent migration",
+    "priority": "P0 — release blocker",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "06-connector-secret-encryption/repair.md"
+  },
+  {
+    "id": 7,
+    "slug": "session-oauth-hardening",
+    "title": "Harden cookies and GitHub OAuth redirect/state handling",
+    "priority": "P0 — release blocker for production authentication",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "07-session-oauth-hardening/repair.md"
+  },
+  {
+    "id": 8,
+    "slug": "enforced-root-ci",
+    "title": "Add enforced root CI for the integration repo and full behavioral gates upstream",
+    "priority": "P1 — required before declaring repairs test-backed",
+    "target": "both `The-Interdependency/a0-betatest` and `The-Interdependency/a0ucns`",
+    "path": "08-enforced-root-ci/repair.md"
+  },
+  {
+    "id": 9,
+    "slug": "deployment-contract",
+    "title": "Reconcile Cloud Run configuration with the current FastAPI/Mongo application",
+    "priority": "P1 — production deploy blocker",
+    "target": "`The-Interdependency/a0-betatest` plus deployment environment configuration",
+    "path": "09-deployment-contract/repair.md"
+  },
+  {
+    "id": 10,
+    "slug": "connections-status-truth",
+    "title": "Reconcile CONNECTIONS.md with implemented coupling surfaces and evidence status",
+    "priority": "P1 — architecture truth and safe handoff",
+    "target": "`The-Interdependency/a0ucns`",
+    "path": "10-connections-status-truth/repair.md"
+  },
+  {
+    "id": 11,
+    "slug": "mirror-sync-and-drift",
+    "title": "Re-mirror authoritative heads reproducibly and fail CI on drift or forbidden material",
+    "priority": "P1 — integration integrity",
+    "target": "`The-Interdependency/a0ucns`",
+    "path": "11-mirror-sync-and-drift/repair.md"
+  },
+  {
+    "id": 12,
+    "slug": "circular-phase-mean",
+    "title": "Use a circular mean for unit-circle phase readouts",
+    "priority": "P2 — research-readout correctness",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "12-circular-phase-mean/repair.md"
+  },
+  {
+    "id": 13,
+    "slug": "public-fixture-validation",
+    "title": "Make public-fixture carrier status reflect successful runtime validation",
+    "priority": "P2 — research-readout truthfulness",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "13-public-fixture-validation/repair.md"
+  },
+  {
+    "id": 14,
+    "slug": "edcm-metric-semantics",
+    "title": "Make EDCM applicability, polarity, and alert semantics metric-specific",
+    "priority": "P2 — research-readout correctness",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "14-edcm-metric-semantics/repair.md"
+  },
+  {
+    "id": 15,
+    "slug": "phase-compose-compatibility",
+    "title": "Reject incompatible phase embeddings instead of silently truncating composition",
+    "priority": "P2 — structural correctness",
+    "target": "`The-Interdependency/a0-betatest`",
+    "path": "15-phase-compose-compatibility/repair.md"
+  }
+]
