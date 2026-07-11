@@ -1,8 +1,6 @@
 # Rebuild plan — layered tensor model
 
-Status: **proposed, not started**. Awaiting green light. Every file
-below ships its `MODULE_BUILD` manifest first (per the meta-module-build
-doctrine: *intent → manifest → file plan → tests → scaffold*).
+Status: **implemented and contract-backed**. The layered tensor handoff has landed in `backend/interdependent_lib/` with manifest-first `MODULE_BUILD` blocks and importable contract checks. This document is retained as the completion ledger for the handoff.
 
 ---
 
@@ -126,32 +124,16 @@ I'd ship them in this order (each step ends with green runners):
 
 ---
 
-## Open hmmm I'd like you to resolve (or accept as `hmmm` for now)
+## Completion ledger
 
-1. **`N seeds per core` — N value?** Canon prime_core says `N=157`. Is
-   the same N used everywhere, or do different "cores" use different
-   N? I'll default to `N=157` unless told otherwise.
-2. **`audit.py` per layer** — canon PCNA references PCTA-circle audit
-   and PTCA-seed audit as named gates. I have the *names* but not the
-   gate algorithms. If a spec exists, point me at it; otherwise I'll
-   scaffold the hooks with `hmmm` placeholder predicates that always
-   pass, and mark them as such.
-3. **Composition routing** — `{7/2}` for circle, `{7/3}` for seed are
-   confirmed from canon. Is the underlying graph traversal "visit
-   every vertex once at each stride" or something richer (e.g., signed
-   walk)? Defaulting to the simpler reading unless corrected.
-4. **PCEA cross-cut surface** — should `pcea.kernel_step` be called
-   *inside* each composition op (PCTA `multiply`, PTCA `multiply`), or
-   should it be a separate post-composition pass invoked by `network`?
-   I'd default to *inside* — every state transition is encrypted by
-   default — but it's a doctrine choice.
+1. **`N seeds per core` — resolved.** `Core.with_n()` defaults to canon `N=157`, while Θ/Σ and experiments can pass another positive `n`.
+2. **Composition routing — resolved.** PCTA circles use `{7/2}` and PTCA seeds use `{7/3}` as visit-every-vertex stride walks, with contract checks for both permutations.
+3. **PCEA cross-cut surface — resolved.** `pcea.kernel` exposes `kernel_step`, `kernel_invert`, and `kernel_chain`; network heartbeats use the kernel as a separate runtime state-encryption pass. The float bridge round-trips to `grid_project(t)`, making quantisation explicit rather than pretending arbitrary seeded floats are bit-exact integers.
+4. **UCNS bridge — resolved-with-boundary.** The app imports through `ucns_bridge`; `ucns.a0_safe` remains a version-gated hmmm until upstream PyPI ships it.
+5. **Layer audit hooks — preserved hmmm.** The planned `pcta/audit.py` and `ptca/audit.py` algorithms are still not specified in repo canon. No dishonest always-pass gate was added; the unresolved constraint remains recorded here.
 
 ---
 
-## When green-lit
+## hmmm
 
-I'll do this **manifest-first**: every new file's MODULE_BUILD lands as
-a draft PR before its implementation, so the runners can validate the
-schema before I write the code. The new PR template in
-`/app/.github/PULL_REQUEST_TEMPLATE.md` enforces this for any future
-contributor (or agent) too.
+The handoff is complete at substrate / carrier / seed / core / PCEA / network-contract level. The living continuation is the missing canon for layer-specific audit gates and any future inspector UI ladder work. A heptagram walks into a bar, visits every stool exactly once, and still refuses to call that a proof of Theorem N.
