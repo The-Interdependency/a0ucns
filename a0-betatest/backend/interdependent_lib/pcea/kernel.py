@@ -5,7 +5,7 @@
 #   module_kind: engine
 #   summary: PCEA cross-cut — "this state, last state" kernel runtime encryption operating on Tensor payloads at any layer of the layered model
 #   owner: a0p maintainer
-#   public_surface: kernel_step, kernel_invert, kernel_chain, QUANT_SCALE, QUANT_OFFSET
+#   public_surface: kernel_step, kernel_invert, kernel_chain, grid_project, QUANT_SCALE, QUANT_OFFSET
 #   internal_surface: _quantize, _dequantize
 #   auth_boundary: none
 #   storage_boundary: none
@@ -30,7 +30,7 @@
 # === CAPABILITIES ===
 # id: pcea_kernel
 #   summary: PCEA cross-cut — "this state, last state" kernel runtime encryption operating on Tensor payloads at any layer of the layered model
-#   exposes: kernel_step, kernel_invert, kernel_chain, QUANT_SCALE, QUANT_OFFSET
+#   exposes: kernel_step, kernel_invert, kernel_chain, grid_project, QUANT_SCALE, QUANT_OFFSET
 #   boundaries: auth:none, storage:none, network:none, user_data:none
 #   owner: a0p maintainer
 # === END CAPABILITIES ===

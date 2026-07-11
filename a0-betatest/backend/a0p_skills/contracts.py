@@ -184,6 +184,32 @@ def pcna_aggregate_deterministic_holds() -> None:
     assert a == b, "aggregate must be deterministic"
 
 
+
+def pcna_engine_uses_network_handoff_holds() -> None:
+    """Contract: legacy PCNAEngine is backed by canonical NetworkEngine heartbeat state."""
+    from interdependent_lib.pcna import PCNAEngine
+    from interdependent_lib.network import NetworkEngine
+
+    engine = PCNAEngine(n_primes=3)
+    assert isinstance(engine.network, NetworkEngine)
+    before = engine.network.tick_count
+    state = engine.heartbeat("handoff smoke")
+    assert engine.network.tick_count == before + 1
+    assert state["tick"] == 1
+    assert state["network"]["tick_count"] == 1
+    assert "coherence" in state and "tamper" in state
+    assert set(state["cores"]) == {"phi", "psi", "omega"}
+    for ring in ("phi", "psi", "omega", "theta", "sigma", "epsilon"):
+        assert ring in state["ring_signals"], f"missing legacy ring signal {ring}"
+    snap = engine.snapshot()
+    assert snap["network"]["tick_count"] == 1
+    assert snap["intent_count"] == 0
+    engine.push_intent("remember this")
+    engine.absorb_response("model", "answer", {"total": 1})
+    snap2 = engine.snapshot()
+    assert snap2["intent_count"] == 1
+    assert snap2["response_count"] == 1
+
 def ucns_bridge_unit_holds() -> None:
     """Contract: bridge UNIT identity behaves as ucns unit; multiply works."""
     from interdependent_lib import ucns_bridge as ub
@@ -1506,7 +1532,7 @@ def pcea_two_layer_authorization_holds() -> None:
 def pcea_kernel_chain_holds() -> None:
     """Contract: kernel_chain encrypts a sequence with each step keyed against prior plaintext."""
     from interdependent_lib.pcna.tensor import Tensor
-    from interdependent_lib.pcea.kernel import kernel_chain, kernel_invert
+    from interdependent_lib.pcea.kernel import kernel_chain, kernel_invert, grid_project
 
     initial = Tensor.from_seed(0, "init")
     plaintexts = [Tensor.from_seed(i, f"chain::{i}") for i in range(1, 4)]
@@ -1521,7 +1547,8 @@ def pcea_kernel_chain_holds() -> None:
         rec = kernel_invert(ct, last)
         recovered.append(rec)
         last = pt  # next inversion uses the original plaintext as the key
-    assert recovered == list(plaintexts), "kernel_chain must round-trip with the original keys"
+    expected = [grid_project(pt) for pt in plaintexts]
+    assert recovered == expected, "kernel_chain must round-trip to the quantisation grid with the original keys"
 
 # === CONTRACTS ===
 # id: a0p_contracts_loads

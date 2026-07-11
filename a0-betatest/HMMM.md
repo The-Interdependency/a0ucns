@@ -6,7 +6,7 @@
 
 ## Architecture (open)
 
-### Layered tensor model — rebuild pending
+### Layered tensor model — handoff completed
 
 The user's canon framing (confirmed turn 2026-06-02):
 
@@ -25,17 +25,7 @@ Recursive fractal: each layer's whole-of-seven is itself a tensor at
 its level. Substrate is UCNS — depth-d objects carry depth-(d-1)
 payloads.
 
-What's in the repo today is **wrong** under this model:
-- `interdependent_lib/ptca/tensor.py` holds a flat `[N, 4, 7, 7]`
-  nested-list "tensor" — never a UCNS object, no depth lift,
-  no payload arithmetic, no provenance through composition.
-- `interdependent_lib/pcna/pcna.py` reduces the rings to scalar
-  signals (a float per ring). Canon: each ring is an N-sized tensor
-  (Φ N=53, Ψ N=53, Ω N=53, Θ N=29, MemL N=19, MemS N=17, Σ N=41 as
-  observer outside the scored set).
-- `interdependent_lib/pcta/` does not exist.
-
-Rebuild plan is recorded under `## Rebuild plan` below; not started.
+The handoff is now implemented under `backend/interdependent_lib/`: PCNA leaf tensors and 7-way aggregation, PCTA circles, PTCA seeds/cores, PCEA kernel-state encryption, and the PCNA network engine. `PCNAEngine` now acts as a compatibility facade over `NetworkEngine`, so legacy inspector/ZFAE callers advance the canonical network handoff without losing their existing response shape. Legacy `ptca/tensor.py` remains for compatibility, but the layered handoff path is the contract-backed path.
 
 ### The `9` axis — closed, was misremembered
 
@@ -79,7 +69,7 @@ upstream constants or the corrected layer model. Marking closed.
 - `meta-module-build` runner — 42/42 covered, 0 gaps, 0 invalid.
 - `test-build` runner — 4 contracts, 4 PASS, 0 FAIL, 0 ERROR.
 
-## Rebuild plan (proposed; not started)
+## Rebuild plan (completed ledger)
 
 Single coordinated rebuild against the layered model. Replaces the
 "PTCA stratified rebuild" + "PCNA canon-topology rebuild" tasks (those
@@ -114,10 +104,9 @@ interdependent_lib/
     └── coherence.py
 ```
 
-PCEA cross-cuts: every layer's composition op delegates last-state
-keying to PCEA so state transitions are encrypted by default.
+PCEA cross-cuts through `pcea.kernel`: runtime state transitions can be encrypted with `kernel_step` / `kernel_chain`, and network heartbeats use that separate cross-cut instead of hiding encryption inside every aggregate projection.
 
-## Suggested order, once approved
+## Completed order
 
 1. **PCNA `tensor.py`** — leaf tensor, payload arithmetic, group op.
    Contract: round-trip + composition associativity.
@@ -133,7 +122,13 @@ keying to PCEA so state transitions are encrypted by default.
 5. **Inspector UI** — render the layered structure (was a tensor card,
    now a UCNS-depth ladder).
 
-## Definitely out of scope this session
+## PCNA facade handoff (closed in this turn)
+
+- `interdependent_lib.pcna.PCNAEngine` now delegates heartbeat state to the canonical `NetworkEngine`.
+- Legacy `ring_signals`, `cores`, memory, EDCM, and ZFAE persona calls remain available for compatibility.
+- Contract: `a0p_skills.contracts.pcna_engine_uses_network_handoff_holds`.
+
+## hmmm — still open
 
 - Carrier widening (UCNS `FRONTIER`).
 - UCNS-G metric geometry claims.
