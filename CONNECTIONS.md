@@ -1,5 +1,11 @@
 # CONNECTIONS.md — Coupling scheme: a0-betatest ⟷ aimmh ⟷ odysseus-a0
 
+> **DEPRECATED as current coupling authority (2026-08-16).** The exact-tree
+> audit falsified this document's verbatim-mirror claim. Treat the embedded
+> trees and every “what exists” statement below as historical design evidence.
+> Use exact upstream commits for current implementation status. No proof,
+> security, or empirical status transfers through this document.
+
 Purpose of this document: a formatted connection scheme showing every point where
 **aimmh** or **odysseus-a0** can couple meaningfully with **a0-betatest (a0p)**, so
 that either or both can be used *from within* a0-betatest. Each coupling names the
@@ -10,9 +16,10 @@ boundary rules that must hold.
 
 ## Mirrored sources in this repo
 
-The three trees at this repo's root are verbatim mirrors (tracked files only) of
-their source repos at the commits below. They are **not** the source of truth —
-edit upstream first, re-mirror second.
+The three trees at this repo's root were intended as verbatim mirrors (tracked
+files only) of their source repos at the commits below. That claim is
+**FALSIFIED and DEPRECATED**. They are historical modified snapshots, not
+source authorities. Edit and test upstream instead.
 
 | Directory | Source repo | Commit | Date | Exclusions |
 |---|---|---|---|---|

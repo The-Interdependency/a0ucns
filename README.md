@@ -1,26 +1,26 @@
-# a0ucns — integration workspace
+# a0ucns
 
-This repository was restructured on 2026-07-03:
+Status: **DEPRECATED as a verbatim-mirror and current coupling authority**.
 
-- **`archive/`** — the complete previous contents of a0ucns (the a0 platform
-  copy), moved intact. Nothing was deleted; git history is preserved as renames.
-- **`a0-betatest/`**, **`aimmh/`**, **`odysseus-a0/`** — verbatim mirrors of the
-  corresponding The-Interdependency repos (tracked files only; source commits and
-  exclusions listed in `CONNECTIONS.md`). They are working copies for integration
-  design — the source of truth stays upstream.
-- **`CONNECTIONS.md`** — the connection scheme: every seam where aimmh or
-  odysseus-a0 couples with a0-betatest (a0p), what exists vs. what needs writing,
-  a decision matrix, and the boundary rules. **Start there.**
+The 2026-08-16 exact-tree audit falsified the claim that the embedded
+`a0-betatest/`, `aimmh/`, and `odysseus-a0/` trees are verbatim copies of the
+commits named in `CONNECTIONS.md`. The first comparison alone found one missing
+tracked blob, one target-only blob, and six changed blobs outside the declared
+directory exclusions; testing then stopped.
 
-Quick summary of the scheme (details in `CONNECTIONS.md`):
+Use the three upstream repositories at exact commits as source authorities.
+This repository remains historical integration design and does not transfer
+current implementation, security, or evidence status.
 
-| # | Coupling | Direction | Status |
-|---|---|---|---|
-| A | `aimmh_lib` CallFn adapter over a0p `ProviderAdapter.chat` | aimmh → a0p, in-process | ~40-line adapter to write |
-| B | aimmh hub HTTP API (`/api/v1/hub/*`) | aimmh → a0p, HTTP | optional, heavier |
-| C | odysseus MCP servers via a0p `mcp_relay` + tool registry | odysseus → a0p | registration only |
-| D | odysseus REST via scoped API tokens as a0p webhook tools | odysseus → a0p | thin tool defs |
-| E | a0p as OpenAI-compatible model endpoint in odysseus | a0p → odysseus | shim to write in a0p |
+## Replacement
 
-License note: this repo is AGPL-3.0-or-later; the mirrored trees retain their own
-licenses (a0-betatest: Apache-2.0; aimmh: MPL-2.0; odysseus-a0: per its LICENSE).
+- `The-Interdependency/a0-betatest`
+- `The-Interdependency/aimmh`
+- `The-Interdependency/odysseus-a0`
+
+Resolve each at an explicit commit. Do not use the embedded trees as mirrors.
+
+## hmmm
+
+The modified snapshots have no machine-readable divergence manifest. Until one
+exists, they are historical working copies, not reproducible integration input.
