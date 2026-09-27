@@ -42,7 +42,8 @@ keeps imported skills under their upstream license. Known carve-outs inside
 | `archive/.agents/skills/frontend-design/` | Apache-2.0 (`LICENSE.txt`, from anthropics/skills) |
 | `archive/.agents/skills/skill-creator/` | Apache-2.0 (`LICENSE.txt`, from anthropics/skills) |
 | other third-party skills under `archive/.agents/skills/` listed in `archive/skills-lock.json` (inf-sh, squirrelscan, better-auth, obra/superpowers, browser-use, vercel-labs, nextlevelbuilder) | their upstream terms; several upstreams show no repo-level license (`hmmm`) |
-| `archive/skill-lib/`; `archive/.agents/skills/msdmd/`, `archive/.agents/skills/meta-module-build/`, `archive/.agents/skills/test-build/` (earlier copies of Erin's own The-Interdependency/skill-lib skills, per `archive/.agents/skills/README.md`) | MPL-2.0 (`archive/skill-lib/LICENSE`) |
+| `archive/skill-lib/` | MPL-2.0 (`archive/skill-lib/LICENSE`) |
+| `archive/.agents/skills/msdmd/`, `archive/.agents/skills/meta-module-build/`, `archive/.agents/skills/test-build/` (earlier copies of Erin's own The-Interdependency/skill-lib skills, per `archive/.agents/skills/README.md`) | MPL-2.0 (earlier copies were also published under Apache-2.0; that grant stands) |
 | `archive/edcm-org/` | MIT (`archive/edcm-org/pyproject.toml`) |
 | `archive/a0python/edcm-org/` | MIT (`archive/a0python/edcm-org/pyproject.toml`) |
 
