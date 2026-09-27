@@ -26,10 +26,25 @@ Quick summary of the scheme (details in `CONNECTIONS.md`):
 
 a0ucns's own content is licensed under the GNU Affero General Public License v3.0
 or later (SPDX: `AGPL-3.0-or-later`). The full text is in [`LICENSE`](LICENSE). This
-covers the root files, `archive/`, `docs/` and `repairs/`. The root file is
+covers the root files, `archive/`, `docs/` and `repairs/`, except the carve-outs
+below and the mirrored trees listed further down. The root file is
 byte-identical to `archive/LICENSE`, the AGPL text a0ucns inherited from its fork
 parent The-Interdependency/a0, which was at the repo root until the 2026-07-03
 restructure moved it into `archive/`.
+
+Carve-outs: any file or directory that carries its own LICENSE file or a manifest
+license declaration keeps those terms, in the same way `skill-lib/ATTRIBUTION.md`
+keeps imported skills under their upstream license. Known carve-outs inside
+`archive/`:
+
+| Path | Own terms |
+|---|---|
+| `archive/.agents/skills/frontend-design/` | Apache-2.0 (`LICENSE.txt`, from anthropics/skills) |
+| `archive/.agents/skills/skill-creator/` | Apache-2.0 (`LICENSE.txt`, from anthropics/skills) |
+| other third-party skills under `archive/.agents/skills/` listed in `archive/skills-lock.json` (inf-sh, squirrelscan, better-auth, obra/superpowers, browser-use, vercel-labs, nextlevelbuilder) | their upstream terms; several upstreams show no repo-level license (`hmmm`) |
+| `archive/skill-lib/` | MPL-2.0 (`archive/skill-lib/LICENSE`) |
+| `archive/edcm-org/` | MIT (`archive/edcm-org/pyproject.toml`) |
+| `archive/a0python/edcm-org/` | MIT (`archive/a0python/edcm-org/pyproject.toml`) |
 
 Inherited terms are preserved. `archive/` carries a0 history from the fork point.
 Versions published at earlier commits keep the terms they were published under:
