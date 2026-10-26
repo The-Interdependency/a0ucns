@@ -1,130 +1,66 @@
-# a0p — a research instrument
+# a0ucns — integration workspace
 
-**a0p is a research instrument, not a product.** It is the deployed instance of `a0` (this codebase) running publicly at [replit.interdependentway.org](https://replit.interdependentway.org). It explores agent / energy-provider / PCNA dynamics in the open. Anyone may read and use it. Code-altering access is restricted to the owner and a small set of explicitly-invited collaborators. The instrument is funded by donations; it does not solicit subscribers.
+This repository was restructured on 2026-07-03:
 
-> **Naming:** `a0` = the project / runtime / repository (used in contributor-facing material). `a0p` = the deployed instance of `a0` (used in user-facing UI copy and billing). The thing you build is `a0`; the thing that runs is `a0p`.
+- **`archive/`** — the complete previous contents of a0ucns (the a0 platform
+  copy), moved intact. Nothing was deleted; git history is preserved as renames.
+- **`a0-betatest/`**, **`aimmh/`**, **`odysseus-a0/`** — verbatim mirrors of the
+  corresponding The-Interdependency repos (tracked files only; source commits and
+  exclusions listed in `CONNECTIONS.md`). They are working copies for integration
+  design — the source of truth stays upstream.
+- **`CONNECTIONS.md`** — the connection scheme: every seam where aimmh or
+  odysseus-a0 couples with a0-betatest (a0p), what exists vs. what needs writing,
+  a decision matrix, and the boundary rules. **Start there.**
 
----
+Quick summary of the scheme (details in `CONNECTIONS.md`):
 
-## The Agent
+| # | Coupling | Direction | Status |
+|---|---|---|---|
+| A | `aimmh_lib` CallFn adapter over a0p `ProviderAdapter.chat` | aimmh → a0p, in-process | ~40-line adapter to write |
+| B | aimmh hub HTTP API (`/api/v1/hub/*`) | aimmh → a0p, HTTP | optional, heavier |
+| C | odysseus MCP servers via a0p `mcp_relay` + tool registry | odysseus → a0p | registration only |
+| D | odysseus REST via scoped API tokens as a0p webhook tools | odysseus → a0p | thin tool defs |
+| E | a0p as OpenAI-compatible model endpoint in odysseus | a0p → odysseus | shim to write in a0p |
 
-ZFAE (`a0(zeta fun alpha echo)`) is the single persistent agent running on the instrument. Large language models (GPT-5 mini, Gemini 2.5 Flash, Claude Sonnet 4.5, Grok 4 Fast) are treated as **energy providers** — they supply computational energy for each response but are not the agent itself.
+## License
 
-Sub-agents (`a0(zeta{n})`) can be spawned to fork the PCNA instance, execute in parallel, and merge results back into the primary agent.
+a0ucns's own content is licensed under the GNU Affero General Public License v3.0
+or later (SPDX: `AGPL-3.0-or-later`). The full text is in [`LICENSE`](LICENSE). This
+covers the root files, `archive/`, `docs/` and `repairs/`, except the carve-outs
+below and the mirrored trees listed further down. The root file is
+byte-identical to `archive/LICENSE`, the AGPL text a0ucns inherited from its fork
+parent The-Interdependency/a0, which was at the repo root until the 2026-07-03
+restructure moved it into `archive/`.
 
----
+Carve-outs: any file or directory that carries its own LICENSE file or a manifest
+license declaration keeps those terms, in the same way `skill-lib/ATTRIBUTION.md`
+keeps imported skills under their upstream license. Known carve-outs inside
+`archive/`:
 
-## Architecture
+| Path | Own terms |
+|---|---|
+| `archive/.agents/skills/frontend-design/` | Apache-2.0 (`LICENSE.txt`, from anthropics/skills) |
+| `archive/.agents/skills/skill-creator/` | Apache-2.0 (`LICENSE.txt`, from anthropics/skills) |
+| other third-party skills under `archive/.agents/skills/` listed in `archive/skills-lock.json` (inf-sh, squirrelscan, better-auth, obra/superpowers, browser-use, vercel-labs, nextlevelbuilder) | their upstream terms; several upstreams show no repo-level license (`hmmm`) |
+| `archive/skill-lib/` | MPL-2.0 (`archive/skill-lib/LICENSE`) |
+| `archive/.agents/skills/msdmd/`, `archive/.agents/skills/meta-module-build/`, `archive/.agents/skills/test-build/` (earlier copies of Erin's own The-Interdependency/skill-lib skills, per `archive/.agents/skills/README.md`) | MPL-2.0 (earlier copies were also published under Apache-2.0; that grant stands) |
+| `archive/edcm-org/` | MIT (`archive/edcm-org/pyproject.toml`) |
+| `archive/a0python/edcm-org/` | MIT (`archive/a0python/edcm-org/pyproject.toml`) |
 
-Three processes compose the runtime:
+Inherited terms are preserved. `archive/` carries a0 history from the fork point.
+Versions published at earlier commits keep the terms they were published under:
+`package.json` `"license": "MIT"` from 2026-02-26, Apache-2.0 LICENSE from
+2026-05-01, an interim BSL notice from 2026-05-26, MIT
+from 2026-06-07, and AGPL-3.0 from 2026-06-12. `archive/package.json` and
+`archive/pyproject.toml` declare `AGPL-3.0-or-later`.
 
-```
-Browser → Express (:5000) → [proxy /api/*] → Python/FastAPI (:8001)
-                          ↘ Vite dev server (:5001)
-```
+The mirrored trees keep their own licenses:
 
-- **Express** — Auth, sessions, guest-chat rate limiting. The only public entry point; injects identity and internal-secret headers on every request proxied to Python.
-- **Python/FastAPI** — All AI orchestration, agent lifecycle, billing, and the cognitive engine stack.
-- **Vite** — React frontend (dev only).
+| Tree | License |
+|---|---|
+| `aimmh/` | MPL-2.0 (`aimmh/LICENSE`) |
+| `odysseus-a0/` | MIT (`odysseus-a0/LICENSE`, Copyright (c) 2025 Odysseus Contributors) |
+| `a0-betatest/` | Mirrored at `4f089d4` (2026-07-09). At that commit a0-betatest had **no root LICENSE**. `backend/pyproject.toml` declared `Apache-2.0` and `_legacy_a0/LICENSE` is an unfinished interim BSL placeholder, not a license. Upstream a0-betatest added its AGPL-3.0-or-later `LICENSE` on 2026-07-10 (`47acbc3`), after this mirror was taken. Re-mirroring would bring it in. |
 
-### Cognitive Engine Stack
-
-| Component | Role |
-|-----------|------|
-| **PCNA** (`python/engine/pcna.py`) | Six-ring inference pipeline: Φ (Phi), Ψ (Psi), Ω (Omega), Θ (Theta), Memory-L (N=19), Memory-S (N=17) |
-| **PTCA** (`python/engine/ptca_core.py`) | Prime-ring tensor context — shape `[N, 4, 7, 7]` across node/dim/phase/heptagram axes |
-| **Sigma** (`python/engine/sigma.py`) | Filesystem substrate encoder; companion to the Ψ ring |
-| **Zeta** (`python/engine/zeta.py`) | Memory injection layer — LT→prompt cache, ST→after cache, sub-agent→volatile |
-| **EDCM** (`python/services/edcm.py`) | Behavioral directive scoring (CM, DA, DRIFT, DVG, INT, TBF) |
-| **Bandits** (`python/services/bandit.py`) | UCB1 multi-armed bandit for tool / model / routing selection |
-| **Heartbeat** (`python/services/heartbeat.py`) | 30-second tick: PCNA propagation, memory checkpoints, sub-agent cleanup |
-
-### Metadata-Driven Console
-
-The frontend has zero hardcoded tabs. Every Python route module declares `UI_META` + `DATA_SCHEMA`; `/api/v1/ui/structure` aggregates them; the React console renders tabs dynamically.
-
----
-
-## Access Model
-
-- **Reading and using the app is free for everyone.** Every tab is open. There is no paywall and donations do not unlock anything.
-- **Operator tier** — `@interdependentway.org` accounts are auto-promoted to `ws` on login.
-- **Owner-only ("admin") write endpoints** govern actions that mutate shared instrument state: agent state, learning state, system configuration, and module toggles. Per-user CRUD on your own data is not admin-gated. The static contract lives in `python/tests/contracts/gating.py`.
-
-Contributors will only encounter a 403 if they invoke an instrument-mutation endpoint directly against the deployed instance, which is not part of the documented contribution path. If your work requires an owner-gated endpoint, open an issue first.
-
----
-
-## Funding
-
-a0p runs on donations. There is no subscription tier and no perk unlocked by donating.
-
-> "I don't have the cash required for 501c3 status, so I have to report it for taxes, but every tax payer is allowed to claim up to five hundred dollars in charitable donations per year without receipts required."
-
-To donate, visit [a0p/pricing](https://replit.interdependentway.org/pricing). Minimum $5.
-
-The only productized service is the **EDCMbone transcript explainer** — a one-off paid analysis ($50 for 3 explanations, ~$16.67 each) priced against the operator's $1,000/hr benchmark.
-
----
-
-## Local Development
-
-**Prerequisites:** Node.js 20+, Python 3.12+, PostgreSQL
-
-```bash
-npm install
-pip install -e .
-
-# Start all three processes (Express :5000, Vite :5001, Python :8001)
-bash scripts/start-dev.sh
-```
-
-In development `scripts/start-dev.sh` generates a shared `INTERNAL_API_SECRET` automatically.
-
-### Useful commands
-
-```bash
-npm run build                      # Production build → dist/
-npm run check                      # TypeScript type checking
-python scripts/annotate.py         # Re-stamp file N:M ratio annotations
-
-# Gating contracts (no live server required)
-python -m pytest python/tests/contracts/route_gating.py python/tests/contracts/gating.py -v
-
-# Playwright e2e (requires dev server on :5000)
-npx playwright install chromium    # first time only
-npx playwright test
-```
-
-### Required environment variables (production)
-
-| Variable | Purpose |
-|----------|---------|
-| `SESSION_SECRET` | Express session encryption |
-| `INTERNAL_API_SECRET` | Express→Python shared secret |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `XAI_API_KEY` | Grok 4 Fast |
-| `ANTHROPIC_API_KEY` | Claude Sonnet 4.5 |
-| `GEMINI_API_KEY` | Gemini 2.5 Flash |
-| `OPENAI_API_KEY` | GPT-5 mini |
-| `STRIPE_SECRET_KEY` | Stripe (donations + EDCMbone explainer) |
-| `STRIPE_PUBLISHABLE_KEY` | Stripe embedded checkout |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook HMAC |
-| `ADMIN_EMAIL` | Seed admin access on first boot |
-
----
-
-## Contributing
-
-Standard contribution work — code, docs, tests, evaluation harnesses, architecture diagrams — does not require any elevated in-app access tier. Pull requests go through normal GitHub review.
-
-Areas where help is especially useful:
-
-- LLM provider routing and model gateway design
-- Tool-calling and safe tool execution
-- Agent memory and context management
-- Evaluation harnesses and regression tests
-- Documentation and architecture diagrams
-- Responsible AI and human-aligned agent behavior
-
-Built and operated by Erin (wayseer00@gmail.com).
+Usage: to reuse code from this repo, take the license of the tree it lives in, as
+listed above. This section is a licensing map, not legal advice.
